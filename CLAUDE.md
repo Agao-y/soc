@@ -1,0 +1,74 @@
+# SOC 项目 — 龙王守护者
+
+## 项目概述
+
+基于 LLM 的 SIEM 告警智能分析平台。FastAPI 后端 + Vue 3 前端，集成 Wazuh SIEM 数据源和 DeepSeek LLM 研判。
+
+## 技术栈
+
+- 后端：Python 3.12、FastAPI、Pydantic v2、httpx
+- 前端：Vue 3、TypeScript、Vite、ECharts + echarts-gl 3D 地球
+- 数据源：Wazuh Indexer (OpenSearch) + Wazuh Manager API
+- LLM：DeepSeek Chat API (OpenAI 兼容接口)
+
+## 启动命令
+
+### 后端
+```powershell
+cd D:\soc\soc\backend
+.venv_new\Scripts\Activate.ps1
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+- 健康检查：http://127.0.0.1:8000/health
+- Swagger：http://127.0.0.1:8000/docs
+- 告警接口：http://127.0.0.1:8000/api/alerts
+
+### 前端
+```powershell
+cd D:\soc\soc\frontend
+npm run dev
+```
+- 前端地址：http://127.0.0.1:5173
+- Vite 代理 /api → 127.0.0.1:8000
+
+### Wazuh
+```powershell
+docker ps  # 确认 single-node 容器在运行
+```
+- Dashboard：https://localhost (admin/SecretPassword)
+- Indexer API：https://localhost:9200
+
+## 当前配置状态
+
+- `.env` 中 APP_MODE=wazuh，数据源从 Wazuh 实时读取
+- LLM 已配置 DeepSeek：`deepseek-chat` 模型
+- Wazuh Docker single-node 已部署
+- 虚拟环境：`backend\.venv_new`（旧的 `.venv` 损坏无法删除）
+
+## 8 个 API 接口
+
+| 路径 | 功能 |
+|------|------|
+| GET /health | 健康检查 |
+| GET /api/alerts | 告警列表 |
+| GET /api/alerts/{id} | 告警详情+AI研判 |
+| GET /api/alerts/{id}/explainability | XAI解释 |
+| GET /api/dashboard | 驾驶舱聚合 |
+| GET /api/health/wazuh | Wazuh状态 |
+| GET /api/agents | Agent列表 |
+| GET /api/agents/{id} | Agent详情 |
+
+## 8 个前端模块
+
+CockpitHeader / AlertFlowTicker / AiAnalysisBoard / ResponseAdvicePanel / SituationVisualizationPanel / ExplainabilityPanel / TicketFlowPanel / DashboardPage
+
+## Git
+
+- 仓库：https://github.com/Agao-y/soc.git
+- 分支：main
+
+## 团队分组
+
+- 第一组（前端展示组）：页面展示、交互流程、截图
+- 第二组（后端接口组）：接口、路由、数据返回
+- 第三组（数据分析组）：告警数据、风险评分、AI研判

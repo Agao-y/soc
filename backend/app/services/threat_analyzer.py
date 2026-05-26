@@ -26,7 +26,7 @@ class ThreatAnalyzer:
         self.llm_client = llm_client
 
     async def analyze_alert(self, alert_id: str) -> AlertDetailResponse | None:
-        alert = self.repository.get_alert(alert_id)
+        alert = await self.repository.get_alert_async(alert_id)
         if not alert:
             return None
 
@@ -47,6 +47,103 @@ class ThreatAnalyzer:
             trace_summary=self._trace_summary(alert),
         )
         return AlertDetailResponse(alert=alert, assessment=assessment)
+
+    async def build_dashboard_async(self) -> DashboardResponse:
+        alerts = await self.repository.list_alerts_async()
+        severity_counts = Counter(alert.severity for alert in alerts)
+        status_counts = Counter(alert.status for alert in alerts)
+        tactic_counts = Counter(tactic for alert in alerts for tactic in alert.mitre_tactics)
+        type_counts = Counter(alert.event_type for alert in alerts)
+        ticket_counts = Counter(alert.ticket.status for alert in alerts)
+        assessments = [self._heuristic_scores(alert) for alert in alerts]
+
+        online_assets = len({alert.asset.hostname for alert in alerts})
+        handled_count = sum(1 for alert in alerts if alert.ticket.status in {"closed", "ignored"})
+        pending_count = len(alerts) - handled_count
+        high_risk = sum(1 for score in assessments if float(score["overall_score"]) >= 80)
+        avg_accuracy = sum(float(score["confidence"]) for score in assessments) / max(len(alerts), 1)
+        avg_response = sum(alert.ticket.response_minutes for alert in alerts) / max(len(alerts), 1)
+        risk_index = sum(float(score["overall_score"]) for score in assessments) / max(len(alerts), 1)
+
+        metrics = [
+            DashboardMetric(label="实时在线资产数", value=str(online_assets), trend="基于当前告警资产统计"),
+            DashboardMetric(label="今日告警总量", value=str(len(alerts)), trend="来自当前数据源实时查询"),
+            DashboardMetric(label="高危告警数", value=str(high_risk), trend="需优先升级响应"),
+            DashboardMetric(label="已处置 / 未处置", value=f"{handled_count} / {pending_count}", trend="待接入真实工单回写"),
+            DashboardMetric(label="AI 自动研判准确率", value=f"{avg_accuracy:.0%}", trend="当前为启发式估算"),
+            DashboardMetric(label="平均响应耗时", value=f"{avg_response:.0f} min", trend="当前为占位统计"),
+        ]
+
+        top_tactics = [{"name": name, "count": count} for name, count in tactic_counts.most_common(6)]
+        attack_map = self._build_attack_map(alerts)
+        distribution = self._build_distribution(type_counts)
+        recent_records = sorted(
+            [alert.ticket for alert in alerts],
+            key=lambda item: item.updated_at,
+            reverse=True,
+        )[:6]
+
+        return DashboardResponse(
+            metrics=metrics,
+            alerts_by_severity=dict(severity_counts),
+            alerts_by_status=dict(status_counts),
+            top_tactics=top_tactics,
+            risk_gauge=RiskGauge(
+                score=round(risk_index, 1),
+                label="整体风险指数",
+                trend="基于当前告警集合动态计算",
+                ranges=[
+                    GaugeRange(start=0, end=30, color="#22c55e"),
+                    GaugeRange(start=31, end=70, color="#f59e0b"),
+                    GaugeRange(start=71, end=100, color="#ef4444"),
+                ],
+            ),
+            attack_map=attack_map,
+            alert_type_distribution=distribution,
+            ticket_flow=TicketFlowSummary(
+                pending=ticket_counts.get("pending", 0),
+                processing=ticket_counts.get("processing", 0),
+                closed=ticket_counts.get("closed", 0),
+                ignored=ticket_counts.get("ignored", 0),
+                avg_response_minutes=round(avg_response, 1),
+                recent_records=recent_records,
+            ),
+        )
+
+    async def explain_alert_async(self, alert_id: str) -> AssessmentExplainability | None:
+        alert = await self.repository.get_alert_async(alert_id)
+        if not alert:
+            return None
+
+        scores = self._heuristic_scores(alert)
+        rows = [
+            ExplainabilityRow(
+                factor="来源 IP 信誉",
+                weight=0.24,
+                note=f"来源 {alert.source_ip} 位于 {alert.source_geo.country}，近期存在待核验访问模式",
+            ),
+            ExplainabilityRow(
+                factor="异常行为强度",
+                weight=0.28,
+                note=f"轻量模型估算 anomaly_score={scores['anomaly_score']:.2f}，日志模式与历史样本存在偏差",
+            ),
+            ExplainabilityRow(
+                factor="时间规律偏离",
+                weight=0.16,
+                note="事件发生在非常规活跃时段，且与正常变更窗口不一致",
+            ),
+            ExplainabilityRow(
+                factor="关联事件密度",
+                weight=0.17,
+                note=f"已关联 {len(alert.related_entities)} 个实体与 {len(alert.timeline)} 个时间线节点",
+            ),
+            ExplainabilityRow(
+                factor="攻击链阶段权重",
+                weight=0.15,
+                note=f"当前阶段处于 {alert.attack_stage}，对业务影响权重较高",
+            ),
+        ]
+        return AssessmentExplainability(alert_id=alert.id, rows=rows)
 
     def build_dashboard(self) -> DashboardResponse:
         alerts = self.repository.list_alerts()

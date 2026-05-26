@@ -869,3 +869,46 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Alert Action Buttons ---- */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.action-btn {
+  padding: 6px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #edf6ff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.action-btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+}
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.action-resolve:hover:not(:disabled) {
+  border-color: #10b981;
+  color: #10b981;
+}
+.action-ignore:hover:not(:disabled) {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+.action-escalate:hover:not(:disabled) {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.action-msg {
+  color: #10b981;
+  font-size: 13px;
+  margin-left: 6px;
+}

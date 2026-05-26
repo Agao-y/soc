@@ -1,11 +1,40 @@
 <script setup lang="ts">
-import type { Alert, AlertDetail } from "../api/client";
+import { ref } from "vue";
+import type { ActionStatus, Alert, AlertDetail } from "../api/client";
+import { updateAlertStatus } from "../api/client";
 
-defineProps<{
+const props = defineProps<{
   detail: AlertDetail | null;
   selectedAlert: Alert | null;
   loading: boolean;
 }>();
+
+const emit = defineEmits<{
+  (e: "status-changed"): void;
+}>();
+
+const acting = ref(false);
+const actionMsg = ref("");
+
+async function handleStatus(status: ActionStatus) {
+  if (!props.selectedAlert) return;
+  acting.value = true;
+  actionMsg.value = "";
+  try {
+    await updateAlertStatus(props.selectedAlert.id, status);
+    const labels: Record<ActionStatus, string> = {
+      resolved: "已处置",
+      ignored: "已忽略",
+      escalated: "已升级",
+    };
+    actionMsg.value = `告警 ${labels[status]}`;
+    emit("status-changed");
+  } catch {
+    actionMsg.value = "操作失败";
+  } finally {
+    acting.value = false;
+  }
+}
 
 const stages = [
   "Reconnaissance",
@@ -82,6 +111,19 @@ function getText(value?: string) {
           <span>置信度评分</span>
           <strong>{{ Math.round(detail.assessment.confidence * 100) }}</strong>
         </article>
+      </div>
+
+      <div class="action-bar">
+        <button class="action-btn action-resolve" :disabled="acting" @click="handleStatus('resolved')">
+          标记已处置
+        </button>
+        <button class="action-btn action-ignore" :disabled="acting" @click="handleStatus('ignored')">
+          忽略误报
+        </button>
+        <button class="action-btn action-escalate" :disabled="acting" @click="handleStatus('escalated')">
+          升级工单
+        </button>
+        <span v-if="actionMsg" class="action-msg">{{ actionMsg }}</span>
       </div>
 
       <article class="analysis-card attack-chain-card">

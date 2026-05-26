@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 
 Severity = Literal["low", "medium", "high", "critical"]
-AlertStatus = Literal["new", "investigating", "resolved"]
+AlertStatus = Literal["new", "investigating", "resolved", "ignored", "escalated"]
 ThreatLabel = Literal["benign", "suspicious", "confirmed-threat"]
 ThreatType = Literal["brute-force", "miner", "ransomware", "c2", "port-scan", "exfiltration"]
 AttackStage = Literal["Reconnaissance", "Initial Access", "Execution", "Command and Control", "Exfiltration"]
@@ -171,3 +171,7 @@ class ExplainabilityRow(BaseModel):
 class AssessmentExplainability(BaseModel):
     alert_id: str
     rows: list[ExplainabilityRow]
+
+
+class StatusUpdateRequest(BaseModel):
+    status: AlertStatus

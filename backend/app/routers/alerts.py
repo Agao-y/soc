@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
-from app.models.schemas import AlertDetailResponse, AssessmentExplainability, DashboardResponse, SIEMAlert
+from app.auth import get_current_user
+from app.models.schemas import AlertDetailResponse, AssessmentExplainability, DashboardResponse, SIEMAlert, StatusUpdateRequest
 from app.services.alert_repository import AlertRepository
 from app.services.config import settings
 from app.services.llm_client import LLMClient
@@ -15,12 +16,12 @@ analyzer = ThreatAnalyzer(repository=repository, llm_client=LLMClient())
 
 
 @router.get("/alerts", response_model=list[SIEMAlert])
-async def list_alerts() -> list[SIEMAlert]:
+async def list_alerts(current_user: dict = Depends(get_current_user)) -> list[SIEMAlert]:
     return await repository.list_alerts_async()
 
 
 @router.get("/alerts/{alert_id}", response_model=AlertDetailResponse)
-async def get_alert_detail(alert_id: str) -> AlertDetailResponse:
+async def get_alert_detail(alert_id: str, current_user: dict = Depends(get_current_user)) -> AlertDetailResponse:
     result = await analyzer.analyze_alert(alert_id)
     if not result:
         raise HTTPException(status_code=404, detail="Alert not found")
@@ -28,20 +29,28 @@ async def get_alert_detail(alert_id: str) -> AlertDetailResponse:
 
 
 @router.get("/alerts/{alert_id}/explainability", response_model=AssessmentExplainability)
-async def get_alert_explainability(alert_id: str) -> AssessmentExplainability:
+async def get_alert_explainability(alert_id: str, current_user: dict = Depends(get_current_user)) -> AssessmentExplainability:
     result = await analyzer.explain_alert_async(alert_id)
     if not result:
         raise HTTPException(status_code=404, detail="Alert not found")
     return result
 
 
+@router.patch("/alerts/{alert_id}/status", response_model=SIEMAlert)
+async def update_alert_status(alert_id: str, body: StatusUpdateRequest, current_user: dict = Depends(get_current_user)) -> SIEMAlert:
+    alert = await repository.update_alert_status(alert_id, body.status)
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    return alert
+
+
 @router.get("/dashboard", response_model=DashboardResponse)
-async def get_dashboard() -> DashboardResponse:
+async def get_dashboard(current_user: dict = Depends(get_current_user)) -> DashboardResponse:
     return await analyzer.build_dashboard_async()
 
 
 @router.get("/health/wazuh")
-async def wazuh_health() -> dict:
+async def wazuh_health(current_user: dict = Depends(get_current_user)) -> dict:
     if settings.app_mode != "wazuh":
         return {
             "indexer": {"ok": False, "note": "不在 Wazuh 模式"},
@@ -84,12 +93,12 @@ async def wazuh_health() -> dict:
 
 
 @router.get("/agents")
-async def list_agents() -> list[dict]:
+async def list_agents(current_user: dict = Depends(get_current_user)) -> list[dict]:
     return await repository.list_wazuh_agents()
 
 
 @router.get("/agents/{agent_id}")
-async def get_agent(agent_id: str) -> dict:
+async def get_agent(agent_id: str, current_user: dict = Depends(get_current_user)) -> dict:
     agent = await repository.get_wazuh_agent(agent_id)
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")

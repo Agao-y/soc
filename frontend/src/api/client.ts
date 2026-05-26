@@ -1,9 +1,29 @@
 import axios from "axios";
+import { getToken } from "../auth";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api",
   timeout: 20000,
 });
+
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("soc-jwt-token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  },
+);
 
 export type Severity = "low" | "medium" | "high" | "critical";
 export type Status = "new" | "investigating" | "resolved";
@@ -181,5 +201,12 @@ export async function fetchWazuhHealth() {
 
 export async function fetchWazuhAgents() {
   const { data } = await api.get<WazuhAgent[]>("/agents");
+  return data;
+}
+
+export type ActionStatus = "resolved" | "ignored" | "escalated";
+
+export async function updateAlertStatus(alertId: string, status: ActionStatus) {
+  const { data } = await api.patch<Alert>(`/alerts/${alertId}/status`, { status });
   return data;
 }

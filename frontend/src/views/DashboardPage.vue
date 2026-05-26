@@ -139,7 +139,7 @@ onBeforeUnmount(stopRotation);
           <SituationVisualizationPanel :dashboard="dashboard" />
         </div>
         <div class="grid-card area-analysis">
-          <AiAnalysisBoard :detail="detail" :selected-alert="selectedAlert" :loading="loading" />
+          <AiAnalysisBoard :detail="detail" :selected-alert="selectedAlert" :loading="loading" @status-changed="loadInitialData" />
         </div>
         <div class="grid-card area-alerts">
           <AlertFlowTicker

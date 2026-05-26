@@ -7,13 +7,19 @@ const router = useRouter();
 const username = ref("admin");
 const password = ref("admin123");
 const error = ref("");
+const loading = ref(false);
 
-function submit() {
-  if (login(username.value, password.value)) {
+async function submit() {
+  error.value = "";
+  loading.value = true;
+  try {
+    await login(username.value, password.value);
     router.push("/");
-    return;
+  } catch {
+    error.value = "账号或密码错误";
+  } finally {
+    loading.value = false;
   }
-  error.value = "账号或密码错误，请使用默认账号 admin / admin123";
 }
 </script>
 
@@ -39,7 +45,9 @@ function submit() {
             <span>密码</span>
             <input v-model="password" class="login-input" type="password" autocomplete="current-password" />
           </label>
-          <button class="hero-button login-button" @click="submit">进入系统</button>
+          <button class="hero-button login-button" @click="submit" :disabled="loading">
+            {{ loading ? "登录中..." : "进入系统" }}
+          </button>
           <p v-if="error" class="login-error">{{ error }}</p>
           <p class="login-tip">默认账号：`admin` 默认密码：`admin123`</p>
         </div>

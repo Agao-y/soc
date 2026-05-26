@@ -1,17 +1,19 @@
-const AUTH_KEY = "soc-authenticated";
-const DEFAULT_USERNAME = "admin";
-const DEFAULT_PASSWORD = "admin123";
+import axios from "axios";
+
+const AUTH_KEY = "soc-jwt-token";
 
 export function isAuthenticated() {
-  return localStorage.getItem(AUTH_KEY) === "true";
+  return localStorage.getItem(AUTH_KEY) !== null;
 }
 
-export function login(username: string, password: string) {
-  const ok = username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD;
-  if (ok) {
-    localStorage.setItem(AUTH_KEY, "true");
-  }
-  return ok;
+export function getToken(): string | null {
+  return localStorage.getItem(AUTH_KEY);
+}
+
+export async function login(username: string, password: string) {
+  const { data } = await axios.post("/api/auth/login", { username, password });
+  localStorage.setItem(AUTH_KEY, data.access_token);
+  return data.username;
 }
 
 export function clearAuth() {

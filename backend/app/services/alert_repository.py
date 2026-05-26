@@ -122,6 +122,13 @@ class AlertRepository:
         await self._wazuh_client.close()
         await self._manager_client.close()
 
+    async def update_alert_status(self, alert_id: str, new_status: str) -> SIEMAlert | None:
+        alert = await self.get_alert_async(alert_id)
+        if not alert:
+            return None
+        alert.status = new_status
+        return alert
+
     async def wazuh_indexer_health(self) -> dict:
         return await self._wazuh_client.health_check()
 

@@ -159,3 +159,27 @@ export async function fetchExplainability(alertId: string) {
   const { data } = await api.get<Explainability>(`/alerts/${alertId}/explainability`);
   return data;
 }
+
+export interface WazuhHealth {
+  indexer: { ok: boolean; url: string; cluster_status?: string; circuit_breaker: string };
+  manager: { ok: boolean; url: string; version?: string; circuit_breaker: string };
+  overall: string;
+}
+
+export interface WazuhAgent {
+  id: string;
+  name: string;
+  ip: string;
+  status: string;
+  os?: { name?: string; version?: string };
+}
+
+export async function fetchWazuhHealth() {
+  const { data } = await api.get<WazuhHealth>("/health/wazuh");
+  return data;
+}
+
+export async function fetchWazuhAgents() {
+  const { data } = await api.get<WazuhAgent[]>("/agents");
+  return data;
+}

@@ -63,6 +63,7 @@ class WazuhIndexerClient:
     async def search_alerts(
         self,
         size: int = 50,
+        from_: int = 0,
         from_ts: str | None = None,
         to_ts: str | None = None,
     ) -> list[dict[str, Any]]:
@@ -77,6 +78,7 @@ class WazuhIndexerClient:
         async def _search() -> list[dict[str, Any]]:
             payload: dict[str, Any] = {
                 "size": size,
+                "from": from_,
                 "sort": [{"@timestamp": {"order": "desc"}}],
                 "query": {"range": {"@timestamp": range_query}},
             }
@@ -89,6 +91,22 @@ class WazuhIndexerClient:
             return data.get("hits", {}).get("hits", [])
 
         return await with_wazuh_fallback(_search, [], self._breaker)
+
+    async def count_alerts(self) -> int:
+        if not self._base_url:
+            return 0
+
+        async def _count() -> int:
+            payload = {"size": 0, "track_total_hits": True, "query": {"match_all": {}}}
+            resp = await self.client.post(
+                f"{self._base_url}/{self._alert_index}/_search",
+                json=payload,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data.get("hits", {}).get("total", {}).get("value", 0)
+
+        return await with_wazuh_fallback(_count, 0, self._breaker)
 
     async def get_alert_by_id(self, alert_id: str) -> dict[str, Any] | None:
         if not self._base_url:

@@ -165,8 +165,16 @@ export async function fetchDashboard() {
   return data;
 }
 
-export async function fetchAlerts() {
-  const { data } = await api.get<Alert[]>("/alerts");
+export interface PagedAlerts {
+  items: Alert[];
+  total: number;
+  page: number;
+  size: number;
+  total_pages: number;
+}
+
+export async function fetchAlerts(page = 1, size = 20) {
+  const { data } = await api.get<PagedAlerts>("/alerts", { params: { page, size } });
   return data;
 }
 

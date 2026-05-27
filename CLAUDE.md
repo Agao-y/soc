@@ -45,18 +45,29 @@ docker ps  # 确认 single-node 容器在运行
 - Wazuh Docker single-node 已部署
 - 虚拟环境：`backend\.venv_new`（旧的 `.venv` 损坏无法删除）
 
-## 8 个 API 接口
+## API 接口
 
-| 路径 | 功能 |
-|------|------|
-| GET /health | 健康检查 |
-| GET /api/alerts | 告警列表 |
-| GET /api/alerts/{id} | 告警详情+AI研判 |
-| GET /api/alerts/{id}/explainability | XAI解释 |
-| GET /api/dashboard | 驾驶舱聚合 |
-| GET /api/health/wazuh | Wazuh状态 |
-| GET /api/agents | Agent列表 |
-| GET /api/agents/{id} | Agent详情 |
+| 方法 | 路径 | 功能 |
+|------|------|------|
+| GET | /health | 健康检查（无需认证） |
+| POST | /api/auth/login | JWT登录（无需认证） |
+| GET | /api/alerts | 告警列表 |
+| GET | /api/alerts/{id} | 告警详情+AI研判 |
+| PATCH | /api/alerts/{id}/status | 变更告警状态（resolved/ignored/escalated） |
+| GET | /api/alerts/{id}/explainability | XAI解释 |
+| GET | /api/dashboard | 驾驶舱聚合 |
+| GET | /api/health/wazuh | Wazuh状态 |
+| GET | /api/agents | Agent列表 |
+| GET | /api/agents/{id} | Agent详情 |
+
+所有 `/api/alerts*` `/api/dashboard` `/api/agents*` 需带 `Authorization: Bearer <token>`
+
+## JWT 鉴权
+
+- 默认账号：admin / admin123
+- Token 有效期：8 小时
+- 401 时前端自动跳转 /login
+- 后端模块：`backend/app/auth.py`、`backend/app/routers/auth.py`
 
 ## 8 个前端模块
 

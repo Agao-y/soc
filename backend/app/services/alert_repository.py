@@ -45,6 +45,26 @@ class AlertRepository:
 
         return alerts
 
+    async def list_alerts_paged(self, page: int, size: int) -> tuple[list[SIEMAlert], int]:
+        if settings.app_mode != "wazuh":
+            all_alerts = self._load_demo_alerts()
+            total = len(all_alerts)
+            offset = (page - 1) * size
+            return all_alerts[offset : offset + size], total
+
+        from_ = (page - 1) * size
+        hits_task = self._wazuh_client.search_alerts(size=size, from_=from_)
+        count_task = self._wazuh_client.count_alerts()
+
+        hits = await hits_task
+        total = await count_task
+
+        alerts = [self._map_wazuh_hit(hit) for hit in hits]
+        if settings.wazuh_enrich_with_agents and alerts:
+            alerts = await self._enrich_with_agents(alerts)
+
+        return alerts, total
+
     async def get_alert_async(self, alert_id: str) -> SIEMAlert | None:
         if settings.app_mode != "wazuh":
             for alert in self._load_demo_alerts():

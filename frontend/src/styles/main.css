@@ -912,3 +912,32 @@ button {
   font-size: 13px;
   margin-left: 6px;
 }
+
+/* ---- Pagination ---- */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 0 4px;
+}
+.pager-btn {
+  padding: 4px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #edf6ff;
+  font-size: 12px;
+  cursor: pointer;
+}
+.pager-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+.pager-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.pager-info {
+  color: #94a3b8;
+  font-size: 13px;
+}

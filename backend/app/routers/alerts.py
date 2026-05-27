@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth import get_current_user
-from app.models.schemas import AlertDetailResponse, AssessmentExplainability, DashboardResponse, SIEMAlert, StatusUpdateRequest
+from app.models.schemas import AlertDetailResponse, AssessmentExplainability, DashboardResponse, PagedAlertsResponse, SIEMAlert, StatusUpdateRequest
 from app.services.alert_repository import AlertRepository
 from app.services.config import settings
 from app.services.llm_client import LLMClient
@@ -15,9 +15,15 @@ repository = AlertRepository()
 analyzer = ThreatAnalyzer(repository=repository, llm_client=LLMClient())
 
 
-@router.get("/alerts", response_model=list[SIEMAlert])
-async def list_alerts(current_user: dict = Depends(get_current_user)) -> list[SIEMAlert]:
-    return await repository.list_alerts_async()
+@router.get("/alerts", response_model=PagedAlertsResponse)
+async def list_alerts(
+    page: int = Query(default=1, ge=1),
+    size: int = Query(default=20, ge=1, le=100),
+    current_user: dict = Depends(get_current_user),
+) -> PagedAlertsResponse:
+    items, total = await repository.list_alerts_paged(page, size)
+    total_pages = max(1, (total + size - 1) // size)
+    return PagedAlertsResponse(items=items, total=total, page=page, size=size, total_pages=total_pages)
 
 
 @router.get("/alerts/{alert_id}", response_model=AlertDetailResponse)

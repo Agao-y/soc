@@ -28,6 +28,9 @@ const detail = ref<AlertDetail | null>(null);
 const explainability = ref<Explainability | null>(null);
 const loading = ref(false);
 const isFullscreen = ref(false);
+const page = ref(1);
+const totalPages = ref(1);
+const pageSize = 20;
 let rotateTimer: number | undefined;
 
 const selectedAlert = computed(() => alerts.value.find((item) => item.id === selectedAlertId.value) ?? null);
@@ -35,10 +38,28 @@ const selectedAlert = computed(() => alerts.value.find((item) => item.id === sel
 async function loadInitialData() {
   loading.value = true;
   try {
-    const [dashboardData, alertData] = await Promise.all([fetchDashboard(), fetchAlerts()]);
+    const [dashboardData, alertData] = await Promise.all([
+      fetchDashboard(),
+      fetchAlerts(page.value, pageSize),
+    ]);
     dashboard.value = dashboardData;
-    alerts.value = alertData;
-    selectedAlertId.value = alertData[0]?.id ?? "";
+    alerts.value = alertData.items;
+    totalPages.value = alertData.total_pages;
+    selectedAlertId.value = alertData.items[0]?.id ?? "";
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function goPage(p: number) {
+  if (p < 1 || p > totalPages.value || p === page.value) return;
+  page.value = p;
+  loading.value = true;
+  try {
+    const alertData = await fetchAlerts(page.value, pageSize);
+    alerts.value = alertData.items;
+    totalPages.value = alertData.total_pages;
+    selectedAlertId.value = alertData.items[0]?.id ?? "";
   } finally {
     loading.value = false;
   }
@@ -148,6 +169,11 @@ onBeforeUnmount(stopRotation);
             :show-link-button="true"
             @select="selectedAlertId = $event"
           />
+          <div class="pager">
+            <button class="pager-btn" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>
+            <span class="pager-info">{{ page }} / {{ totalPages }}</span>
+            <button class="pager-btn" :disabled="page >= totalPages" @click="goPage(page + 1)">下一页</button>
+          </div>
         </div>
         <div class="grid-card area-response">
           <ResponseAdvicePanel :detail="detail" :loading="loading" />

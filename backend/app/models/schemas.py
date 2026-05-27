@@ -175,3 +175,11 @@ class AssessmentExplainability(BaseModel):
 
 class StatusUpdateRequest(BaseModel):
     status: AlertStatus
+
+
+class PagedAlertsResponse(BaseModel):
+    items: list[SIEMAlert]
+    total: int
+    page: int
+    size: int
+    total_pages: int

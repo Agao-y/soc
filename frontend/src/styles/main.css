@@ -941,3 +941,128 @@ button {
   color: #94a3b8;
   font-size: 13px;
 }
+
+/* ---- View Toggle ---- */
+.alert-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.view-toggle {
+  display: flex;
+  gap: 4px;
+}
+.toggle-btn {
+  padding: 3px 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  background: transparent;
+  color: #7f9ab5;
+  font-size: 12px;
+  cursor: pointer;
+}
+.toggle-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #67e8f9;
+}
+
+/* ---- Incident Cards ---- */
+.incident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 100%;
+  overflow-y: auto;
+}
+.incident-card {
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.incident-card:hover {
+  border-color: rgba(248, 113, 113, 0.3);
+}
+.incident-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.incident-ip {
+  color: #f97316;
+  font-size: 14px;
+}
+.incident-badge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.incident-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  color: #7f9ab5;
+  font-size: 12px;
+}
+
+/* ---- Key Alert Highlighting ---- */
+.key-alerts {
+  margin-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 8px;
+}
+.key-alert-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12px;
+}
+.key-sev-tag {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.key-sev-critical .key-sev-tag {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+.key-sev-critical {
+  border-left: 3px solid #ef4444;
+  padding-left: 6px;
+}
+.key-sev-high .key-sev-tag {
+  background: rgba(249, 115, 22, 0.25);
+  color: #fdba74;
+}
+.key-sev-high {
+  border-left: 3px solid #f97316;
+  padding-left: 6px;
+}
+.key-sev-medium .key-sev-tag {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fde047;
+}
+.key-sev-medium {
+  border-left: 3px solid #eab308;
+  padding-left: 6px;
+}
+.key-sev-low .key-sev-tag {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+.key-sev-low {
+  border-left: 3px solid #94a3b8;
+  padding-left: 6px;
+}
+.key-title {
+  color: #cbd5e1;
+  line-height: 1.4;
+}

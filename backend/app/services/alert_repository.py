@@ -142,6 +142,39 @@ class AlertRepository:
         await self._wazuh_client.close()
         await self._manager_client.close()
 
+    async def aggregate_incidents(self, top_n: int = 20) -> list[dict]:
+        alerts = await self.list_alerts_async()
+        groups: dict[str, dict] = {}
+        sev_order = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+        for alert in alerts:
+            # 按攻击规则名称聚合（更有分析价值）
+            key = alert.rule_name or alert.title
+            if not key or len(key) < 3:
+                continue
+            if key not in groups:
+                groups[key] = {
+                    "source_ip": key,  # 复用字段存规则名
+                    "count": 0,
+                    "severities": {},
+                    "latest": alert.timestamp.isoformat() if hasattr(alert.timestamp, "isoformat") else str(alert.timestamp),
+                    "location": alert.event_type or "未知类型",
+                    "key_alerts": [],
+                }
+            groups[key]["count"] += 1
+            sev = alert.severity
+            groups[key]["severities"][sev] = groups[key]["severities"].get(sev, 0) + 1
+            # 更新时间戳
+            groups[key]["latest"] = alert.timestamp.isoformat() if hasattr(alert.timestamp, "isoformat") else str(alert.timestamp)
+
+            key_list = groups[key]["key_alerts"]
+            key_list.append({"id": alert.id, "title": alert.title, "severity": sev})
+            key_list.sort(key=lambda x: sev_order.get(x["severity"], 0), reverse=True)
+            if len(key_list) > 3:
+                key_list.pop()
+
+        sorted_groups = sorted(groups.values(), key=lambda x: x["count"], reverse=True)
+        return sorted_groups[:top_n]
+
     async def update_alert_status(self, alert_id: str, new_status: str) -> SIEMAlert | None:
         alert = await self.get_alert_async(alert_id)
         if not alert:

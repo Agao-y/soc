@@ -183,3 +183,24 @@ class PagedAlertsResponse(BaseModel):
     page: int
     size: int
     total_pages: int
+
+
+class KeyAlert(BaseModel):
+    id: str
+    title: str
+    severity: str
+
+
+class IncidentItem(BaseModel):
+    source_ip: str
+    count: int
+    severities: dict[str, int] = {}
+    latest: str = ""
+    location: str = ""
+    key_alerts: list[KeyAlert] = []
+
+
+class IncidentsResponse(BaseModel):
+    incidents: list[IncidentItem]
+    total_ips: int
+    total_alerts: int

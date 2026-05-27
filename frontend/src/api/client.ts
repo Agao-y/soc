@@ -218,3 +218,29 @@ export async function updateAlertStatus(alertId: string, status: ActionStatus) {
   const { data } = await api.patch<Alert>(`/alerts/${alertId}/status`, { status });
   return data;
 }
+
+export interface KeyAlert {
+  id: string;
+  title: string;
+  severity: string;
+}
+
+export interface IncidentItem {
+  source_ip: string;
+  count: number;
+  severities: Record<string, number>;
+  latest: string;
+  location: string;
+  key_alerts: KeyAlert[];
+}
+
+export interface IncidentsResponse {
+  incidents: IncidentItem[];
+  total_ips: number;
+  total_alerts: number;
+}
+
+export async function fetchIncidents(top = 10) {
+  const { data } = await api.get<IncidentsResponse>("/incidents", { params: { top } });
+  return data;
+}

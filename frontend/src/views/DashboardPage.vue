@@ -13,10 +13,12 @@ import {
   type AlertDetail,
   type DashboardData,
   type Explainability,
+  type IncidentItem,
   fetchAlertDetail,
   fetchAlerts,
   fetchDashboard,
   fetchExplainability,
+  fetchIncidents,
 } from "../api/client";
 import { clearAuth } from "../auth";
 
@@ -31,6 +33,8 @@ const isFullscreen = ref(false);
 const page = ref(1);
 const totalPages = ref(1);
 const pageSize = 20;
+const viewMode = ref<"alerts" | "incidents">("alerts");
+const incidents = ref<IncidentItem[]>([]);
 let rotateTimer: number | undefined;
 let pollTimer: number | undefined;
 
@@ -47,6 +51,7 @@ async function loadInitialData() {
     alerts.value = alertData.items;
     totalPages.value = alertData.total_pages;
     selectedAlertId.value = alertData.items[0]?.id ?? "";
+    loadIncidents();  // fire-and-forget
   } finally {
     loading.value = false;
   }
@@ -97,6 +102,13 @@ function stopRotation() {
   }
 }
 
+async function loadIncidents() {
+  try {
+    const data = await fetchIncidents(10);
+    incidents.value = data.incidents;
+  } catch { /* ignore */ }
+}
+
 async function pollRefresh() {
   try {
     const [dashboardData, alertData] = await Promise.all([
@@ -106,7 +118,6 @@ async function pollRefresh() {
     dashboard.value = dashboardData;
     alerts.value = alertData.items;
     totalPages.value = alertData.total_pages;
-    // 保持当前选中告警，不存在就切到第一条
     if (!alertData.items.find((a) => a.id === selectedAlertId.value)) {
       selectedAlertId.value = alertData.items[0]?.id ?? "";
     }
@@ -189,16 +200,58 @@ onBeforeUnmount(() => {
           <AiAnalysisBoard :detail="detail" :selected-alert="selectedAlert" :loading="loading" @status-changed="loadInitialData" />
         </div>
         <div class="grid-card area-alerts">
-          <AlertFlowTicker
-            :alerts="alerts"
-            :selected-alert-id="selectedAlertId"
-            :show-link-button="true"
-            @select="selectedAlertId = $event"
-          />
-          <div class="pager">
-            <button class="pager-btn" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>
-            <span class="pager-info">{{ page }} / {{ totalPages }}</span>
-            <button class="pager-btn" :disabled="page >= totalPages" @click="goPage(page + 1)">下一页</button>
+          <div class="panel-heading alert-view-header">
+            <h2>{{ viewMode === "alerts" ? "实时告警流" : "攻击事件聚合" }}</h2>
+            <div class="view-toggle">
+              <button class="toggle-btn" :class="{ active: viewMode === 'alerts' }" @click="viewMode = 'alerts'">原始告警</button>
+              <button class="toggle-btn" :class="{ active: viewMode === 'incidents' }" @click="viewMode = 'incidents'">聚合事件</button>
+            </div>
+          </div>
+
+          <template v-if="viewMode === 'alerts'">
+            <AlertFlowTicker
+              :alerts="alerts"
+              :selected-alert-id="selectedAlertId"
+              :show-link-button="true"
+              @select="selectedAlertId = $event"
+            />
+            <div class="pager">
+              <button class="pager-btn" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>
+              <span class="pager-info">{{ page }} / {{ totalPages }}</span>
+              <button class="pager-btn" :disabled="page >= totalPages" @click="goPage(page + 1)">下一页</button>
+            </div>
+          </template>
+
+          <div v-else class="incident-list">
+            <div v-if="incidents.length === 0" class="empty-state">正在加载聚合数据...</div>
+            <div
+              v-for="inc in incidents"
+              :key="inc.source_ip"
+              class="incident-card"
+            >
+              <div class="incident-top">
+                <strong class="incident-ip">{{ inc.source_ip }}</strong>
+                <span class="incident-badge">{{ inc.count }} 次</span>
+              </div>
+              <div class="incident-meta">
+                <span>{{ inc.location }}</span>
+                <span v-if="inc.severities.critical">高危 {{ inc.severities.critical }}</span>
+                <span v-if="inc.severities.high">警告 {{ inc.severities.high }}</span>
+                <span v-if="inc.severities.medium">中危 {{ inc.severities.medium }}</span>
+                <span v-if="inc.severities.low">低危 {{ inc.severities.low }}</span>
+              </div>
+              <div v-if="inc.key_alerts.length" class="key-alerts">
+                <div
+                  v-for="ka in inc.key_alerts"
+                  :key="ka.id"
+                  class="key-alert-row"
+                  :class="'key-sev-' + ka.severity"
+                >
+                  <span class="key-sev-tag">{{ ka.severity === 'critical' ? '严重' : ka.severity === 'high' ? '高危' : ka.severity === 'medium' ? '中危' : '低危' }}</span>
+                  <span class="key-title">{{ ka.title }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="grid-card area-response">

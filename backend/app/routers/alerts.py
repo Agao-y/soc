@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth import get_current_user
-from app.models.schemas import AlertDetailResponse, AssessmentExplainability, DashboardResponse, PagedAlertsResponse, SIEMAlert, StatusUpdateRequest
+from app.models.schemas import AlertDetailResponse, AssessmentExplainability, DashboardResponse, IncidentsResponse, IncidentItem, PagedAlertsResponse, SIEMAlert, StatusUpdateRequest
 from app.services.alert_repository import AlertRepository
 from app.services.config import settings
 from app.services.llm_client import LLMClient
@@ -48,6 +48,17 @@ async def update_alert_status(alert_id: str, body: StatusUpdateRequest, current_
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
     return alert
+
+
+@router.get("/incidents", response_model=IncidentsResponse)
+async def list_incidents(
+    top: int = Query(default=10, ge=1, le=50),
+    current_user: dict = Depends(get_current_user),
+) -> IncidentsResponse:
+    raw = await repository.aggregate_incidents(top)
+    incidents = [IncidentItem(**item) for item in raw]
+    total_alerts = sum(inc.count for inc in incidents)
+    return IncidentsResponse(incidents=incidents, total_ips=len(incidents), total_alerts=total_alerts)
 
 
 @router.get("/dashboard", response_model=DashboardResponse)

@@ -14,11 +14,15 @@ import {
   type DashboardData,
   type Explainability,
   type IncidentItem,
+  type UserInfo,
   fetchAlertDetail,
   fetchAlerts,
   fetchDashboard,
   fetchExplainability,
   fetchIncidents,
+  fetchMe,
+  fetchUsers,
+  registerUser,
 } from "../api/client";
 import { clearAuth } from "../auth";
 
@@ -35,6 +39,14 @@ const totalPages = ref(1);
 const pageSize = 20;
 const viewMode = ref<"alerts" | "incidents">("alerts");
 const incidents = ref<IncidentItem[]>([]);
+const showUserModal = ref(false);
+const users = ref<UserInfo[]>([]);
+const newUsername = ref("");
+const newPassword = ref("");
+const registerError = ref("");
+const registerOk = ref("");
+const userRole = ref("");
+
 let rotateTimer: number | undefined;
 let pollTimer: number | undefined;
 
@@ -52,6 +64,7 @@ async function loadInitialData() {
     totalPages.value = alertData.total_pages;
     selectedAlertId.value = alertData.items[0]?.id ?? "";
     loadIncidents();  // fire-and-forget
+    fetchMe().then((u) => { userRole.value = u.role; }).catch(() => {});
   } finally {
     loading.value = false;
   }
@@ -141,6 +154,43 @@ function logout() {
   router.push("/login");
 }
 
+async function openUserModal() {
+  registerError.value = "";
+  registerOk.value = "";
+  newUsername.value = "";
+  newPassword.value = "";
+  try {
+    users.value = await fetchUsers();
+  } catch {
+    users.value = [];
+  }
+  showUserModal.value = true;
+}
+
+async function handleRegister() {
+  registerError.value = "";
+  registerOk.value = "";
+  const u = newUsername.value.trim();
+  const p = newPassword.value.trim();
+  if (!u || !p) {
+    registerError.value = "用户名和密码不能为空";
+    return;
+  }
+  if (p.length < 8) {
+    registerError.value = "密码至少8位";
+    return;
+  }
+  try {
+    await registerUser(u, p);
+    registerOk.value = `用户 ${u} 创建成功`;
+    newUsername.value = "";
+    newPassword.value = "";
+    users.value = await fetchUsers();
+  } catch (e: any) {
+    registerError.value = e?.response?.data?.detail ?? "创建失败";
+  }
+}
+
 watch(selectedAlertId, (alertId) => {
   if (alertId) {
     void loadAlertContext(alertId);
@@ -183,6 +233,7 @@ onBeforeUnmount(() => {
             <span class="status-dot"></span>
             <span>LLM 分析链路在线</span>
           </div>
+          <button v-if="userRole === 'admin'" class="hero-button" @click="openUserModal">用户管理</button>
           <button class="hero-button" @click="toggleFullscreen">
             {{ isFullscreen ? "退出全屏" : "全屏展示" }}
           </button>
@@ -265,5 +316,49 @@ onBeforeUnmount(() => {
         </div>
       </section>
     </main>
+
+    <Teleport to="body">
+      <div v-if="showUserModal" class="modal-backdrop" @click.self="showUserModal = false">
+        <div class="modal-panel">
+          <div class="modal-header">
+            <h2>用户管理</h2>
+            <button class="modal-close" @click="showUserModal = false">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="user-register-form">
+              <h3>创建新用户</h3>
+              <div class="register-row">
+                <input
+                  v-model="newUsername"
+                  class="modal-input"
+                  placeholder="用户名"
+                  @keyup.enter="handleRegister"
+                />
+                <input
+                  v-model="newPassword"
+                  class="modal-input"
+                  type="password"
+                  placeholder="密码（至少8位）"
+                  @keyup.enter="handleRegister"
+                />
+                <button class="modal-btn modal-btn-primary" @click="handleRegister">创建</button>
+              </div>
+              <p v-if="registerError" class="modal-msg modal-msg-error">{{ registerError }}</p>
+              <p v-if="registerOk" class="modal-msg modal-msg-ok">{{ registerOk }}</p>
+            </div>
+
+            <div class="user-list">
+              <h3>现有用户 ({{ users.length }})</h3>
+              <div v-if="users.length === 0" class="empty-state">暂无用户数据</div>
+              <div v-for="u in users" :key="u.username" class="user-row">
+                <span class="user-name">{{ u.username }}</span>
+                <span class="user-role" :class="{ 'role-admin': u.role === 'admin' }">{{ u.role }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>

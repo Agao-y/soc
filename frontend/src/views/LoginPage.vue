@@ -4,8 +4,8 @@ import { useRouter } from "vue-router";
 import { login } from "../auth";
 
 const router = useRouter();
-const username = ref("admin");
-const password = ref("admin123");
+const username = ref("");
+const password = ref("");
 const error = ref("");
 const loading = ref(false);
 
@@ -49,7 +49,6 @@ async function submit() {
             {{ loading ? "登录中..." : "进入系统" }}
           </button>
           <p v-if="error" class="login-error">{{ error }}</p>
-          <p class="login-tip">默认账号：`admin` 默认密码：`admin123`</p>
         </div>
       </section>
     </main>

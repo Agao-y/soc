@@ -33,7 +33,8 @@ export type ThreatType =
   | "ransomware"
   | "c2"
   | "port-scan"
-  | "exfiltration";
+  | "exfiltration"
+  | "web-attack";
 export type AttackStage =
   | "Reconnaissance"
   | "Initial Access"
@@ -243,4 +244,31 @@ export interface IncidentsResponse {
 export async function fetchIncidents(top = 10) {
   const { data } = await api.get<IncidentsResponse>("/incidents", { params: { top } });
   return data;
+}
+
+export interface UserInfo {
+  username: string;
+  role: string;
+}
+
+export async function fetchUsers() {
+  const { data } = await api.get<UserInfo[]>("/auth/users");
+  return data;
+}
+
+export async function registerUser(username: string, password: string) {
+  const { data } = await api.post<UserInfo>("/auth/register", { username, password });
+  return data;
+}
+
+export async function fetchMe() {
+  const { data } = await api.get<UserInfo>("/auth/me");
+  return data;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  username: string;
+  role: string;
 }

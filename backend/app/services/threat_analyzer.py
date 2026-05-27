@@ -266,6 +266,7 @@ class ThreatAnalyzer:
             "c2": 12,
             "port-scan": 3,
             "exfiltration": 11,
+            "web-attack": 9,
         }[alert.threat_type]
         anomaly_score = min(
             0.23
@@ -338,6 +339,16 @@ class ThreatAnalyzer:
         return points
 
     def _build_distribution(self, type_counts: Counter[str]) -> list[DistributionSlice]:
+        # 英文事件类型 → 中文显示名
+        type_label_map = {
+            "brute-force": "暴力破解",
+            "port-scan": "端口扫描",
+            "c2": "可疑外连",
+            "ransomware": "恶意文件",
+            "exfiltration": "可疑外连",
+            "miner": "恶意文件",
+            "web-attack": "漏洞利用",
+        }
         color_map = {
             "暴力破解": "#ef4444",
             "异常登录": "#f97316",
@@ -345,9 +356,28 @@ class ThreatAnalyzer:
             "可疑外连": "#22c55e",
             "恶意文件": "#facc15",
             "漏洞利用": "#a78bfa",
+            "认证日志": "#e879f9",
+            "Wazuh告警": "#64748b",
+            "Windows事件": "#06b6d4",
+            "文件完整性监控": "#84cc16",
+            "防火墙日志": "#f97316",
         }
+
+        # 合并计数 (英文 → 中文)
+        merged: Counter[str] = Counter()
+        for raw_type, cnt in type_counts.items():
+            label = type_label_map.get(raw_type, raw_type)
+            merged[label] += cnt
+
         order = ["暴力破解", "异常登录", "端口扫描", "可疑外连", "恶意文件", "漏洞利用"]
+        remaining = sorted([t for t in merged if t not in order])
+        order += remaining
+
         return [
-            DistributionSlice(name=name, count=type_counts.get(name, 0), color=color_map[name])
+            DistributionSlice(
+                name=name,
+                count=merged.get(name, 0),
+                color=color_map.get(name, "#38bdf8"),
+            )
             for name in order
         ]

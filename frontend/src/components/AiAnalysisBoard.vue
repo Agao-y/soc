@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import type { ActionStatus, Alert, AlertDetail } from "../api/client";
 import { updateAlertStatus } from "../api/client";
+import { highlightLog, renderMarkdown } from "../utils/markdown";
 
 const props = defineProps<{
   detail: AlertDetail | null;
@@ -59,6 +60,7 @@ const threatLabels: Record<string, string> = {
   c2: "C2 控制",
   "port-scan": "端口扫描",
   exfiltration: "数据渗出",
+  "web-attack": "Web攻击",
 };
 
 function getThreatLabel(threatType?: string) {
@@ -86,7 +88,7 @@ function getText(value?: string) {
             <span>原始日志</span>
             <span>{{ selectedAlert.rule_name }}</span>
           </div>
-          <pre class="log-block">{{ selectedAlert.log_excerpt }}</pre>
+          <pre class="log-block" v-html="highlightLog(selectedAlert.log_excerpt)"></pre>
         </article>
 
         <article class="analysis-card summary-card">
@@ -94,7 +96,7 @@ function getText(value?: string) {
             <span>AI 自动分析结论</span>
             <span>{{ getThreatLabel(detail.assessment.threat_type) }}</span>
           </div>
-          <p>{{ getText(detail.assessment.reasoning) }}</p>
+          <div class="markdown-body" v-html="renderMarkdown(detail.assessment.reasoning)"></div>
         </article>
       </div>
 

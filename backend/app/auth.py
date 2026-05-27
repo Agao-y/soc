@@ -1,26 +1,22 @@
 import os
 from datetime import datetime, timedelta, timezone
 
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "soc-dev-secret-change-in-production")
+from app.user_store import get_user
+
+load_dotenv()
+
+_key = os.getenv("JWT_SECRET_KEY")
+if not _key:
+    raise RuntimeError("JWT_SECRET_KEY 环境变量未设置，拒绝启动")
+SECRET_KEY = _key
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 hours
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8
 security = HTTPBearer()
-
-# Temporary user store (replace with DB later)
-_USERS = {
-    "admin": {
-        "username": "admin",
-        "hashed_password": pwd_context.hash("admin123"),
-        "role": "admin",
-    }
-}
 
 
 def create_access_token(username: str) -> str:
@@ -29,24 +25,15 @@ def create_access_token(username: str) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
-
-
-def authenticate_user(username: str, password: str) -> dict | None:
-    user = _USERS.get(username)
-    if not user or not verify_password(password, user["hashed_password"]):
-        return None
-    return user
-
-
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    token = credentials.credentials
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         username: str | None = payload.get("sub")
-        if username is None or username not in _USERS:
+        if not username:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        return _USERS[username]
+        user = get_user(username)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        return user
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")

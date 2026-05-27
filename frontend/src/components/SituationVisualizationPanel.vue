@@ -98,92 +98,158 @@ function createEarthTexture() {
 function buildGlobeOption(): any {
   const attackMap = props.dashboard?.attack_map ?? [];
 
-  const scatterData = attackMap.map((point) => ({
+  // 只取强度最高的前 15 条飞线，避免屏幕过于拥挤
+  const topAttacks = [...attackMap]
+    .sort((a, b) => b.intensity - a.intensity)
+    .slice(0, 15);
+
+  // 攻击源散点：按强度差异化大小，且限制显示数量
+  const scatterData = topAttacks.map((point) => ({
     name: point.name,
     value: [point.longitude, point.latitude, point.attacks],
+    intensity: point.intensity,
   }));
 
-  const lineData = attackMap.map((point) => ({
+  // 飞线数据
+  const lineData = topAttacks.map((point) => ({
     coords: [[point.longitude, point.latitude], defendPoint.value],
     value: point.attacks,
   }));
 
+  // 攻击源光环 (大圈脉冲)
+  const haloData = topAttacks.map((point) => ({
+    name: "",
+    value: [point.longitude, point.latitude, 1],
+  }));
+
   return {
     backgroundColor: "transparent",
-    tooltip: {
-      trigger: "item",
-      backgroundColor: "rgba(5, 17, 34, 0.95)",
-      borderColor: "rgba(56, 189, 248, 0.35)",
-      textStyle: { color: "#e6f4ff", fontSize: 12 },
-      formatter: (params: any) => {
-        if (params.seriesType === "lines3D") return `攻击飞线 → ${defendPoint.name}`;
-        const v = params?.value ?? [];
-        return `${params?.name ?? "未知源头"}<br/>经度 ${Number(v[0]).toFixed(2)} / 纬度 ${Number(v[1]).toFixed(2)}<br/>攻击强度 ${v[2] ?? 0}`;
-      },
-    },
     globe: {
       baseTexture: createEarthTexture(),
-      shading: "lambert",
-      environment: "#020617",
-      globeRadius: 95,
+      shading: "color",
+      globeRadius: 96,
+      globeOuterRadius: 97,
       viewControl: {
         autoRotate: true,
-        autoRotateSpeed: 1.5,
+        autoRotateSpeed: 1.2,
         autoRotateAfterStill: 3,
-        damping: 0.1,
-        distance: 175,
-        minDistance: 110,
-        maxDistance: 300,
+        damping: 0.08,
+        distance: 185,
+        minDistance: 120,
+        maxDistance: 320,
         targetCoord: [108, 26],
-        alpha: 25,
-        beta: 155,
+        alpha: 30,
+        beta: 150,
       },
       light: {
-        main: { intensity: 1.3, shadow: false },
-        ambient: { intensity: 0.6 },
+        main: { intensity: 1.6, shadow: true },
+        ambient: { intensity: 0.7 },
       },
-      atmosphere: { enable: true, glowPower: 4.5, innerGlowPower: 1.2 },
+      // 关掉大气辉光消除透明感，解决背面色点穿透
+      atmosphere: { enable: false },
+      // 开启深度纹理辅助遮挡
+      postEffect: { enable: false },
     },
     series: [
+      // 一、攻击源光晕 (静默大圆点)
       {
         type: "scatter3D",
         coordinateSystem: "globe",
-        symbolSize: (value: number[]) => 8 + Number(value[2]) * 2.2,
-        itemStyle: { color: "#f97316", borderColor: "#fff7ed", borderWidth: 1 },
-        label: { show: true, formatter: "{b}", color: "#d9ebff", fontSize: 9, distance: 6 },
-        emphasis: { itemStyle: { color: "#fb923c", borderWidth: 2 }, label: { fontSize: 12 } },
+        symbolSize: 28,
+        itemStyle: { color: "rgba(248, 113, 113, 0.28)" },
+        silent: true,
+        z: 1,
+        data: haloData,
+      },
+      // 二、攻击源实心点
+      {
+        type: "scatter3D",
+        coordinateSystem: "globe",
+        symbolSize: (val: number[]) => {
+          const intensity = (val as any).intensity ?? 0.5;
+          return 8 + intensity * 14;
+        },
+        itemStyle: {
+          color: "#fb923c",
+          borderColor: "#fed7aa",
+          borderWidth: 1.5,
+          shadowBlur: 6,
+          shadowColor: "rgba(249, 115, 22, 0.6)",
+        },
+        label: {
+          show: true,
+          formatter: "{b}",
+          color: "#fde68a",
+          fontSize: 10,
+          distance: 8,
+          textBorderColor: "rgba(0,0,0,0.6)",
+          textBorderWidth: 2,
+        },
+        emphasis: {
+          itemStyle: { color: "#fbbf24", borderWidth: 2.5 },
+          label: { fontSize: 13 },
+        },
+        z: 2,
         data: scatterData,
       },
+      // 三、SOC 防御中心光环
       {
         type: "scatter3D",
         coordinateSystem: "globe",
-        symbolSize: 40,
-        itemStyle: { color: "rgba(56, 189, 248, 0.22)" },
+        symbolSize: 50,
+        itemStyle: { color: "rgba(56, 189, 248, 0.18)" },
         silent: true,
+        z: 1,
         data: [{ name: "", value: [...defendPoint.value, 1] }],
       },
+      // 四、SOC 防御中心 (蓝色核心)
       {
         type: "scatter3D",
         coordinateSystem: "globe",
-        symbolSize: 18,
-        itemStyle: { color: "#67e8f9", borderColor: "#e0f2fe", borderWidth: 2 },
-        label: { show: true, formatter: defendPoint.name, color: "#d5f5ff", fontSize: 12, fontWeight: "bold", distance: 10 },
+        symbolSize: 20,
+        itemStyle: {
+          color: "#38bdf8",
+          borderColor: "#bae6fd",
+          borderWidth: 2.5,
+          shadowBlur: 10,
+          shadowColor: "rgba(56, 189, 248, 0.7)",
+        },
+        label: {
+          show: true,
+          formatter: defendPoint.name,
+          color: "#bae6fd",
+          fontSize: 13,
+          fontWeight: "bold",
+          distance: 12,
+          textBorderColor: "rgba(0,0,0,0.65)",
+          textBorderWidth: 3,
+        },
+        emphasis: { scale: 1.3 },
+        z: 3,
         data: [{ name: defendPoint.name, value: [...defendPoint.value, 1] }],
       },
+      // 五、攻击飞线 (加强清晰度)
       {
         type: "lines3D",
         coordinateSystem: "globe",
+        polyline: false,
         effect: {
           show: true,
-          period: 4,
-          trailWidth: 5,
-          trailLength: 0.28,
-          trailOpacity: 0.95,
-          trailColor: "#ef4444",
+          period: 3.5,
+          trailWidth: 7,
+          trailLength: 0.32,
+          trailOpacity: 1,
+          trailColor: "#f87171",
           symbol: "arrow",
-          symbolSize: 5,
+          symbolSize: 7,
         },
-        lineStyle: { width: 2, color: "rgba(248, 113, 113, 0.8)", curveness: 0.25 },
+        lineStyle: {
+          width: 3.5,
+          color: "rgba(252, 165, 165, 0.9)",
+          curveness: 0.3,
+          opacity: 1,
+        },
+        z: 4,
         data: lineData,
       },
     ],
@@ -193,6 +259,9 @@ function buildGlobeOption(): any {
 function buildDistributionOption(): echarts.EChartsOption {
   const distribution = props.dashboard?.alert_type_distribution ?? [];
   const total = distribution.reduce((sum, d) => sum + d.count, 0);
+
+  // 按数量降序排列，饼图和柱状图共用
+  const sorted = [...distribution].sort((a, b) => b.count - a.count);
 
   return {
     animationDuration: 800,
@@ -208,10 +277,25 @@ function buildDistributionOption(): echarts.EChartsOption {
         return `${params.name}<br/>数量: ${params.value}<br/>占比: ${pct}%`;
       },
     },
-    legend: { bottom: 0, textStyle: { color: "#9bb2ca", fontSize: 11 } },
+    legend: {
+      bottom: 0,
+      textStyle: { color: "#9bb2ca", fontSize: 11 },
+      selectedMode: "multiple",
+    },
     grid: { left: "54%", right: 10, top: 24, bottom: 48, containLabel: true },
-    xAxis: { type: "value", axisLabel: { color: "#7f9ab5" }, splitLine: { lineStyle: { color: "rgba(148, 163, 184, 0.08)" } } },
-    yAxis: { type: "category", data: distribution.map((item) => item.name), axisLabel: { color: "#cfe4ff" }, axisLine: { show: false }, axisTick: { show: false } },
+    xAxis: {
+      type: "value",
+      axisLabel: { color: "#7f9ab5" },
+      splitLine: { lineStyle: { color: "rgba(148, 163, 184, 0.08)" } },
+    },
+    yAxis: {
+      type: "category",
+      data: sorted.map((item) => item.name),
+      axisLabel: { color: "#cfe4ff" },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      inverse: true,
+    },
     series: [
       {
         type: "pie",
@@ -219,22 +303,54 @@ function buildDistributionOption(): echarts.EChartsOption {
         center: ["24%", "42%"],
         animationType: "scale",
         animationEasing: "elasticOut" as any,
-        label: { color: "#d9ebff", formatter: "{b}\n{d}%", fontSize: 10 },
+        label: {
+          color: "#d9ebff",
+          formatter: "{b}\n{d}%",
+          fontSize: 10,
+        },
         labelLine: { lineStyle: { color: "rgba(148, 163, 184, 0.35)" } },
-        emphasis: { scaleSize: 12, label: { fontSize: 14 } },
-        data: distribution.map((item) => ({
-          value: item.count, name: item.name,
-          itemStyle: { color: item.color, borderColor: "rgba(0,0,0,0.3)", borderWidth: 1 },
+        emphasis: {
+          scaleSize: 12,
+          label: { fontSize: 14 },
+          focus: "self",
+          blurScope: "coordinateSystem",
+        },
+        blur: {
+          itemStyle: { opacity: 0.3 },
+          label: { opacity: 0.3 },
+        },
+        data: sorted.map((item) => ({
+          value: item.count,
+          name: item.name,
+          itemStyle: {
+            color: item.color,
+            borderColor: "rgba(0,0,0,0.3)",
+            borderWidth: 1,
+          },
         })),
       },
       {
         type: "bar",
-        xAxisIndex: 0, yAxisIndex: 0, barWidth: 14,
+        xAxisIndex: 0,
+        yAxisIndex: 0,
+        barWidth: 14,
         animationDelay: (idx: number) => idx * 60,
-        data: distribution.map((item) => ({
+        emphasis: {
+          focus: "self",
+          blurScope: "coordinateSystem",
+          itemStyle: { opacity: 1, borderWidth: 1, borderColor: "#fff" },
+        },
+        blur: {
+          itemStyle: { opacity: 0.3 },
+        },
+        data: sorted.map((item) => ({
           value: item.count,
-          itemStyle: { color: item.color, borderRadius: [0, 8, 8, 0], opacity: 0.85 },
-          emphasis: { itemStyle: { opacity: 1, borderWidth: 1, borderColor: "#fff" } },
+          name: item.name,
+          itemStyle: {
+            color: item.color,
+            borderRadius: [0, 8, 8, 0],
+            opacity: 0.85,
+          },
         })),
       },
     ],
@@ -248,6 +364,7 @@ function renderGlobe() {
   }
   globeChart = echarts.init(globeRef.value);
   globeChart.setOption(buildGlobeOption());
+  linkCharts();
 }
 
 function renderDistribution() {
@@ -257,11 +374,28 @@ function renderDistribution() {
   }
   distributionChart = echarts.init(distributionRef.value);
   distributionChart.setOption(buildDistributionOption());
+  linkCharts();
+}
+
+function linkCharts() {
+  if (globeChart && distributionChart) {
+    globeChart.group = "soc-dashboard";
+    distributionChart.group = "soc-dashboard";
+    echarts.connect("soc-dashboard");
+  }
 }
 
 function resizeCharts() {
   globeChart?.resize();
   distributionChart?.resize();
+}
+
+function onFullscreenChange() {
+  // WebGL canvas 在全屏切入/切出时尺寸变化，上下文可能损坏，必须延迟重建
+  setTimeout(() => {
+    renderGlobe();
+    distributionChart?.resize();
+  }, 200);
 }
 
 watch(() => props.dashboard, () => {
@@ -273,10 +407,15 @@ onMounted(() => {
   renderGlobe();
   renderDistribution();
   window.addEventListener("resize", resizeCharts);
+  document.addEventListener("fullscreenchange", onFullscreenChange);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", resizeCharts);
+  document.removeEventListener("fullscreenchange", onFullscreenChange);
+  if (globeChart && distributionChart) {
+    echarts.disconnect("soc-dashboard");
+  }
   globeChart?.dispose();
   distributionChart?.dispose();
 });

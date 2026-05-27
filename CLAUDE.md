@@ -73,6 +73,25 @@ docker ps  # 确认 single-node 容器在运行
 
 CockpitHeader / AlertFlowTicker / AiAnalysisBoard / ResponseAdvicePanel / SituationVisualizationPanel / ExplainabilityPanel / TicketFlowPanel / DashboardPage
 
+## 攻击模拟器
+
+```powershell
+cd D:\soc\soc\backend
+.venv_new\Scripts\Activate.ps1
+python simulate_attacks.py --count 500     # 一次性注入500条
+python simulate_attacks.py --watch          # 持续注入(每30秒一批)
+python simulate_attacks.py --clear          # 清空模拟数据
+python simulate_attacks.py --dry-run --count 5  # 预览不写入
+```
+- 直接写 Wazuh Indexer (OpenSearch)，生成7种攻击类型
+- 告警带有标记 `sim_tag: soc-simulation`，方便批量清理
+- 含暴力破解/端口扫描/C2/勒索/渗出/挖矿/Web攻击
+
+## 状态持久化
+
+- 告警状态保存到 `backend/data/alert_status.json`
+- 刷新/重启后状态不丢失
+
 ## Git
 
 - 仓库：https://github.com/Agao-y/soc.git

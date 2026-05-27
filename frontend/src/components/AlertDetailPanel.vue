@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AlertDetail } from "../api/client";
+import { renderMarkdown } from "../utils/markdown";
 
 defineProps<{
   detail: AlertDetail | null;
@@ -33,7 +34,7 @@ defineProps<{
 
       <article class="content-card">
         <h3>LLM 研判结论</h3>
-        <p>{{ detail.assessment.reasoning }}</p>
+        <div class="markdown-body" v-html="renderMarkdown(detail.assessment.reasoning)"></div>
       </article>
 
       <article class="content-card">

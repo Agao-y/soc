@@ -18,8 +18,34 @@ class AlertRepository:
     def __init__(self) -> None:
         root = Path(__file__).resolve().parents[2]
         self._data_file = root / "data" / "alerts.json"
+        self._status_file = root / "data" / "alert_status.json"
         self._wazuh_client = WazuhIndexerClient()
         self._manager_client = WazuhManagerClient()
+        self._status_overrides: dict[str, str] = self._load_status()
+
+    def _load_status(self) -> dict[str, str]:
+        if self._status_file.exists():
+            try:
+                return json.loads(self._status_file.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                return {}
+        self._status_file.parent.mkdir(parents=True, exist_ok=True)
+        return {}
+
+    def _save_status(self) -> None:
+        self._status_file.write_text(
+            json.dumps(self._status_overrides, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def _apply_status_override(self, alert: SIEMAlert) -> None:
+        if alert.id in self._status_overrides:
+            alert.status = self._status_overrides[alert.id]
+
+    def _apply_status_overrides(self, alerts: list[SIEMAlert]) -> list[SIEMAlert]:
+        for alert in alerts:
+            self._apply_status_override(alert)
+        return alerts
 
     @property
     def indexer_breaker(self) -> CircuitBreaker:
@@ -33,17 +59,17 @@ class AlertRepository:
         payload = json.loads(self._data_file.read_text(encoding="utf-8"))
         return [SIEMAlert.model_validate(item) for item in payload]
 
-    async def list_alerts_async(self) -> list[SIEMAlert]:
+    async def list_alerts_async(self, limit: int = 2000) -> list[SIEMAlert]:
         if settings.app_mode != "wazuh":
             return self._load_demo_alerts()
 
-        hits = await self._wazuh_client.search_alerts()
+        hits = await self._wazuh_client.search_alerts(size=limit)
         alerts = [self._map_wazuh_hit(hit) for hit in hits]
 
         if settings.wazuh_enrich_with_agents and alerts:
             alerts = await self._enrich_with_agents(alerts)
 
-        return alerts
+        return self._apply_status_overrides(alerts)
 
     async def list_alerts_paged(self, page: int, size: int) -> tuple[list[SIEMAlert], int]:
         if settings.app_mode != "wazuh":
@@ -63,12 +89,13 @@ class AlertRepository:
         if settings.wazuh_enrich_with_agents and alerts:
             alerts = await self._enrich_with_agents(alerts)
 
-        return alerts, total
+        return self._apply_status_overrides(alerts), total
 
     async def get_alert_async(self, alert_id: str) -> SIEMAlert | None:
         if settings.app_mode != "wazuh":
             for alert in self._load_demo_alerts():
                 if alert.id == alert_id:
+                    self._apply_status_override(alert)
                     return alert
             return None
 
@@ -79,8 +106,9 @@ class AlertRepository:
 
         if settings.wazuh_enrich_with_agents:
             enriched = await self._enrich_with_agents([alert])
-            return enriched[0]
+            alert = enriched[0]
 
+        self._apply_status_override(alert)
         return alert
 
     def list_alerts(self) -> list[SIEMAlert]:
@@ -179,6 +207,8 @@ class AlertRepository:
         alert = await self.get_alert_async(alert_id)
         if not alert:
             return None
+        self._status_overrides[alert_id] = new_status
+        self._save_status()
         alert.status = new_status
         return alert
 
@@ -348,6 +378,8 @@ class AlertRepository:
         decoder = source.get("decoder", {})
         decoder_name = (decoder.get("name") or "").lower()
         decoder_parent = (decoder.get("parent") or "").lower()
+        groups = [g.lower() for g in rule.get("groups", [])]
+        groups_text = " ".join(groups)
 
         if "syscheck" in decoder_name or "syscheck" in decoder_parent:
             return "文件完整性监控"
@@ -360,7 +392,20 @@ class AlertRepository:
         if "firewall" in decoder_name or "iptables" in decoder_parent:
             return "防火墙日志"
 
-        groups = rule.get("groups", [])
+        # 模拟数据 / 通用规则 → 6 类分布图映射
+        if any(kw in groups_text for kw in ("brute", "auth", "login", "ssh", "rdp", "pam")):
+            return "暴力破解"
+        if any(kw in groups_text for kw in ("scan", "recon", "discovery")):
+            return "端口扫描"
+        if any(kw in groups_text for kw in ("ransom", "miner", "malware", "trojan", "virus", "file")):
+            return "恶意文件"
+        if any(kw in groups_text for kw in ("c2", "exfil", "tunnel", "beacon", "command")):
+            return "可疑外连"
+        if any(kw in groups_text for kw in ("sql", "xss", "injection", "exploit", "web", "traversal")):
+            return "漏洞利用"
+        if any(kw in groups_text for kw in ("abnormal", "anomaly", "suspicious")):
+            return "异常登录"
+
         if groups:
             return str(groups[0])
         return "Wazuh告警"

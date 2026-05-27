@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 Severity = Literal["low", "medium", "high", "critical"]
 AlertStatus = Literal["new", "investigating", "resolved", "ignored", "escalated"]
 ThreatLabel = Literal["benign", "suspicious", "confirmed-threat"]
-ThreatType = Literal["brute-force", "miner", "ransomware", "c2", "port-scan", "exfiltration"]
+ThreatType = Literal["brute-force", "miner", "ransomware", "c2", "port-scan", "exfiltration", "web-attack"]
 AttackStage = Literal["Reconnaissance", "Initial Access", "Execution", "Command and Control", "Exfiltration"]
 
 

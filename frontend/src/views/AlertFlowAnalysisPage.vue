@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { type ActionStatus, type Alert, type AlertDetail, fetchAlertDetail, fetchAlerts, updateAlertStatus } from "../api/client";
+import { highlightLog, renderMarkdown } from "../utils/markdown";
 
 const router = useRouter();
 const alerts = ref<Alert[]>([]);
@@ -23,6 +24,10 @@ const threatLabels: Record<string, string> = {
 
 function getText(value?: string) {
   return value && value.trim() ? value : "暂无数据";
+}
+
+function getThreatLabel(t: string) {
+  return threatLabels[t] ?? t;
 }
 
 async function loadAlerts() {
@@ -153,7 +158,7 @@ onBeforeUnmount(() => { if (pollTimer) window.clearInterval(pollTimer); });
 
               <article class="info-card">
                 <h3>请求内容</h3>
-                <pre class="log-block">{{ getText(detail.alert.request_content) }}</pre>
+                <pre class="log-block" v-html="highlightLog(detail.alert.request_content)"></pre>
               </article>
 
               <article class="info-card">
@@ -166,7 +171,7 @@ onBeforeUnmount(() => { if (pollTimer) window.clearInterval(pollTimer); });
                   <div><span>包大小</span><strong>{{ detail.alert.packet_details.packet_size }} bytes</strong></div>
                   <div><span>TCP Flags</span><strong>{{ getText(detail.alert.packet_details.tcp_flags) }}</strong></div>
                 </div>
-                <pre class="log-block packet-preview">{{ getText(detail.alert.packet_details.payload_preview) }}</pre>
+                <pre class="log-block packet-preview" v-html="highlightLog(detail.alert.packet_details.payload_preview)"></pre>
               </article>
             </div>
             <div v-else class="empty-state">请选择一条告警查看流量详情。</div>
@@ -181,7 +186,7 @@ onBeforeUnmount(() => { if (pollTimer) window.clearInterval(pollTimer); });
               <div v-if="detail" class="stack-list">
                 <article class="info-card">
                   <h3>分析结论</h3>
-                  <p>{{ getText(detail.assessment.reasoning) }}</p>
+                  <div class="markdown-body" v-html="renderMarkdown(detail.assessment.reasoning)"></div>
                 </article>
                 <article class="info-card compact-card">
                   <h3>风险画像</h3>

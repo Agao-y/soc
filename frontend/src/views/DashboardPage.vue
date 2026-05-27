@@ -32,6 +32,7 @@ const page = ref(1);
 const totalPages = ref(1);
 const pageSize = 20;
 let rotateTimer: number | undefined;
+let pollTimer: number | undefined;
 
 const selectedAlert = computed(() => alerts.value.find((item) => item.id === selectedAlertId.value) ?? null);
 
@@ -96,6 +97,24 @@ function stopRotation() {
   }
 }
 
+async function pollRefresh() {
+  try {
+    const [dashboardData, alertData] = await Promise.all([
+      fetchDashboard(),
+      fetchAlerts(page.value, pageSize),
+    ]);
+    dashboard.value = dashboardData;
+    alerts.value = alertData.items;
+    totalPages.value = alertData.total_pages;
+    // 保持当前选中告警，不存在就切到第一条
+    if (!alertData.items.find((a) => a.id === selectedAlertId.value)) {
+      selectedAlertId.value = alertData.items[0]?.id ?? "";
+    }
+  } catch {
+    // 轮询静默失败
+  }
+}
+
 async function toggleFullscreen() {
   if (!document.fullscreenElement) {
     await document.documentElement.requestFullscreen();
@@ -120,9 +139,16 @@ watch(selectedAlertId, (alertId) => {
 onMounted(async () => {
   await loadInitialData();
   startRotation();
+  pollTimer = window.setInterval(pollRefresh, 30000);
 });
 
-onBeforeUnmount(stopRotation);
+onBeforeUnmount(() => {
+  stopRotation();
+  if (pollTimer) {
+    window.clearInterval(pollTimer);
+    pollTimer = undefined;
+  }
+});
 </script>
 
 <template>

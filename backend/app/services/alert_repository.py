@@ -15,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class AlertRepository:
+    _demo_cache: list[SIEMAlert] | None = None
+    _asset_list_cache: list[str] | None = None
+
     def __init__(self) -> None:
         root = Path(__file__).resolve().parents[2]
         self._data_file = root / "data" / "alerts.json"
@@ -56,8 +59,18 @@ class AlertRepository:
         return self._manager_client.breaker
 
     def _load_demo_alerts(self) -> list[SIEMAlert]:
+        if AlertRepository._demo_cache is not None:
+            return AlertRepository._demo_cache
         payload = json.loads(self._data_file.read_text(encoding="utf-8"))
-        return [SIEMAlert.model_validate(item) for item in payload]
+        AlertRepository._demo_cache = [SIEMAlert.model_validate(item) for item in payload]
+        return AlertRepository._demo_cache
+
+    def get_asset_list(self) -> list[str]:
+        if AlertRepository._asset_list_cache is not None:
+            return AlertRepository._asset_list_cache
+        alerts = self._load_demo_alerts()
+        AlertRepository._asset_list_cache = list(dict.fromkeys(a.asset.hostname for a in alerts))
+        return AlertRepository._asset_list_cache
 
     async def list_alerts_async(self, limit: int = 2000) -> list[SIEMAlert]:
         if settings.app_mode != "wazuh":

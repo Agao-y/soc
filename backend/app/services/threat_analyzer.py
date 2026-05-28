@@ -42,8 +42,7 @@ class ThreatAnalyzer:
             service_hints=[alert.threat_type, alert.attack_stage],
         )
 
-        all_alerts = await self.repository.list_alerts_async(limit=200)
-        all_assets = list(dict.fromkeys(a.asset.hostname for a in all_alerts))
+        all_assets = self.repository.get_asset_list()
 
         # 并行调用 LLM：分析 + 预测
         tasks = [self.llm_client.analyze(alert, heuristic["summary"])]

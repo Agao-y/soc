@@ -1,152 +1,165 @@
-# 龙王守护者-基于LLM的SIME的告警智能分析平台
+# 龙王守护者 (Dragon Guardian) — LLM SIEM 智能分析平台
 
-这是一个面向 SOC 场景的高级威胁检测项目骨架，聚合 SIEM 告警、进行轻量机器学习风险评分，并结合大语言模型生成威胁研判和处置建议。
-
-## 项目能力
-
-- 告警聚合：统一接入 Wazuh / ELK / Suricata 风格告警数据
-- 威胁研判：结合规则特征、资产上下文和日志内容估算风险分
-- 误报压降：输出误报概率，辅助分析师快速筛选高价值告警
-- 处置建议：利用 LLM 自动生成简洁中文研判与处置动作
-- 溯源分析：根据时间线输出追踪摘要
-- 可解释性：展示风险评分主要因子，提升分析透明度
+基于 LLM 的 SIEM 告警智能分析平台。FastAPI 后端 + Vue 3 前端，集成 Wazuh SIEM 和 DeepSeek LLM 研判。
 
 ## 技术栈
 
-- 后端：Python、FastAPI、Pydantic
-- 智能分析：启发式规则评分、轻量“ML 风格”异常分、LLM 研判接口
-- 前端：Vue 3、TypeScript、Vite
-- SIEM 数据：内置 Wazuh / ELK / Suricata 示例数据，可扩展为真实 API 对接
+| 层 | 技术 |
+|---|---|
+| 后端 | Python 3.12、FastAPI、Pydantic v2 |
+| 前端 | Vue 3、TypeScript、Vite、ECharts + echarts-gl |
+| 数据源 | Wazuh Indexer (OpenSearch) |
+| AI | DeepSeek Chat API |
 
-## 目录结构
+## 快速开始（竞赛演示模式）
 
-```text
-backend/
-  app/
-    main.py
-    models/
-    routers/
-    services/
-  data/alerts.json
-frontend/
-  src/
-    api/
-    components/
-    styles/
-README.md
-```
+无需 Docker / Wazuh，开箱即用。
 
-## 快速启动
+### 1. 环境要求
 
-### 1. 启动后端
+- Python 3.12+
+- Node.js 18+
+- Git
+
+### 2. 克隆仓库
 
 ```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-uvicorn app.main:app --reload
+git clone https://github.com/Agao-y/soc.git
+cd soc
 ```
 
-PowerShell 中请按行执行，不要使用 `&&`。例如：
+### 3. 后端配置
 
 ```powershell
-cd F:\soc\backend
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+cd backend
+
+# 创建虚拟环境
+python -m venv .venv_new
+
+# 激活虚拟环境
+.venv_new\Scripts\Activate.ps1      # PowerShell
+# 或
+.venv_new\Scripts\activate.bat      # CMD
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 复制并配置环境变量
+copy .env.example .env
+# 编辑 .env，填入 DeepSeek API Key: OPENAI_API_KEY=sk-你的key
 ```
 
-默认启动地址：`http://127.0.0.1:8000`
+### 4. 前端配置
 
-可访问：
-
-- 健康检查：`http://127.0.0.1:8000/health`
-- Swagger：`http://127.0.0.1:8000/docs`
-
-### 2. 启动前端
-
-```bash
+```powershell
 cd frontend
 npm install
+```
+
+### 5. 启动
+
+**方式一：双击 `start-demo.bat` 一键启动（仅演示模式）**
+
+**方式二：手动分别启动**
+
+```powershell
+# 终端1 — 后端 (端口 8000)
+cd backend
+.venv_new\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+# 终端2 — 前端 (端口 5173)
+cd frontend
 npm run dev
 ```
 
-PowerShell 示例：
+### 6. 登录
 
-```powershell
-cd F:\soc\frontend
-npm run dev
+浏览器打开 http://127.0.0.1:5173
+
+| 账号 | 密码 |
+|---|---|
+| admin | admin123 |
+
+## 项目结构
+
+```
+soc/
+├── start-demo.bat            # 一键启动脚本
+├── backend/
+│   ├── .env.example          # 环境变量模板
+│   ├── .env.demo.example     # 演示模式环境变量模板
+│   ├── requirements.txt      # Python 依赖
+│   ├── data/
+│   │   └── alerts.json       # 演示模式告警数据 (200条)
+│   ├── generate_demo_data.py # 演示数据生成器
+│   ├── simulate_attacks.py   # 攻击模拟器
+│   └── app/
+│       ├── main.py           # FastAPI 入口
+│       ├── auth.py           # JWT 鉴权
+│       ├── models/
+│       │   └── schemas.py    # Pydantic 数据模型
+│       ├── routers/
+│       │   └── auth.py       # 认证路由
+│       └── services/
+│           ├── alert_repository.py    # 告警数据源（支持 demo/wazuh 双模式）
+│           ├── threat_analyzer.py     # 威胁分析引擎（启发式+LLM）
+│           ├── llm_client.py          # LLM API 调用
+│           └── config.py             # 配置中心
+├── frontend/
+│   └── src/
+│       ├── api/client.ts     # API 调用层
+│       ├── views/            # 页面（Dashboard/告警分析/登录）
+│       ├── components/       # 通用组件（AI研判/3D地球/可解释性）
+│       └── utils/            # 工具（Markdown渲染/日志高亮）
+└── CLAUDE.md                 # Claude Code 辅助开发配置
 ```
 
-默认前端地址：`http://127.0.0.1:5173`
+## 运行模式
 
-前端开发环境默认通过 Vite 代理把 `/api` 请求转发到本机后端 `http://127.0.0.1:8000`，因此本机和局域网访问都不需要再手动修改前端接口地址。
+通过 `.env` 中的 `APP_MODE` 切换：
 
-### 局域网访问说明
+| 模式 | 说明 | 数据源 |
+|---|---|---|
+| `demo`（默认） | 竞赛演示模式，零外部依赖 | `data/alerts.json` (200条预生成) |
+| `wazuh` | 生产模式，实时数据 | Wazuh Indexer (OpenSearch) |
 
-如果需要让同一局域网内的其他主机访问，请使用本机 IP，而不是 `127.0.0.1`。
+## API 接口
 
-1. 后端必须监听局域网地址：
+| 方法 | 路径 | 说明 | 认证 |
+|---|---|---|---|
+| POST | `/api/auth/login` | 登录获取 JWT | 否 |
+| GET | `/api/auth/me` | 当前用户信息 | 是 |
+| GET | `/api/dashboard` | 驾驶舱聚合数据 | 是 |
+| GET | `/api/alerts?page=1&size=20` | 告警分页列表 | 是 |
+| GET | `/api/alerts/{id}` | 告警详情 + AI 研判 | 是 |
+| PATCH | `/api/alerts/{id}/status` | 变更告警状态 | 是 |
+| GET | `/api/alerts/{id}/explainability` | XAI 可解释性评分 | 是 |
+| GET | `/api/health/wazuh` | Wazuh 健康检查 | 是 |
+| GET | `/api/agents` | Wazuh Agent 列表 | 是 |
+
+## 攻击模拟器（仅 wazuh 模式）
 
 ```powershell
-cd F:\soc\backend
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+cd backend
+python simulate_attacks.py --count 500     # 一次性注入 500 条
+python simulate_attacks.py --watch          # 持续注入（每 30 秒一批）
+python simulate_attacks.py --clear          # 清空模拟数据
+python simulate_attacks.py --dry-run --count 5  # 预览不写入
 ```
 
-2. 前端保持默认启动即可：
+支持 7 种攻击类型：暴力破解、端口扫描、C2 控制、勒索、数据渗出、挖矿、Web 攻击。
 
-```powershell
-cd F:\soc\frontend
-npm run dev
+## 切换 Wazuh 模式
+
+编辑 `.env`：
+```
+APP_MODE=wazuh
+WAZUH_INDEXER_URL=https://localhost:9200
+WAZUH_INDEXER_USERNAME=admin
+WAZUH_INDEXER_PASSWORD=SecretPassword
 ```
 
-3. 在其他主机浏览器访问：
-
-- 前端：`http://你的主机IP:5173`
-- 后端文档：`http://你的主机IP:8000/docs`
-
-前端开发环境会把浏览器中的 `/api` 请求先发送到 `5173`，再由 Vite 代理转发到运行前端的这台主机上的 `8000` 后端。因此其他主机访问 `http://你的主机IP:5173` 时，也能通过同一台主机拿到后端数据。
-
-如果你的后端不是默认地址，可在前端启动前设置：
-
+确保 Wazuh Docker single-node 已启动：
 ```bash
-set VITE_API_BASE_URL=http://127.0.0.1:8000/api
+docker ps  # 确认 single-node 容器运行中
 ```
-
-## LLM 接入方式
-
-当前后端内置两种模式：
-
-1. 未配置 `OPENAI_API_KEY` 时，系统使用本地回退分析逻辑，项目可以直接演示
-2. 配置 `OPENAI_API_KEY` 后，后端会调用兼容 OpenAI Chat Completions 的接口生成真实研判结论
-
-可在 `backend/.env` 中配置：
-
-```env
-OPENAI_API_KEY=your_key
-OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4o-mini
-```
-
-## 当前实现说明
-
-- 示例数据位于 `backend/data/alerts.json`
-- `ThreatAnalyzer` 负责风险评分、误报概率估算、处置建议与溯源摘要
-- `LLMClient` 负责调用大模型或执行本地回退逻辑
-- 前端已升级为 8 大模块安全运营驾驶舱：
-  - 全局态势驾驶舱
-  - 实时告警流
-  - AI 智能研判大屏
-  - AI 生成处置建议
-  - 攻击态势热力图
-  - 告警类型分布图
-  - 可解释性面板（XAI）
-  - 处置工单流转面板
-
-## 下一步可扩展方向
-
-- 对接真实 Wazuh API / Elasticsearch 检索接口
-- 使用向量库做历史告警相似性召回
-- 引入 XGBoost / Isolation Forest / AutoEncoder 实现真实异常检测
-- 增加 SOAR 工单联动、封禁 IP、隔离主机等自动化动作
-- 接入 RBAC、审计日志与多租户能力

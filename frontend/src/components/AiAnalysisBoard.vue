@@ -71,6 +71,14 @@ function getThreatLabel(threatType?: string) {
 function getText(value?: string) {
   return value && value.trim() ? value : "暂无数据";
 }
+
+function getStageLabel(stage: string) {
+  return stageLabels[stage] ?? stage;
+}
+
+function cveSeverityColor(severity: string) {
+  return severity === "critical" ? "#ef4444" : severity === "high" ? "#f97316" : "#facc15";
+}
 </script>
 
 <template>
@@ -138,11 +146,61 @@ function getText(value?: string) {
             v-for="stage in stages"
             :key="stage"
             class="chain-node"
-            :class="{ active: detail.assessment.attack_stage === stage }"
+            :class="{ active: detail.assessment.attack_stage === stage, predicted: detail.prediction?.predicted_next_stage === stage }"
           >
             <span>{{ stageLabels[stage] }}</span>
             <small>{{ stage }}</small>
           </div>
+        </div>
+      </article>
+
+      <!-- Attack Prediction -->
+      <article v-if="detail.prediction" class="analysis-card prediction-card">
+        <div class="sub-heading">
+          <span>攻击路径推演</span>
+          <span class="prediction-badge">AI 预测</span>
+        </div>
+
+        <div class="prediction-grid">
+          <div class="pred-item pred-next">
+            <span class="pred-label">预测下一阶段</span>
+            <strong class="pred-value stage-highlight">
+              {{ getStageLabel(detail.prediction.predicted_next_stage) }}
+            </strong>
+            <small>{{ detail.prediction.current_stage }} → {{ detail.prediction.predicted_next_stage }}</small>
+          </div>
+          <div class="pred-item pred-risk">
+            <span class="pred-label">入侵风险评分</span>
+            <strong class="pred-value risk-score" :class="detail.prediction.risk_score >= 70 ? 'risk-high' : 'risk-mid'">
+              {{ detail.prediction.risk_score }}
+            </strong>
+            <small>置信度 {{ Math.round(detail.prediction.confidence * 100) }}%</small>
+          </div>
+          <div class="pred-item pred-vector">
+            <span class="pred-label">攻击路径</span>
+            <strong class="pred-value">{{ detail.prediction.attack_vector || "推演中..." }}</strong>
+          </div>
+        </div>
+
+        <div v-if="detail.prediction.rationale" class="pred-rationale markdown-body" v-html="renderMarkdown(detail.prediction.rationale)"></div>
+
+        <div v-if="detail.prediction.matched_cves.length" class="cve-section">
+          <span class="cve-title">关联高危 CVE</span>
+          <div class="cve-list">
+            <div v-for="cve in detail.prediction.matched_cves" :key="cve.id" class="cve-chip">
+              <span class="cve-badge" :style="{ background: cveSeverityColor(cve.severity) }">{{ cve.severity.toUpperCase() }}</span>
+              <span class="cve-id">{{ cve.id }}</span>
+              <span class="cve-score">CVSS {{ cve.cvss }}</span>
+              <span class="cve-desc">{{ cve.description.slice(0, 60) }}...</span>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="detail.prediction.recommended_defense.length" class="defense-section">
+          <span class="defense-title">防御建议</span>
+          <ul class="defense-list">
+            <li v-for="(d, i) in detail.prediction.recommended_defense" :key="i">{{ d }}</li>
+          </ul>
         </div>
       </article>
     </div>

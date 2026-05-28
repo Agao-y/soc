@@ -139,6 +139,18 @@ export interface DashboardData {
   };
 }
 
+export interface AttackPrediction {
+  current_stage: string;
+  predicted_next_stage: string;
+  confidence: number;
+  risk_score: number;
+  likely_targets: string[];
+  attack_vector: string;
+  rationale: string;
+  recommended_defense: string[];
+  matched_cves: Array<{ id: string; cvss: number; severity: string; product: string; description: string; exploit_type: string }>;
+}
+
 export interface AlertDetail {
   alert: Alert;
   assessment: {
@@ -154,6 +166,7 @@ export interface AlertDetail {
     threat_type: ThreatType;
     attack_stage: AttackStage;
   };
+  prediction?: AttackPrediction | null;
 }
 
 export interface Explainability {

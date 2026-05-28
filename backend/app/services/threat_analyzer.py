@@ -5,6 +5,7 @@ from collections import Counter
 from app.models.schemas import (
     AlertDetailResponse,
     AssessmentExplainability,
+    AttackPrediction,
     DashboardMetric,
     DashboardResponse,
     DistributionSlice,
@@ -17,6 +18,7 @@ from app.models.schemas import (
     TicketFlowSummary,
 )
 from app.services.alert_repository import AlertRepository
+from app.services.cve_lookup import search_cve_by_asset
 from app.services.llm_client import LLMClient
 
 
@@ -33,6 +35,21 @@ class ThreatAnalyzer:
         heuristic = self._heuristic_scores(alert)
         llm_reasoning = await self.llm_client.analyze(alert, heuristic["summary"])
 
+        # CVE 关联 + 攻击路径预测
+        cve_matches = search_cve_by_asset(
+            hostname=alert.asset.hostname,
+            log_text=alert.log_excerpt + " " + alert.description,
+            service_hints=[alert.threat_type, alert.attack_stage],
+        )
+
+        all_alerts = await self.repository.list_alerts_async(limit=200)
+        all_assets = list(dict.fromkeys(a.asset.hostname for a in all_alerts))
+
+        prediction = None
+        if heuristic["label"] in ("suspicious", "confirmed-threat"):
+            llm_prediction = await self.llm_client.predict_attack_path(alert, cve_matches, all_assets)
+            prediction = self._parse_prediction(alert.attack_stage, llm_prediction, cve_matches)
+
         assessment = ThreatAssessment(
             alert_id=alert.id,
             overall_score=heuristic["overall_score"],
@@ -46,7 +63,7 @@ class ThreatAnalyzer:
             recommendations=self._recommendations(alert, heuristic["label"]),
             trace_summary=self._trace_summary(alert),
         )
-        return AlertDetailResponse(alert=alert, assessment=assessment)
+        return AlertDetailResponse(alert=alert, assessment=assessment, prediction=prediction)
 
     async def build_dashboard_async(self) -> DashboardResponse:
         alerts = await self.repository.list_alerts_async()
@@ -318,6 +335,95 @@ class ThreatAnalyzer:
 
     def _trace_summary(self, alert: SIEMAlert) -> list[str]:
         return [f"{event.timestamp.isoformat()} - {event.message}" for event in alert.timeline]
+
+    @staticmethod
+    def _parse_prediction(current_stage: str, llm_response: str, cve_matches: list[dict]) -> AttackPrediction:
+        """Parse LLM prediction response into structured AttackPrediction."""
+        import re
+
+        next_stage = ""
+        rationale = ""
+        targets: list[str] = []
+        defense: list[str] = []
+        risk_score = 50.0
+        confidence = 0.6
+
+        # Extract next stage
+        stage_match = re.search(r"预测下一攻击阶段[：:]\s*(.+)", llm_response, re.IGNORECASE)
+        if stage_match:
+            stage_text = stage_match.group(1).strip()
+            stage_keywords = {
+                "reconnaissance": "Reconnaissance",
+                "侦察": "Reconnaissance",
+                "初始访问": "Initial Access",
+                "initial access": "Initial Access",
+                "植入": "Initial Access",
+                "execution": "Execution",
+                "执行": "Execution",
+                "command and control": "Command and Control",
+                "命令控制": "Command and Control",
+                "命令与控制": "Command and Control",
+                "exfiltration": "Exfiltration",
+                "数据渗出": "Exfiltration",
+                "渗出": "Exfiltration",
+            }
+            for kw, stage in stage_keywords.items():
+                if kw.lower() in stage_text.lower():
+                    next_stage = stage
+                    break
+            if not next_stage:
+                next_stage = stage_text[:50]
+
+        # Extract risk score
+        score_match = re.search(r"风险评分[：:]\s*(\d+)", llm_response, re.IGNORECASE)
+        if score_match:
+            risk_score = min(100, max(0, int(score_match.group(1))))
+            if risk_score >= 80:
+                confidence = 0.85
+            elif risk_score >= 60:
+                confidence = 0.72
+            else:
+                confidence = 0.55
+
+        # Extract attack path reasoning
+        path_match = re.search(r"攻击路径推理[：:]\s*(.+?)(?:\n\d\.|$)", llm_response, re.DOTALL | re.IGNORECASE)
+        if path_match:
+            rationale = path_match.group(1).strip()[:500]
+
+        # Extract high-risk targets
+        target_match = re.search(r"高风险目标[：:]\s*(.+?)(?:\n\d\.|$)", llm_response, re.DOTALL | re.IGNORECASE)
+        if target_match:
+            targets = [t.strip("- *") for t in target_match.group(1).strip().split("\n") if t.strip()][:3]
+
+        # Extract defense actions
+        defense_match = re.search(r"建议防御动作[：:]\s*(.+?)(?:\n\d\.|$)", llm_response, re.DOTALL | re.IGNORECASE)
+        if defense_match:
+            defense = [d.strip("- *") for d in defense_match.group(1).strip().split("\n") if d.strip()][:3]
+
+        # Use the LLM's full response as rationale if we didn't extract a specific section
+        if not rationale:
+            rationale = llm_response[:400]
+
+        # Build attack vector summary from CVE matches
+        attack_vector_parts = []
+        if cve_matches:
+            top_cve = cve_matches[0]
+            attack_vector_parts.append(f"利用 {top_cve['id']} ({top_cve['exploit_type']})")
+        if next_stage:
+            attack_vector_parts.append(f"向 {next_stage} 阶段推进")
+        attack_vector = " → ".join(attack_vector_parts) if attack_vector_parts else "未知"
+
+        return AttackPrediction(
+            current_stage=current_stage,
+            predicted_next_stage=next_stage or "Execution",
+            confidence=round(confidence, 2),
+            risk_score=round(risk_score, 1),
+            likely_targets=targets,
+            attack_vector=attack_vector,
+            rationale=rationale,
+            recommended_defense=defense,
+            matched_cves=cve_matches[:3],
+        )
 
     def _build_attack_map(self, alerts: list[SIEMAlert]) -> list[GeoAttackPoint]:
         points: list[GeoAttackPoint] = []

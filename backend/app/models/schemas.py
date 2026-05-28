@@ -99,9 +99,22 @@ class ThreatAssessment(BaseModel):
     trace_summary: list[str]
 
 
+class AttackPrediction(BaseModel):
+    current_stage: str
+    predicted_next_stage: str
+    confidence: float = Field(ge=0, le=1)
+    risk_score: float = Field(ge=0, le=100)
+    likely_targets: list[str] = Field(default_factory=list)
+    attack_vector: str = ""
+    rationale: str = ""
+    recommended_defense: list[str] = Field(default_factory=list)
+    matched_cves: list[dict] = Field(default_factory=list)
+
+
 class AlertDetailResponse(BaseModel):
     alert: SIEMAlert
     assessment: ThreatAssessment
+    prediction: AttackPrediction | None = None
 
 
 class DashboardMetric(BaseModel):

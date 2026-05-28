@@ -98,6 +98,11 @@ async function loadAlertContext(alertId: string) {
   }
 }
 
+function handleSelect(alertId: string) {
+  selectedAlertId.value = alertId;
+  startRotation(); // 手动选择后重置轮播计时，避免被立即覆盖
+}
+
 function startRotation() {
   stopRotation();
   rotateTimer = window.setInterval(() => {
@@ -264,7 +269,7 @@ onBeforeUnmount(() => {
               :alerts="alerts"
               :selected-alert-id="selectedAlertId"
               :show-link-button="true"
-              @select="selectedAlertId = $event"
+              @select="handleSelect"
             />
             <div class="pager">
               <button class="pager-btn" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>

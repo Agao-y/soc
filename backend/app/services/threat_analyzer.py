@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from collections import Counter
 
 from app.models.schemas import (
@@ -33,9 +34,8 @@ class ThreatAnalyzer:
             return None
 
         heuristic = self._heuristic_scores(alert)
-        llm_reasoning = await self.llm_client.analyze(alert, heuristic["summary"])
 
-        # CVE 关联 + 攻击路径预测
+        # CVE 关联
         cve_matches = search_cve_by_asset(
             hostname=alert.asset.hostname,
             log_text=alert.log_excerpt + " " + alert.description,
@@ -45,9 +45,18 @@ class ThreatAnalyzer:
         all_alerts = await self.repository.list_alerts_async(limit=200)
         all_assets = list(dict.fromkeys(a.asset.hostname for a in all_alerts))
 
+        # 并行调用 LLM：分析 + 预测
+        tasks = [self.llm_client.analyze(alert, heuristic["summary"])]
+        need_prediction = heuristic["label"] in ("suspicious", "confirmed-threat")
+        if need_prediction:
+            tasks.append(self.llm_client.predict_attack_path(alert, cve_matches, all_assets))
+
+        results = await asyncio.gather(*tasks)
+        llm_reasoning = results[0]
+        llm_prediction = results[1] if len(results) > 1 else None
+
         prediction = None
-        if heuristic["label"] in ("suspicious", "confirmed-threat"):
-            llm_prediction = await self.llm_client.predict_attack_path(alert, cve_matches, all_assets)
+        if need_prediction and llm_prediction:
             prediction = self._parse_prediction(alert.attack_stage, llm_prediction, cve_matches)
 
         assessment = ThreatAssessment(

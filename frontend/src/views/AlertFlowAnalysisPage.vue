@@ -45,9 +45,12 @@ async function loadAlerts() {
 }
 
 async function loadDetail(alertId: string) {
+  detail.value = null;        // 立即清空旧数据
   loading.value = true;
   try {
     detail.value = await fetchAlertDetail(alertId);
+  } catch {
+    detail.value = null;
   } finally {
     loading.value = false;
   }

@@ -85,6 +85,8 @@ async function goPage(p: number) {
 }
 
 async function loadAlertContext(alertId: string) {
+  detail.value = null;        // 立即清空旧数据，显示加载态
+  explainability.value = null;
   loading.value = true;
   try {
     const [detailData, explainData] = await Promise.all([
@@ -93,6 +95,8 @@ async function loadAlertContext(alertId: string) {
     ]);
     detail.value = detailData;
     explainability.value = explainData;
+  } catch {
+    detail.value = null;
   } finally {
     loading.value = false;
   }

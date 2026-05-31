@@ -104,17 +104,29 @@ async function loadAlertContext(alertId: string) {
 
 function handleSelect(alertId: string) {
   selectedAlertId.value = alertId;
-  startRotation(); // 手动选择后重置轮播计时，避免被立即覆盖
+  stopRotation(); // 手动选择后停止轮播，让用户固定查看
+}
+
+const autoPlay = ref(true);
+
+function toggleAutoPlay() {
+  autoPlay.value = !autoPlay.value;
+  if (autoPlay.value) {
+    startRotation();
+  } else {
+    stopRotation();
+  }
 }
 
 function startRotation() {
   stopRotation();
+  if (!autoPlay.value) return;
   rotateTimer = window.setInterval(() => {
     if (!alerts.value.length) return;
     const currentIndex = alerts.value.findIndex((item) => item.id === selectedAlertId.value);
     const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % alerts.value.length : 0;
     selectedAlertId.value = alerts.value[nextIndex].id;
-  }, 6000);
+  }, 10000);
 }
 
 function stopRotation() {
@@ -263,6 +275,9 @@ onBeforeUnmount(() => {
           <div class="panel-heading alert-view-header">
             <h2>{{ viewMode === "alerts" ? "实时告警流" : "攻击事件聚合" }}</h2>
             <div class="view-toggle">
+              <button v-if="viewMode === 'alerts'" class="toggle-btn" :class="{ active: autoPlay }" @click="toggleAutoPlay">
+                {{ autoPlay ? '⏯ 自动轮播' : '▶ 已暂停' }}
+              </button>
               <button class="toggle-btn" :class="{ active: viewMode === 'alerts' }" @click="viewMode = 'alerts'">原始告警</button>
               <button class="toggle-btn" :class="{ active: viewMode === 'incidents' }" @click="viewMode = 'incidents'">聚合事件</button>
             </div>

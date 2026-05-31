@@ -322,7 +322,8 @@ class ThreatAnalyzer:
             + (0.10 if "tls" in alert.log_excerpt.lower() else 0),
             0.99,
         )
-        overall_score = min(severity_weight + stage_bonus + prod_bonus + tactic_bonus + entity_bonus + threat_bonus, 100)
+        raw_sum = severity_weight + stage_bonus + prod_bonus + tactic_bonus + entity_bonus + threat_bonus
+        overall_score = min(raw_sum, 100)
         false_positive_probability = max(0.03, 1 - overall_score / 112 - anomaly_score / 4)
         confidence = min(0.58 + overall_score / 205 + anomaly_score / 5, 0.99)
 
@@ -338,13 +339,28 @@ class ThreatAnalyzer:
             f"误报概率 {false_positive_probability:.2f}，攻击阶段 {alert.attack_stage}，"
             f"威胁类型 {alert.threat_type}，分类为 {label}。"
         )
+
+        # 归一化分项贡献：若原始和超过上限，按比例缩放使各分项之和 = overall_score
+        if raw_sum > 100:
+            scale = overall_score / raw_sum
+            sev = round(severity_weight * scale, 1)
+            stg = round(stage_bonus * scale, 1)
+            prd = round(prod_bonus * scale, 1)
+            tac = round(tactic_bonus * scale, 1)
+            ent = round(entity_bonus * scale, 1)
+            thr = round(threat_bonus * scale, 1)
+        else:
+            sev, stg, prd, tac, ent, thr = (
+                severity_weight, stage_bonus, prod_bonus, tactic_bonus, entity_bonus, threat_bonus
+            )
+
         components = {
-            "告警严重级别": severity_weight,
-            "攻击阶段权重": stage_bonus,
-            "生产环境风险": prod_bonus,
-            "MITRE 战术覆盖": tactic_bonus,
-            "关联实体密度": entity_bonus,
-            "威胁类型权重": threat_bonus,
+            "告警严重级别": sev,
+            "攻击阶段权重": stg,
+            "生产环境风险": prd,
+            "MITRE 战术覆盖": tac,
+            "关联实体密度": ent,
+            "威胁类型权重": thr,
         }
 
         return {

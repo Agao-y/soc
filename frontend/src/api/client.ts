@@ -171,7 +171,8 @@ export interface AlertDetail {
 
 export interface Explainability {
   alert_id: string;
-  rows: Array<{ factor: string; weight: number; note: string }>;
+  overall_score: number;
+  rows: Array<{ factor: string; weight: number; contribution: number; note: string }>;
 }
 
 export async function fetchDashboard() {
@@ -199,6 +200,16 @@ export async function fetchAlertDetail(alertId: string) {
 
 export async function fetchExplainability(alertId: string) {
   const { data } = await api.get<Explainability>(`/alerts/${alertId}/explainability`);
+  return data;
+}
+
+export interface NarrativeResponse {
+  alert_id: string;
+  narrative: string;
+}
+
+export async function fetchNarrative(alertId: string) {
+  const { data } = await api.get<NarrativeResponse>(`/alerts/${alertId}/narrative`);
   return data;
 }
 

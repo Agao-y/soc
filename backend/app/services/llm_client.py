@@ -149,6 +149,82 @@ class LLMClient:
             data = response.json()
             return data["choices"][0]["message"]["content"].strip()
 
+    async def generate_narrative(
+        self,
+        target_alert: SIEMAlert,
+        related_alerts: list[SIEMAlert],
+    ) -> str:
+        """Generate a complete attack narrative from a chain of related alerts."""
+        if not settings.openai_api_key or not related_alerts:
+            return self._fallback_narrative(target_alert, related_alerts)
+
+        timeline_text = ""
+        for i, a in enumerate(related_alerts, 1):
+            timeline_text += (
+                f"\n{i}. [{a.timestamp.isoformat()}] 阶段={a.attack_stage} | "
+                f"类型={a.threat_type} | 严重={a.severity} | "
+                f"源={a.source_ip} → 目标={a.asset.hostname}\n"
+                f"   描述: {a.description}\n"
+                f"   日志: {a.log_excerpt[:120]}\n"
+            )
+
+        prompt = (
+            f"你是一名资深的网络安全事件调查分析师。请根据以下同一攻击者的告警时间线，"
+            f"撰写一份完整的攻击事件分析报告，以通俗易懂但专业的方式讲述攻击故事。\n\n"
+            f"## 攻击源\n"
+            f"IP: {target_alert.source_ip} ({target_alert.source_geo.country}, {target_alert.source_geo.city})\n\n"
+            f"## 告警时间线\n{timeline_text}\n\n"
+            f"## 要求\n"
+            f"请以自然段落形式撰写，包含以下内容，使用中文：\n"
+            f"1. **攻击概述**: 用一段话总结这是一次什么样的攻击 (150字以内)\n"
+            f"2. **攻击路径**: 从初始访问到最终目的的完整 Kill Chain 演进过程\n"
+            f"3. **关键证据**: 从日志中提取最能说明攻击行为的证据\n"
+            f"4. **影响评估**: 攻击对业务系统和数据可能造成的影响\n"
+            f"5. **处置建议**: 按优先级列出具体可执行的处置步骤\n\n"
+            f"注意：这是一份面向安全运维团队的正式报告，语言要专业、清晰、有条理。"
+        )
+
+        headers = {
+            "Authorization": f"Bearer {settings.openai_api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": settings.openai_model,
+            "messages": [
+                {"role": "system", "content": "你是严谨的网络安全事件分析专家，擅长撰写攻击事件调查报告。"},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.4,
+            "max_tokens": 1200,
+        }
+
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            response = await client.post(
+                f"{settings.openai_base_url}/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"].strip()
+
+    def _fallback_narrative(
+        self, alert: SIEMAlert, related: list[SIEMAlert]
+    ) -> str:
+        items = "\n".join(
+            f"- {a.timestamp.isoformat()}: {a.attack_stage} / {a.threat_type} → {a.asset.hostname}"
+            for a in related[:10]
+        )
+        return (
+            f"## 攻击事件报告 (启发式生成)\n\n"
+            f"**攻击源**: {alert.source_ip} ({alert.source_geo.country})\n\n"
+            f"**关联告警**: {len(related)} 条\n\n"
+            f"**告警时间线**:\n{items}\n\n"
+            f"**初步判断**: 基于 {len(related)} 条关联告警，攻击者从 {alert.source_ip} "
+            f"针对资产 {alert.asset.hostname} 发起了 {alert.threat_type} 类型攻击，"
+            f"当前处于 {alert.attack_stage} 阶段。建议立即隔离涉事终端并展开横向移动排查。"
+        )
+
     def _fallback(self, alert: SIEMAlert, heuristic_summary: str) -> str:
         return (
             f"综合规则特征与上下文，该告警更偏向{'真实威胁' if alert.severity in {'high', 'critical'} else '可疑事件'}。"

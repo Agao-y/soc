@@ -28,6 +28,30 @@ class ThreatAnalyzer:
         self.repository = repository
         self.llm_client = llm_client
 
+    async def generate_narrative(self, alert_id: str) -> str | None:
+        """Find related alerts from same source IP and generate an attack narrative."""
+        try:
+            target = await self.repository.get_alert_async(alert_id)
+            if not target:
+                return None
+
+            all_alerts = await self.repository.list_alerts_async(limit=200)
+            related = [
+                a for a in all_alerts
+                if a.source_ip == target.source_ip
+            ]
+            related.sort(key=lambda a: a.timestamp)
+
+            if len(related) < 2:
+                related = [a for a in all_alerts if a.id == alert_id] + [
+                    a for a in all_alerts
+                    if a.asset.hostname == target.asset.hostname and a.id != alert_id
+                ][:4]
+
+            return await self.llm_client.generate_narrative(target, related)
+        except Exception:
+            return None
+
     async def analyze_alert(self, alert_id: str) -> AlertDetailResponse | None:
         alert = await self.repository.get_alert_async(alert_id)
         if not alert:
@@ -141,34 +165,32 @@ class ThreatAnalyzer:
             return None
 
         scores = self._heuristic_scores(alert)
+        components = scores.get("components", {})
+        total = sum(components.values())
+
+        feature_notes = {
+            "告警严重级别": f"严重级别={alert.severity}，基础风险分值",
+            "攻击阶段权重": f"当前阶段 {alert.attack_stage}，越靠后权重越高",
+            "生产环境风险": f"环境={alert.asset.environment}，生产环境附加风险",
+            "MITRE 战术覆盖": f"匹配 {len(alert.mitre_tactics)} 个 MITRE 战术",
+            "关联实体密度": f"关联 {len(alert.related_entities)} 个实体",
+            "威胁类型权重": f"威胁类型={alert.threat_type}，按危害程度加权",
+        }
+
         rows = [
             ExplainabilityRow(
-                factor="来源 IP 信誉",
-                weight=0.24,
-                note=f"来源 {alert.source_ip} 位于 {alert.source_geo.country}，近期存在待核验访问模式",
-            ),
-            ExplainabilityRow(
-                factor="异常行为强度",
-                weight=0.28,
-                note=f"轻量模型估算 anomaly_score={scores['anomaly_score']:.2f}，日志模式与历史样本存在偏差",
-            ),
-            ExplainabilityRow(
-                factor="时间规律偏离",
-                weight=0.16,
-                note="事件发生在非常规活跃时段，且与正常变更窗口不一致",
-            ),
-            ExplainabilityRow(
-                factor="关联事件密度",
-                weight=0.17,
-                note=f"已关联 {len(alert.related_entities)} 个实体与 {len(alert.timeline)} 个时间线节点",
-            ),
-            ExplainabilityRow(
-                factor="攻击链阶段权重",
-                weight=0.15,
-                note=f"当前阶段处于 {alert.attack_stage}，对业务影响权重较高",
-            ),
+                factor=name,
+                weight=round(val / total, 3) if total > 0 else 0,
+                contribution=round(val, 1),
+                note=feature_notes.get(name, ""),
+            )
+            for name, val in components.items()
         ]
-        return AssessmentExplainability(alert_id=alert.id, rows=rows)
+        return AssessmentExplainability(
+            alert_id=alert.id,
+            overall_score=scores["overall_score"],
+            rows=rows,
+        )
 
     def build_dashboard(self) -> DashboardResponse:
         alerts = self.repository.list_alerts()
@@ -238,34 +260,32 @@ class ThreatAnalyzer:
             return None
 
         scores = self._heuristic_scores(alert)
+        components = scores.get("components", {})
+        total = sum(components.values())
+
+        feature_notes = {
+            "告警严重级别": f"严重级别={alert.severity}，基础风险分值",
+            "攻击阶段权重": f"当前阶段 {alert.attack_stage}，越靠后权重越高",
+            "生产环境风险": f"环境={alert.asset.environment}，生产环境附加风险",
+            "MITRE 战术覆盖": f"匹配 {len(alert.mitre_tactics)} 个 MITRE 战术",
+            "关联实体密度": f"关联 {len(alert.related_entities)} 个实体",
+            "威胁类型权重": f"威胁类型={alert.threat_type}，按危害程度加权",
+        }
+
         rows = [
             ExplainabilityRow(
-                factor="来源 IP 信誉",
-                weight=0.24,
-                note=f"来源 {alert.source_ip} 位于 {alert.source_geo.country}，近期存在异常访问模式",
-            ),
-            ExplainabilityRow(
-                factor="异常行为强度",
-                weight=0.28,
-                note=f"轻量模型估算 anomaly_score={scores['anomaly_score']:.2f}，日志模式与历史样本偏差明显",
-            ),
-            ExplainabilityRow(
-                factor="时间规律偏离",
-                weight=0.16,
-                note="事件发生在非常规活跃时段，且与正常变更窗口不一致",
-            ),
-            ExplainabilityRow(
-                factor="关联事件密度",
-                weight=0.17,
-                note=f"已关联 {len(alert.related_entities)} 个实体与 {len(alert.timeline)} 个时间线节点",
-            ),
-            ExplainabilityRow(
-                factor="攻击链阶段权重",
-                weight=0.15,
-                note=f"当前阶段处于 {alert.attack_stage}，对业务影响权重较高",
-            ),
+                factor=name,
+                weight=round(val / total, 3) if total > 0 else 0,
+                contribution=round(val, 1),
+                note=feature_notes.get(name, ""),
+            )
+            for name, val in components.items()
         ]
-        return AssessmentExplainability(alert_id=alert.id, rows=rows)
+        return AssessmentExplainability(
+            alert_id=alert.id,
+            overall_score=scores["overall_score"],
+            rows=rows,
+        )
 
     def _heuristic_scores(self, alert: SIEMAlert) -> dict[str, float | str]:
         severity_weight = {
@@ -318,6 +338,15 @@ class ThreatAnalyzer:
             f"误报概率 {false_positive_probability:.2f}，攻击阶段 {alert.attack_stage}，"
             f"威胁类型 {alert.threat_type}，分类为 {label}。"
         )
+        components = {
+            "告警严重级别": severity_weight,
+            "攻击阶段权重": stage_bonus,
+            "生产环境风险": prod_bonus,
+            "MITRE 战术覆盖": tactic_bonus,
+            "关联实体密度": entity_bonus,
+            "威胁类型权重": threat_bonus,
+        }
+
         return {
             "overall_score": round(overall_score, 2),
             "confidence": round(confidence, 2),
@@ -325,6 +354,7 @@ class ThreatAnalyzer:
             "false_positive_probability": round(false_positive_probability, 2),
             "anomaly_score": round(anomaly_score, 2),
             "summary": summary,
+            "components": components,
         }
 
     def _recommendations(self, alert: SIEMAlert, label: str) -> list[str]:

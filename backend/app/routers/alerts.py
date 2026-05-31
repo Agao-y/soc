@@ -42,6 +42,14 @@ async def get_alert_explainability(alert_id: str, current_user: dict = Depends(g
     return result
 
 
+@router.get("/alerts/{alert_id}/narrative")
+async def get_alert_narrative(alert_id: str, current_user: dict = Depends(get_current_user)):
+    result = await analyzer.generate_narrative(alert_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Alert not found or narrative generation failed")
+    return {"alert_id": alert_id, "narrative": result}
+
+
 @router.patch("/alerts/{alert_id}/status", response_model=SIEMAlert)
 async def update_alert_status(alert_id: str, body: StatusUpdateRequest, current_user: dict = Depends(get_current_user)) -> SIEMAlert:
     alert = await repository.update_alert_status(alert_id, body.status)

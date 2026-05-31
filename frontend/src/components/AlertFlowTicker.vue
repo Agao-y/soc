@@ -28,6 +28,7 @@ const threatTypeLabel: Record<Alert["threat_type"], string> = {
   c2: "C2 控制通信",
   "port-scan": "端口扫描攻击",
   exfiltration: "数据渗出风险",
+  "web-attack": "Web 应用攻击",
 };
 
 function colorClass(level: Alert["severity"]) {

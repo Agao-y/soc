@@ -178,11 +178,13 @@ class AnalyzeRequest(BaseModel):
 class ExplainabilityRow(BaseModel):
     factor: str
     weight: float
+    contribution: float = 0  # 原始贡献值 (分)
     note: str
 
 
 class AssessmentExplainability(BaseModel):
     alert_id: str
+    overall_score: float = 0
     rows: list[ExplainabilityRow]
 
 

@@ -776,6 +776,58 @@ button {
   background: linear-gradient(90deg, #38bdf8, #22c55e);
 }
 
+/* Waterfall XAI Chart */
+.waterfall-chart {
+  width: 100%;
+  height: 260px;
+}
+
+.xai-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.xai-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xai-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.xai-factor {
+  flex: 1;
+  font-weight: 600;
+  color: #edf6ff;
+  font-size: 0.84rem;
+}
+
+.xai-contrib {
+  color: #38bdf8;
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.xai-pct {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  min-width: 40px;
+  text-align: right;
+}
+
+.xai-note {
+  margin: 4px 0 0;
+  color: #7ea9cc;
+  font-size: 0.74rem;
+}
+
 .detail-kv-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -930,6 +982,10 @@ button {
 .action-escalate:hover:not(:disabled) {
   border-color: #ef4444;
   color: #ef4444;
+}
+.action-narrative:hover:not(:disabled) {
+  border-color: #c084fc;
+  color: #c084fc;
 }
 .action-msg {
   color: #10b981;
@@ -1135,6 +1191,24 @@ button {
 .modal-body {
   display: grid;
   gap: 22px;
+}
+
+/* Narrative Modal */
+.narrative-modal {
+  width: min(720px, 92vw);
+  max-height: 82vh;
+}
+
+.narrative-modal .modal-header h3 {
+  margin: 0;
+  color: #e8f4ff;
+  font-size: 1.1rem;
+}
+
+.narrative-modal .modal-body .markdown-body {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 .modal-body h3 {
   margin: 0 0 10px;

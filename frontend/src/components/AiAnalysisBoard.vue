@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { ActionStatus, Alert, AlertDetail } from "../api/client";
-import { updateAlertStatus } from "../api/client";
+import { fetchNarrative, updateAlertStatus } from "../api/client";
 import { highlightLog, renderMarkdown } from "../utils/markdown";
 
 const props = defineProps<{
@@ -16,6 +16,26 @@ const emit = defineEmits<{
 
 const acting = ref(false);
 const actionMsg = ref("");
+
+// Narrative
+const showNarrative = ref(false);
+const narrativeLoading = ref(false);
+const narrativeText = ref("");
+
+async function generateNarrative() {
+  if (!props.selectedAlert) return;
+  narrativeLoading.value = true;
+  narrativeText.value = "";
+  showNarrative.value = true;
+  try {
+    const res = await fetchNarrative(props.selectedAlert.id);
+    narrativeText.value = res.narrative;
+  } catch {
+    narrativeText.value = "报告生成失败，请重试。";
+  } finally {
+    narrativeLoading.value = false;
+  }
+}
 
 async function handleStatus(status: ActionStatus) {
   if (!props.selectedAlert) return;
@@ -133,6 +153,9 @@ function cveSeverityColor(severity: string) {
         <button class="action-btn action-escalate" :disabled="acting" @click="handleStatus('escalated')">
           升级工单
         </button>
+        <button class="action-btn action-narrative" :disabled="acting" @click="generateNarrative">
+          📄 生成事件报告
+        </button>
         <span v-if="actionMsg" class="action-msg">{{ actionMsg }}</span>
       </div>
 
@@ -205,5 +228,21 @@ function cveSeverityColor(severity: string) {
       </article>
     </div>
     <div v-else class="empty-state">等待选中告警后展示 AI 研判结果。</div>
+
+    <!-- Narrative Modal -->
+    <Teleport to="body">
+      <div v-if="showNarrative" class="modal-backdrop" @click.self="showNarrative = false">
+        <div class="modal-panel narrative-modal">
+          <div class="modal-header">
+            <h3>攻击事件分析报告</h3>
+            <button class="modal-close" @click="showNarrative = false">✕</button>
+          </div>
+          <div class="modal-body">
+            <div v-if="narrativeLoading" class="empty-state">AI 正在生成攻击事件报告...</div>
+            <div v-else class="markdown-body" v-html="renderMarkdown(narrativeText)"></div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>

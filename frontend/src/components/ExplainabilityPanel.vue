@@ -11,89 +11,68 @@ const props = defineProps<{
 const container = ref<HTMLElement | null>(null);
 let chart: echarts.ECharts | null = null;
 
-function buildWaterfallOption(data: Explainability) {
+const palette = ["#ef4444", "#f97316", "#facc15", "#22c55e", "#38bdf8", "#a78bfa"];
+
+function buildOption(data: Explainability) {
   const rows = [...data.rows].sort((a, b) => b.contribution - a.contribution);
-  const features = rows.map((r) => r.factor);
-  const contributions = rows.map((r) => r.contribution);
+  const names = rows.map((r) => r.factor);
+  const values = rows.map((r) => r.contribution);
 
-  const base: number[] = [];
-  const vals: number[] = [];
-  let acc = 0;
-  contributions.forEach((c) => { base.push(acc); vals.push(c); acc += c; });
-
-  const option: echarts.EChartsOption = {
+  return {
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
       formatter: (params: any) => {
-        const p = Array.isArray(params) ? params : [params];
-        const vis = p.find((x: any) => x.seriesName === "贡献值");
-        if (!vis || vis.value === 0) return "";
-        const idx = vis.dataIndex;
-        return `<b>${vis.name}</b><br/>贡献: <b style="color:#38bdf8">${contributions[idx]}</b> 分<br/>占比: <b style="color:#c084fc">${data.overall_score > 0 ? Math.round(contributions[idx] / data.overall_score * 100) : 0}%</b>`;
+        const p = Array.isArray(params) ? params[0] : params;
+        const idx = p.dataIndex;
+        return `<b>${p.name}</b><br/>贡献值: <b style="color:#38bdf8">${values[idx]}</b> 分`;
       },
     },
-    grid: { left: 30, right: 48, top: 20, bottom: 32 },
+    grid: { left: 10, right: 36, top: 12, bottom: 24 },
     xAxis: {
-      type: "category",
-      data: features,
-      axisLabel: { color: "#94a3b8", fontSize: 10, rotate: 18, interval: 0 },
-      axisLine: { lineStyle: { color: "rgba(148,163,184,0.2)" } },
-      axisTick: { show: false },
-    },
-    yAxis: {
       type: "value",
       name: "分",
-      nameTextStyle: { color: "#94a3b8", fontSize: 11 },
+      nameTextStyle: { color: "#94a3b8", fontSize: 10 },
       axisLabel: { color: "#94a3b8", fontSize: 10 },
       splitLine: { lineStyle: { color: "rgba(148,163,184,0.08)" } },
+      max: data.overall_score + 5,
+    },
+    yAxis: {
+      type: "category",
+      data: names,
+      axisLabel: { color: "#cbd5e1", fontSize: 11 },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      inverse: true,
     },
     series: [
       {
-        name: "基底",
         type: "bar",
-        stack: "wf",
-        data: base,
-        itemStyle: { color: "transparent", borderColor: "transparent" },
-        emphasis: { itemStyle: { color: "transparent" } },
         barWidth: "55%",
-      },
-      {
-        name: "贡献值",
-        type: "bar",
-        stack: "wf",
-        barWidth: "55%",
-        data: vals.map((v, i) => {
-          const palette = ["#ef4444", "#f97316", "#facc15", "#22c55e", "#38bdf8", "#a78bfa"];
-          return {
-            value: v,
-            itemStyle: {
-              color: palette[i % palette.length],
-              borderRadius: [4, 4, 0, 0],
-            },
-            label: {
-              show: v > 0,
-              position: "insideTop",
-              color: "#fff",
-              fontSize: 10,
-              fontWeight: "bold",
-              formatter: `+${v}`,
-              offset: [0, -4],
-            },
-          };
-        }),
+        data: values.map((v, i) => ({
+          value: v,
+          itemStyle: {
+            color: palette[i],
+            borderRadius: [0, 6, 6, 0],
+          },
+          label: {
+            show: true,
+            position: "right",
+            color: "#edf6ff",
+            fontSize: 12,
+            fontWeight: "bold",
+            formatter: `${v} 分`,
+          },
+        })),
       },
     ],
-  };
-  return option;
+  } as echarts.EChartsOption;
 }
 
 function renderChart() {
   if (!container.value || !props.explainability) return;
-  if (!chart) {
-    chart = echarts.init(container.value, undefined, { devicePixelRatio: 2 });
-  }
-  chart.setOption(buildWaterfallOption(props.explainability), true);
+  if (!chart) chart = echarts.init(container.value, undefined, { devicePixelRatio: 2 });
+  chart.setOption(buildOption(props.explainability), true);
   chart.resize();
 }
 
@@ -127,19 +106,6 @@ onBeforeUnmount(() => {
         <small>/ 100</small>
       </div>
       <div ref="container" class="waterfall-chart"></div>
-      <div class="xai-list">
-        <article v-for="row in [...explainability.rows].sort((a,b) => b.contribution - a.contribution)" :key="row.factor" class="xai-card">
-          <div class="xai-bar-row">
-            <span class="xai-factor">{{ row.factor }}</span>
-            <span class="xai-contrib">{{ row.contribution }} 分</span>
-            <span class="xai-pct">{{ Math.round(row.weight * 100) }}%</span>
-          </div>
-          <div class="weight-bar">
-            <div class="weight-fill" :style="{ width: `${row.weight * 100}%` }"></div>
-          </div>
-          <p class="xai-note">{{ row.note }}</p>
-        </article>
-      </div>
     </div>
     <div v-else class="empty-state">等待告警上下文载入。</div>
   </section>

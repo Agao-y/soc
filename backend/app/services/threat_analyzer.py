@@ -59,8 +59,8 @@ class ThreatAnalyzer:
 
         heuristic = self._heuristic_scores(alert)
 
-        # CVE 关联
-        cve_matches = search_cve_by_asset(
+        # CVE 关联 (本地缓存 + NVD 实时查询)
+        cve_matches = await search_cve_by_asset(
             hostname=alert.asset.hostname,
             log_text=alert.log_excerpt + " " + alert.description,
             service_hints=[alert.threat_type, alert.attack_stage],

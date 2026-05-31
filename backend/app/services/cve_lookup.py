@@ -1,9 +1,16 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
+import httpx
+
+logger = logging.getLogger(__name__)
+
 _cve_cache: list[dict] | None = None
+
+NVD_API = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 
 
 def _load_cve() -> list[dict]:
@@ -15,15 +22,13 @@ def _load_cve() -> list[dict]:
     return _cve_cache
 
 
-def search_cve(keywords: list[str], top: int = 5) -> list[dict]:
-    """Search CVEs by keyword matching against product, vendor, description, and exploit_type."""
+def search_cve_local(keywords: list[str], top: int = 5) -> list[dict]:
+    """Search local CVE cache by keyword matching."""
     results = []
     for cve in _load_cve():
         text = " ".join([
-            cve.get("product", ""),
-            cve.get("vendor", ""),
-            cve.get("description", ""),
-            cve.get("exploit_type", ""),
+            cve.get("product", ""), cve.get("vendor", ""),
+            cve.get("description", ""), cve.get("exploit_type", ""),
         ]).lower()
         score = sum(1 for kw in keywords if kw.lower() in text)
         if score > 0:
@@ -32,7 +37,79 @@ def search_cve(keywords: list[str], top: int = 5) -> list[dict]:
     return [item[1] for item in results[:top]]
 
 
-def search_cve_by_asset(hostname: str, log_text: str, service_hints: list[str] | None = None) -> list[dict]:
+async def search_cve_nvd(keyword: str, limit: int = 5) -> list[dict]:
+    """Fetch recent CVEs from NVD API 2.0 (free, no key required)."""
+    results: list[dict] = []
+    try:
+        async with httpx.AsyncClient(timeout=12.0) as client:
+            resp = await client.get(
+                NVD_API,
+                params={
+                    "keywordSearch": keyword,
+                    "resultsPerPage": min(limit, 20),
+                },
+                headers={"User-Agent": "SOC-DragonGuardian/1.0"},
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+            for vuln in data.get("vulnerabilities", []):
+                cve = vuln.get("cve", {})
+                cve_id = cve.get("id", "")
+
+                metrics = cve.get("metrics", {})
+                cvss_v31 = metrics.get("cvssMetricV31", [{}])[0].get("cvssData", {})
+                cvss_v30 = metrics.get("cvssMetricV30", [{}])[0].get("cvssData", {})
+                cvss = cvss_v31 or cvss_v30
+                base_score = cvss.get("baseScore", 0)
+                severity = cvss.get("baseSeverity", "MEDIUM").lower()
+
+                descriptions = cve.get("descriptions", [])
+                desc_en = next((d["value"] for d in descriptions if d.get("lang") == "en"), "")
+
+                results.append({
+                    "id": cve_id,
+                    "cvss": base_score,
+                    "severity": severity,
+                    "product": keyword.title(),
+                    "vendor": "",
+                    "versions": [],
+                    "description": desc_en[:300],
+                    "exploit_type": "",
+                    "attack_vector": "",
+                    "patch": "",
+                    "mitre": [],
+                    "source": "nvd",
+                })
+
+        results.sort(key=lambda x: -x["cvss"])
+        return results[:limit]
+    except Exception:
+        logger.debug("NVD API unavailable, falling back to local cache")
+        return []
+
+
+async def search_cve(keywords: list[str], top: int = 5) -> list[dict]:
+    """Search CVEs: local cache + live NVD API. Dedup by CVE ID."""
+    local = search_cve_local(keywords, top)
+    seen = {c["id"] for c in local}
+
+    # Try NVD for supplemental results using the top keyword
+    primary_kw = keywords[0] if keywords else ""
+    if primary_kw:
+        nvd_results = await search_cve_nvd(primary_kw, limit=3)
+        for c in nvd_results:
+            if c["id"] not in seen and c["cvss"] >= 5.0:
+                local.append(c)
+                seen.add(c["id"])
+
+    local.sort(key=lambda x: -x["cvss"])
+    return local[:top]
+
+
+async def search_cve_by_asset(
+    hostname: str, log_text: str, service_hints: list[str] | None = None,
+) -> list[dict]:
     """Search CVEs relevant to an asset, extracting keywords from logs and service hints."""
     keywords = list(service_hints or [])
 
@@ -67,4 +144,4 @@ def search_cve_by_asset(hostname: str, log_text: str, service_hints: list[str] |
         if any(sig in combo for sig in sigs):
             keywords.append(product)
 
-    return search_cve(keywords[:12])
+    return await search_cve(keywords[:12])

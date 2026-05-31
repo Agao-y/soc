@@ -572,6 +572,7 @@ button {
 .xai-panel,
 .ticket-panel {
   height: 100%;
+  overflow-y: auto;
 }
 
 .visualization-grid {

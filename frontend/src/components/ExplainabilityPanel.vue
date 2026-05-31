@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import * as echarts from "echarts";
 import type { Explainability } from "../api/client";
 
@@ -11,79 +11,83 @@ const props = defineProps<{
 const container = ref<HTMLElement | null>(null);
 let chart: echarts.ECharts | null = null;
 
-const palette = ["#ef4444", "#f97316", "#facc15", "#22c55e", "#38bdf8", "#a78bfa"];
-
-function buildOption(data: Explainability) {
+function render() {
+  if (!container.value || !props.explainability) return;
+  const data = props.explainability;
   const rows = [...data.rows].sort((a, b) => b.contribution - a.contribution);
-  const names = rows.map((r) => r.factor);
-  const values = rows.map((r) => r.contribution);
 
-  return {
+  if (!chart) {
+    chart = echarts.init(container.value);
+  }
+
+  chart.setOption({
+    backgroundColor: "transparent",
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
-      formatter: (params: any) => {
-        const p = Array.isArray(params) ? params[0] : params;
-        const idx = p.dataIndex;
-        return `<b>${p.name}</b><br/>贡献值: <b style="color:#38bdf8">${values[idx]}</b> 分`;
+      backgroundColor: "rgba(8,19,38,0.95)",
+      borderColor: "rgba(96,165,250,0.2)",
+      textStyle: { color: "#edf6ff", fontSize: 12 },
+      formatter: (ps: any) => {
+        const i = ps[0].dataIndex;
+        return `<b>${rows[i].factor}</b><br/>贡献: <b style="color:#38bdf8">${rows[i].contribution}</b> 分`;
       },
     },
-    grid: { left: 10, right: 36, top: 12, bottom: 24 },
+    grid: { left: 4, right: 50, top: 8, bottom: 4, containLabel: true },
     xAxis: {
       type: "value",
       name: "分",
       nameTextStyle: { color: "#94a3b8", fontSize: 10 },
       axisLabel: { color: "#94a3b8", fontSize: 10 },
-      splitLine: { lineStyle: { color: "rgba(148,163,184,0.08)" } },
-      max: data.overall_score + 5,
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.1)" } },
     },
     yAxis: {
       type: "category",
-      data: names,
+      data: rows.map((r) => r.factor),
       axisLabel: { color: "#cbd5e1", fontSize: 11 },
       axisLine: { show: false },
       axisTick: { show: false },
       inverse: true,
     },
-    series: [
-      {
-        type: "bar",
-        barWidth: "55%",
-        data: values.map((v, i) => ({
-          value: v,
+    series: [{
+      type: "bar",
+      barWidth: 16,
+      barGap: "30%",
+      data: rows.map((r, i) => {
+        const colors = ["#ef4444", "#f97316", "#facc15", "#22c55e", "#38bdf8", "#a78bfa"];
+        return {
+          value: r.contribution,
           itemStyle: {
-            color: palette[i],
-            borderRadius: [0, 6, 6, 0],
+            color: colors[i],
+            borderRadius: [0, 4, 4, 0],
           },
           label: {
             show: true,
             position: "right",
+            distance: 6,
             color: "#edf6ff",
             fontSize: 12,
             fontWeight: "bold",
-            formatter: `${v} 分`,
+            formatter: `${r.contribution}`,
           },
-        })),
-      },
-    ],
-  } as echarts.EChartsOption;
-}
+        };
+      }),
+    }],
+  } as echarts.EChartsOption, true);
 
-function renderChart() {
-  if (!container.value || !props.explainability) return;
-  if (!chart) chart = echarts.init(container.value, undefined, { devicePixelRatio: 2 });
-  chart.setOption(buildOption(props.explainability), true);
   chart.resize();
 }
 
-let resizeTimer: number | undefined;
-function onResize() {
-  if (resizeTimer) window.clearTimeout(resizeTimer);
-  resizeTimer = window.setTimeout(() => chart?.resize(), 120);
+async function safeRender() {
+  await nextTick();
+  render();
 }
 
-watch(() => props.explainability, (val) => { if (val) renderChart(); });
-onMounted(() => { window.addEventListener("resize", onResize); renderChart(); });
+watch(() => props.explainability, safeRender);
+onMounted(safeRender);
+
+function onResize() { chart?.resize(); }
+onMounted(() => window.addEventListener("resize", onResize));
 onBeforeUnmount(() => {
   window.removeEventListener("resize", onResize);
   chart?.dispose();
@@ -105,7 +109,7 @@ onBeforeUnmount(() => {
         <strong>{{ explainability.overall_score }}</strong>
         <small>/ 100</small>
       </div>
-      <div ref="container" class="waterfall-chart"></div>
+      <div ref="container" class="xai-chart-box"></div>
     </div>
     <div v-else class="empty-state">等待告警上下文载入。</div>
   </section>

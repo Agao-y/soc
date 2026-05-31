@@ -777,6 +777,31 @@ button {
 }
 
 /* Waterfall XAI Chart */
+.xai-score-badge {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 12px;
+  text-align: center;
+}
+.xai-score-badge span {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+.xai-score-badge strong {
+  color: #c084fc;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.xai-score-badge small {
+  color: #7ea9cc;
+  font-size: 0.75rem;
+}
+
 .waterfall-chart {
   width: 100%;
   height: 260px;

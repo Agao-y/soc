@@ -358,18 +358,28 @@ class ThreatAnalyzer:
         }
 
     def _recommendations(self, alert: SIEMAlert, label: str) -> list[str]:
-        items = [
-            "回溯近 24 小时同源 IP、账号与目标主机行为，确认是否存在横向扩散",
-            "提取 IOC 同步至 SIEM、EDR 与边界策略，扩大检索范围",
-            "结合工单流转记录补充取证附件，沉淀为可复用响应剧本",
-        ]
         if label == "confirmed-threat":
-            items.insert(0, "立即隔离涉事终端、阻断源 IP，并冻结高风险账号会话")
-        elif label == "suspicious":
-            items.insert(0, "先执行定向狩猎与补充取证，再决定是否升级为高危处置")
-        else:
-            items.insert(0, "暂列低优先级，优化规则阈值并持续观察是否重复触发")
-        return items
+            return [
+                f"立即阻断源 IP {alert.source_ip}，在边界防火墙添加 deny 规则",
+                f"隔离涉事终端 {alert.asset.hostname} ({alert.asset.ip})，禁止横向移动",
+                f"重置 {alert.asset.hostname} 上受影响账号凭据，排查后门持久化",
+                f"提取 IOC 同步至 SIEM/EDR，全量回溯 {alert.source_ip} 近 72h 活动",
+                "启动应急响应流程，通知安全负责人并留存取证材料",
+            ]
+        if label == "suspicious":
+            return [
+                f"对源 IP {alert.source_ip} 启动定向狩猎，分析访问模式与时间线",
+                f"在 {alert.asset.hostname} 部署额外审计规则，监控异常进程与网络连接",
+                f"提取 IOC (IP/域名/Hash) 同步至威胁情报平台交叉验证",
+                "若确认恶意行为，升级为高危事件并启动应急响应",
+                "更新 SIEM 关联规则，提升对同类行为的检测灵敏度",
+            ]
+        return [
+            f"持续监控源 IP {alert.source_ip}，观察是否重复触发类似告警",
+            f"优化 {alert.rule_name} 规则阈值，降低误报率",
+            f"确认 {alert.asset.hostname} 上相关服务为正常业务行为后标记为白名单",
+            "沉淀本次分析结果为知识库条目，减少后续重复研判成本",
+        ]
 
     def _trace_summary(self, alert: SIEMAlert) -> list[str]:
         return [f"{event.timestamp.isoformat()} - {event.message}" for event in alert.timeline]

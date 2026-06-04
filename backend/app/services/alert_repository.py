@@ -22,9 +22,11 @@ class AlertRepository:
         root = Path(__file__).resolve().parents[2]
         self._data_file = root / "data" / "alerts.json"
         self._status_file = root / "data" / "alert_status.json"
+        self._cache_file = root / "data" / "demo_analysis_cache.json"
         self._wazuh_client = WazuhIndexerClient()
         self._manager_client = WazuhManagerClient()
         self._status_overrides: dict[str, str] = self._load_status()
+        self._analysis_cache: dict[str, dict] = self._load_cache()
 
     def _load_status(self) -> dict[str, str]:
         if self._status_file.exists():
@@ -40,6 +42,33 @@ class AlertRepository:
             json.dumps(self._status_overrides, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+
+    def _load_cache(self) -> dict[str, dict]:
+        if self._cache_file.exists():
+            try:
+                return json.loads(self._cache_file.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                return {}
+        return {}
+
+    def _save_cache(self) -> None:
+        self._cache_file.parent.mkdir(parents=True, exist_ok=True)
+        self._cache_file.write_text(
+            json.dumps(self._analysis_cache, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def get_cached_analysis(self, alert_id: str) -> dict | None:
+        return self._analysis_cache.get(alert_id)
+
+    def set_cached_analysis(self, alert_id: str, data: dict) -> None:
+        self._analysis_cache[alert_id] = data
+        # 异步存盘：每5条写一次，避免频繁IO
+        if len(self._analysis_cache) % 5 == 0:
+            self._save_cache()
+
+    def save_cache_now(self) -> None:
+        self._save_cache()
 
     def _apply_status_override(self, alert: SIEMAlert) -> None:
         if alert.id in self._status_overrides:

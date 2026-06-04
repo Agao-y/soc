@@ -53,6 +53,12 @@ class ThreatAnalyzer:
             return None
 
     async def analyze_alert(self, alert_id: str) -> AlertDetailResponse | None:
+        # 缓存命中：跳过 LLM 调用，直接返回
+        if settings.app_mode != "wazuh":
+            cached = self.repository.get_cached_analysis(alert_id)
+            if cached:
+                return AlertDetailResponse.model_validate(cached)
+
         alert = await self.repository.get_alert_async(alert_id)
         if not alert:
             return None
@@ -95,7 +101,11 @@ class ThreatAnalyzer:
             recommendations=self._recommendations(alert, heuristic["label"]),
             trace_summary=self._trace_summary(alert),
         )
-        return AlertDetailResponse(alert=alert, assessment=assessment, prediction=prediction)
+        result = AlertDetailResponse(alert=alert, assessment=assessment, prediction=prediction)
+        # 演示模式缓存结果，下次加载秒开
+        if settings.app_mode != "wazuh":
+            self.repository.set_cached_analysis(alert_id, result.model_dump(mode="json"))
+        return result
 
     async def build_dashboard_async(self) -> DashboardResponse:
         alerts = await self.repository.list_alerts_async()

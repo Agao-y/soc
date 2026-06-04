@@ -32,6 +32,7 @@ const dashboard = ref<DashboardData | null>(null);
 const selectedAlertId = ref("");
 const detail = ref<AlertDetail | null>(null);
 const explainability = ref<Explainability | null>(null);
+let initialLoading = true;  // 初始加载标志，避免watch重复请求
 const loading = ref(false);
 const isFullscreen = ref(false);
 const page = ref(1);
@@ -62,11 +63,22 @@ async function loadInitialData() {
     dashboard.value = dashboardData;
     alerts.value = alertData.items;
     totalPages.value = alertData.total_pages;
-    selectedAlertId.value = alertData.items[0]?.id ?? "";
-    loadIncidents();  // fire-and-forget
+    const firstId = alertData.items[0]?.id ?? "";
+    selectedAlertId.value = firstId;
+    // 并行预加载首条告警详情，消除第二轮等待
+    if (firstId) {
+      const [detailData, explainData] = await Promise.all([
+        fetchAlertDetail(firstId),
+        fetchExplainability(firstId),
+      ]);
+      detail.value = detailData;
+      explainability.value = explainData;
+    }
+    loadIncidents();
     fetchMe().then((u) => { userRole.value = u.role; }).catch(() => {});
   } finally {
     loading.value = false;
+    initialLoading = false;
   }
 }
 
@@ -213,6 +225,7 @@ async function handleRegister() {
 }
 
 watch(selectedAlertId, (alertId) => {
+  if (initialLoading) return;  // loadInitialData已并行预加载，跳过
   if (alertId) {
     void loadAlertContext(alertId);
   }

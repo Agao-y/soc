@@ -66,6 +66,7 @@ class LLMClient:
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0.3,
+            "max_tokens": 400,
         }
 
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -137,6 +138,7 @@ class LLMClient:
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0.2,
+            "max_tokens": 300,
         }
 
         async with httpx.AsyncClient(timeout=30.0) as client:

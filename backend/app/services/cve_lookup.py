@@ -41,7 +41,7 @@ async def search_cve_nvd(keyword: str, limit: int = 5) -> list[dict]:
     """Fetch recent CVEs from NVD API 2.0 (free, no key required)."""
     results: list[dict] = []
     try:
-        async with httpx.AsyncClient(timeout=12.0) as client:
+        async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.get(
                 NVD_API,
                 params={
@@ -90,11 +90,22 @@ async def search_cve_nvd(keyword: str, limit: int = 5) -> list[dict]:
 
 
 async def search_cve(keywords: list[str], top: int = 5) -> list[dict]:
-    """Search CVEs: local cache + live NVD API. Dedup by CVE ID."""
+    """Search CVEs: local cache + live NVD API. Dedup by CVE ID.
+
+    In demo mode, only local cache is used (fast <1ms, 52 high-risk CVEs).
+    NVD live API is only queried in wazuh mode for real-time CVE enrichment.
+    """
+    from app.services.config import settings
+
     local = search_cve_local(keywords, top)
     seen = {c["id"] for c in local}
 
-    # Try NVD for supplemental results using the top keyword
+    # Demo 模式跳过 NVD 实时查询（本地缓存已有 52 条高危 CVE，足够展示）
+    if settings.app_mode == "demo":
+        local.sort(key=lambda x: -x["cvss"])
+        return local[:top]
+
+    # Wazuh 模式：补充 NVD 实时查询
     primary_kw = keywords[0] if keywords else ""
     if primary_kw:
         nvd_results = await search_cve_nvd(primary_kw, limit=3)

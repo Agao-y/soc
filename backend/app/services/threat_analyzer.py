@@ -19,6 +19,7 @@ from app.models.schemas import (
     TicketFlowSummary,
 )
 from app.services.alert_repository import AlertRepository
+from app.services.config import settings
 from app.services.cve_lookup import search_cve_by_asset
 from app.services.llm_client import LLMClient
 
@@ -64,25 +65,26 @@ class ThreatAnalyzer:
             return None
 
         heuristic = self._heuristic_scores(alert)
+        all_assets = self.repository.get_asset_list()
+        need_prediction = heuristic["label"] in ("suspicious", "confirmed-threat")
 
-        # CVE 关联 (本地缓存 + NVD 实时查询)
-        cve_matches = await search_cve_by_asset(
+        # CVE + LLM分析 + LLM推演 三路并行
+        # predict 先用空 CVE 发起（不影响 LLM 推理质量），结果解析时再用真实 CVE 补充
+        cve_task = search_cve_by_asset(
             hostname=alert.asset.hostname,
             log_text=alert.log_excerpt + " " + alert.description,
             service_hints=[alert.threat_type, alert.attack_stage],
         )
+        analyze_task = self.llm_client.analyze(alert, heuristic["summary"])
 
-        all_assets = self.repository.get_asset_list()
-
-        # 并行调用 LLM：分析 + 预测
-        tasks = [self.llm_client.analyze(alert, heuristic["summary"])]
-        need_prediction = heuristic["label"] in ("suspicious", "confirmed-threat")
         if need_prediction:
-            tasks.append(self.llm_client.predict_attack_path(alert, cve_matches, all_assets))
-
-        results = await asyncio.gather(*tasks)
-        llm_reasoning = results[0]
-        llm_prediction = results[1] if len(results) > 1 else None
+            predict_task = self.llm_client.predict_attack_path(alert, [], all_assets)
+            cve_matches, llm_reasoning, llm_prediction = await asyncio.gather(
+                cve_task, analyze_task, predict_task
+            )
+        else:
+            cve_matches, llm_reasoning = await asyncio.gather(cve_task, analyze_task)
+            llm_prediction = None
 
         prediction = None
         if need_prediction and llm_prediction:

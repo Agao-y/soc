@@ -22,7 +22,7 @@
     "request_content": "masscan detected: 177.54.20.162 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 38686,
       "destination_port": 80,
@@ -103,7 +103,7 @@
     "request_content": "DNS query for bad-actors.net — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 28544,
       "destination_port": 3389,
@@ -184,7 +184,7 @@
     "request_content": "Connection attempts to multiple ports from 194.26.29.230: 3389,8443,3306,22,8443,8443,3306",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 39486,
       "destination_port": 80,
@@ -265,7 +265,7 @@
     "request_content": "Outbound transfer of 4.5MB to 89.40.109.227 on port 443 from db-master-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 49871,
       "destination_port": 8080,
@@ -345,7 +345,7 @@
     "request_content": "High CPU (94%) detected on app-server-02 from hidden process cpuminer.exe",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 51323,
       "destination_port": 3389,
@@ -426,7 +426,7 @@
     "request_content": "Outbound transfer of 41.2MB to 93.172.167.235 on port 443 from web-prod-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 15674,
       "destination_port": 3306,
@@ -587,7 +587,7 @@
     "request_content": "Outbound transfer of 25.6MB to 4.23.141.20 on port 443 from test-server",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 34076,
       "destination_port": 8080,
@@ -667,7 +667,7 @@
     "request_content": "Failed password for invalid user oracle from 5.188.62.216 port 17888",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 17888,
       "destination_port": 443,
@@ -748,7 +748,7 @@
     "request_content": "Port scan detected: 185.220.101.36 → app-server-02 [446 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 2726,
       "destination_port": 3389,
@@ -829,7 +829,7 @@
     "request_content": "Port scan detected: 177.54.20.158 → web-prod-01 [355 ports in 30s]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 15511,
       "destination_port": 80,
@@ -910,7 +910,7 @@
     "request_content": "TLS beacon to 19.52.217.118 with JA3 hash a1b2c3d4e5 (C2 pattern)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 17809,
       "destination_port": 3306,
@@ -991,7 +991,7 @@
     "request_content": "masscan detected: 177.54.20.246 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 55935,
       "destination_port": 443,
@@ -1153,7 +1153,7 @@
     "request_content": "Connection attempts to multiple ports from 185.220.101.181: 8080,8443,3306",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 23515,
       "destination_port": 8443,
@@ -1234,7 +1234,7 @@
     "request_content": "Port scan detected: 103.35.64.39 → dev-workstation [403 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 60220,
       "destination_port": 8443,
@@ -1315,7 +1315,7 @@
     "request_content": "Outbound transfer of 24.0MB to 166.235.168.176 on port 443 from db-slave-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 60567,
       "destination_port": 443,
@@ -1395,7 +1395,7 @@
     "request_content": "Failed password for admin from 185.191.32.126 port 46893 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 46893,
       "destination_port": 8080,
@@ -1476,7 +1476,7 @@
     "request_content": "Failed password for root from 202.183.112.94 port 47070 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 47070,
       "destination_port": 22,
@@ -1557,7 +1557,7 @@
     "request_content": "Large DNS TXT queries from db-slave-01 to malware-update.cc (avg 21.5 bytes)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 43574,
       "destination_port": 8080,
@@ -1637,7 +1637,7 @@
     "request_content": "Suspicious outbound connection: test-server → 181.118.209.58:443 (beacon interval 60s)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 9714,
       "destination_port": 443,
@@ -1718,7 +1718,7 @@
     "request_content": "File extension changed to .encrypted on multiple directories",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 33359,
       "destination_port": 443,
@@ -1799,7 +1799,7 @@
     "request_content": "masscan detected: 77.247.110.194 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 3090,
       "destination_port": 80,
@@ -1880,7 +1880,7 @@
     "request_content": "Port scan detected: 116.31.116.195 → web-prod-01 [273 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 20958,
       "destination_port": 443,
@@ -1961,7 +1961,7 @@
     "request_content": "FTP STOR /data/dump_20260527.sql from dev-workstation to 177.152.90.88",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 25075,
       "destination_port": 8080,
@@ -2041,7 +2041,7 @@
     "request_content": "Process encryptor.exe (PID 56931) modified 96 files in 60s on web-prod-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 34549,
       "destination_port": 80,
@@ -2203,7 +2203,7 @@
     "request_content": "authentication failure; logname= uid=0 rhost=116.31.116.225",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 45090,
       "destination_port": 8080,
@@ -2284,7 +2284,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=45.14.224.12",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 31773,
       "destination_port": 3389,
@@ -2365,7 +2365,7 @@
     "request_content": "Process svchost_inject.exe (PID 67746) modified 307 files in 60s on db-master-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 57524,
       "destination_port": 22,
@@ -2446,7 +2446,7 @@
     "request_content": "Ransom note detected: /home/user/README_DECRYPT.txt on app-server-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 10546,
       "destination_port": 8443,
@@ -2527,7 +2527,7 @@
     "request_content": "DNS query for bad-actors.net — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 11036,
       "destination_port": 22,
@@ -2608,7 +2608,7 @@
     "request_content": "masscan detected: 77.247.110.115 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 58946,
       "destination_port": 3306,
@@ -2689,7 +2689,7 @@
     "request_content": "High CPU (71%) detected on web-prod-02 from hidden process minergate-cli",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 31246,
       "destination_port": 3306,
@@ -2770,7 +2770,7 @@
     "request_content": "Process svchost_inject.exe (PID 96181) modified 313 files in 60s on dev-workstation",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 42655,
       "destination_port": 80,
@@ -2851,7 +2851,7 @@
     "request_content": "Failed password for root from 103.35.64.173 port 4817 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 4817,
       "destination_port": 8080,
@@ -2932,7 +2932,7 @@
     "request_content": "Process wannacry.exe (PID 1333) modified 101 files in 60s on app-server-02",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 15767,
       "destination_port": 6379,
@@ -3013,7 +3013,7 @@
     "request_content": "High CPU (87%) detected on db-master-01 from hidden process nicehash.exe",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 48922,
       "destination_port": 80,
@@ -3094,7 +3094,7 @@
     "request_content": "High CPU (97%) detected on dev-workstation from hidden process minergate-cli",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 6048,
       "destination_port": 6379,
@@ -3175,7 +3175,7 @@
     "request_content": "FTP STOR /data/dump_20260526.sql from dev-workstation to 26.216.202.136",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 55075,
       "destination_port": 80,
@@ -3255,7 +3255,7 @@
     "request_content": "RDP login failed: user=administrator src=45.61.136.101 attempts=106",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 51591,
       "destination_port": 3389,
@@ -3336,7 +3336,7 @@
     "request_content": "Suspicious outbound connection: app-server-02 → 178.181.28.198:443 (beacon interval 60s)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 11494,
       "destination_port": 22,
@@ -3417,7 +3417,7 @@
     "request_content": "masscan detected: 91.240.118.118 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 31076,
       "destination_port": 6379,
@@ -3498,7 +3498,7 @@
     "request_content": "Failed password for invalid user test from 14.192.18.95 port 24821",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 24821,
       "destination_port": 6379,
@@ -3579,7 +3579,7 @@
     "request_content": "Failed password for admin from 185.156.73.139 port 29004 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 29004,
       "destination_port": 3306,
@@ -3660,7 +3660,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=185.176.27.184",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 30513,
       "destination_port": 27017,
@@ -3741,7 +3741,7 @@
     "request_content": "FTP STOR /data/dump_20260526.sql from dev-workstation to 117.120.135.84",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 60100,
       "destination_port": 3389,
@@ -3821,7 +3821,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=103.35.64.41",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 45901,
       "destination_port": 3306,
@@ -3902,7 +3902,7 @@
     "request_content": "Ransom note detected: /home/user/README_DECRYPT.txt on app-server-02",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 41350,
       "destination_port": 3306,
@@ -3983,7 +3983,7 @@
     "request_content": "Process cpuminer.exe connected to steal-data.info:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 41589,
       "destination_port": 3389,
@@ -4064,7 +4064,7 @@
     "request_content": "masscan detected: 185.176.27.113 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 55119,
       "destination_port": 3306,
@@ -4145,7 +4145,7 @@
     "request_content": "FTP STOR /data/dump_20260526.sql from dev-workstation to 105.158.63.46",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 39793,
       "destination_port": 80,
@@ -4225,7 +4225,7 @@
     "request_content": "Outbound transfer of 19.2MB to 136.252.168.84 on port 443 from test-server",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 54964,
       "destination_port": 6379,
@@ -4305,7 +4305,7 @@
     "request_content": "Connection attempts to multiple ports from 94.102.61.156: 8443,6379,443,8080",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 52913,
       "destination_port": 3389,
@@ -4386,7 +4386,7 @@
     "request_content": "Recurring HTTPS POST to 85.161.14.99/gate.php every 120s",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 7882,
       "destination_port": 80,
@@ -4548,7 +4548,7 @@
     "request_content": "FTP STOR /data/dump_20260526.sql from web-prod-01 to 165.54.76.86",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 54435,
       "destination_port": 3389,
@@ -4628,7 +4628,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=103.224.182.104",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 2419,
       "destination_port": 27017,
@@ -4709,7 +4709,7 @@
     "request_content": "Large DNS TXT queries from web-prod-01 to crypt-pool.ru (avg 39.4 bytes)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 64622,
       "destination_port": 8443,
@@ -4870,7 +4870,7 @@
     "request_content": "nmap scan report for test-server [177.54.20.31]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 57329,
       "destination_port": 27017,
@@ -4951,7 +4951,7 @@
     "request_content": "Connection attempts to multiple ports from 45.61.136.85: 3389,8080,80,443,3389,6379,6379",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 30333,
       "destination_port": 443,
@@ -5032,7 +5032,7 @@
     "request_content": "Port scan detected: 91.240.118.250 → web-prod-01 [326 ports in 30s]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 12147,
       "destination_port": 8443,
@@ -5194,7 +5194,7 @@
     "request_content": "Process xmrig.exe connected to bad-actors.net:4444 (mining pool)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 53043,
       "destination_port": 6379,
@@ -5275,7 +5275,7 @@
     "request_content": "nmap scan report for db-master-01 [45.155.205.221]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 23783,
       "destination_port": 8443,
@@ -5356,7 +5356,7 @@
     "request_content": "masscan detected: 94.102.61.228 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 63886,
       "destination_port": 27017,
@@ -5518,7 +5518,7 @@
     "request_content": "File extension changed to .encrypted on multiple directories",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 61737,
       "destination_port": 22,
@@ -5680,7 +5680,7 @@
     "request_content": "File extension changed to .encrypted on multiple directories",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 8415,
       "destination_port": 3306,
@@ -5842,7 +5842,7 @@
     "request_content": "Outbound transfer of 44.2MB to 155.162.106.65 on port 443 from web-prod-02",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 19516,
       "destination_port": 6379,
@@ -5922,7 +5922,7 @@
     "request_content": "Process locker.bin (PID 41058) modified 448 files in 60s on dev-workstation",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 29105,
       "destination_port": 3389,
@@ -6003,7 +6003,7 @@
     "request_content": "File extension changed to .encrypted on multiple directories",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 17885,
       "destination_port": 27017,
@@ -6084,7 +6084,7 @@
     "request_content": "masscan detected: 194.26.29.180 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 53442,
       "destination_port": 22,
@@ -6165,7 +6165,7 @@
     "request_content": "Large DNS TXT queries from db-master-01 to bad-actors.net (avg 9.4 bytes)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 20509,
       "destination_port": 8080,
@@ -6245,7 +6245,7 @@
     "request_content": "TLS beacon to 158.43.156.180 with JA3 hash a1b2c3d4e5 (C2 pattern)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 54304,
       "destination_port": 8080,
@@ -6326,7 +6326,7 @@
     "request_content": "Port scan detected: 177.54.20.64 → db-master-01 [210 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 57695,
       "destination_port": 3389,
@@ -6407,7 +6407,7 @@
     "request_content": "DNS query for steal-data.info — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 18708,
       "destination_port": 22,
@@ -6488,7 +6488,7 @@
     "request_content": "Ransom note detected: /home/user/README_DECRYPT.txt on db-master-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 62553,
       "destination_port": 3306,
@@ -6569,7 +6569,7 @@
     "request_content": "Failed password for root from 185.191.32.60 port 57603 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 57603,
       "destination_port": 22,
@@ -6650,7 +6650,7 @@
     "request_content": "Failed password for invalid user deploy from 45.14.224.6 port 6971",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 6971,
       "destination_port": 80,
@@ -6731,7 +6731,7 @@
     "request_content": "Connection attempts to multiple ports from 103.149.162.244: 8080,3389,3306,443",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 3286,
       "destination_port": 3306,
@@ -6812,7 +6812,7 @@
     "request_content": "Process svchost_inject.exe (PID 32980) modified 208 files in 60s on web-prod-02",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 46768,
       "destination_port": 8080,
@@ -6893,7 +6893,7 @@
     "request_content": "FTP STOR /data/dump_20260526.sql from dev-workstation to 46.225.232.39",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 42978,
       "destination_port": 3306,
@@ -6973,7 +6973,7 @@
     "request_content": "Failed password for admin from 185.191.32.171 port 9491 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 9491,
       "destination_port": 6379,
@@ -7054,7 +7054,7 @@
     "request_content": "Port scan detected: 14.192.18.6 → web-prod-02 [282 ports in 30s]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 43523,
       "destination_port": 8443,
@@ -7135,7 +7135,7 @@
     "request_content": "Process nicehash.exe connected to steal-data.info:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 48305,
       "destination_port": 3306,
@@ -7216,7 +7216,7 @@
     "request_content": "Failed password for root from 45.155.205.186 port 19567 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 19567,
       "destination_port": 22,
@@ -7297,7 +7297,7 @@
     "request_content": "Failed password for admin from 103.149.162.116 port 16634 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 16634,
       "destination_port": 3306,
@@ -7378,7 +7378,7 @@
     "request_content": "Failed password for invalid user root from 185.220.101.69 port 8436",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 8436,
       "destination_port": 3389,
@@ -7540,7 +7540,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=103.149.162.111",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 27564,
       "destination_port": 8080,
@@ -7621,7 +7621,7 @@
     "request_content": "authentication failure; logname= uid=0 rhost=45.61.136.160",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 59645,
       "destination_port": 8080,
@@ -7702,7 +7702,7 @@
     "request_content": "TLS beacon to 67.231.17.27 with JA3 hash a1b2c3d4e5 (C2 pattern)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 45832,
       "destination_port": 6379,
@@ -7783,7 +7783,7 @@
     "request_content": "nmap scan report for db-master-01 [116.31.116.113]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 41266,
       "destination_port": 6379,
@@ -7945,7 +7945,7 @@
     "request_content": "Outbound transfer of 34.5MB to 229.152.235.218 on port 443 from web-prod-01",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 29851,
       "destination_port": 8080,
@@ -8025,7 +8025,7 @@
     "request_content": "Process xmrig.exe connected to c2-beacon.top:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 26514,
       "destination_port": 3389,
@@ -8106,7 +8106,7 @@
     "request_content": "masscan detected: 185.220.101.97 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 59485,
       "destination_port": 6379,
@@ -8268,7 +8268,7 @@
     "request_content": "Failed password for invalid user root from 177.54.20.215 port 24815",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 24815,
       "destination_port": 6379,
@@ -8349,7 +8349,7 @@
     "request_content": "Suspicious outbound connection: test-server → 88.210.56.181:443 (beacon interval 60s)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 56030,
       "destination_port": 8080,
@@ -8430,7 +8430,7 @@
     "request_content": "File extension changed to .encrypted on multiple directories",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 27092,
       "destination_port": 6379,
@@ -8511,7 +8511,7 @@
     "request_content": "Port scan detected: 185.156.73.15 → db-master-01 [47 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 18171,
       "destination_port": 443,
@@ -8592,7 +8592,7 @@
     "request_content": "Port scan detected: 14.192.18.222 → web-prod-02 [280 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 59793,
       "destination_port": 22,
@@ -8673,7 +8673,7 @@
     "request_content": "Outbound transfer of 37.1MB to 154.40.77.250 on port 443 from app-server-02",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 4808,
       "destination_port": 8080,
@@ -8753,7 +8753,7 @@
     "request_content": "FTP STOR /data/dump_20260525.sql from db-master-01 to 64.205.63.52",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 58959,
       "destination_port": 6379,
@@ -8833,7 +8833,7 @@
     "request_content": "DNS query for malware-update.cc — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 20872,
       "destination_port": 6379,
@@ -8914,7 +8914,7 @@
     "request_content": "Port scan detected: 94.102.61.48 → app-server-01 [316 ports in 30s]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 62828,
       "destination_port": 8443,
@@ -8995,7 +8995,7 @@
     "request_content": "Process xmrig.exe connected to crypt-pool.ru:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 38073,
       "destination_port": 27017,
@@ -9076,7 +9076,7 @@
     "request_content": "Large DNS TXT queries from app-server-02 to crypt-pool.ru (avg 29.4 bytes)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 6789,
       "destination_port": 8443,
@@ -9156,7 +9156,7 @@
     "request_content": "Failed password for root from 202.183.112.223 port 1962 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 1962,
       "destination_port": 8080,
@@ -9237,7 +9237,7 @@
     "request_content": "Failed password for admin from 194.26.29.78 port 23320 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 23320,
       "destination_port": 80,
@@ -9399,7 +9399,7 @@
     "request_content": "Connection attempts to multiple ports from 185.176.27.99: 6379,22,3389,80,3306,8443,443",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 20627,
       "destination_port": 27017,
@@ -9480,7 +9480,7 @@
     "request_content": "Failed password for invalid user oracle from 45.155.205.89 port 15055",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 15055,
       "destination_port": 80,
@@ -9561,7 +9561,7 @@
     "request_content": "masscan detected: 185.191.32.70 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 60177,
       "destination_port": 22,
@@ -9642,7 +9642,7 @@
     "request_content": "DNS query for bad-actors.net — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 4613,
       "destination_port": 8443,
@@ -9723,7 +9723,7 @@
     "request_content": "DNS query for evil-c2.xyz — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 20642,
       "destination_port": 3389,
@@ -9804,7 +9804,7 @@
     "request_content": "nmap scan report for web-prod-02 [5.188.62.76]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 30385,
       "destination_port": 27017,
@@ -9966,7 +9966,7 @@
     "request_content": "Failed password for root from 194.26.29.3 port 29497 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 29497,
       "destination_port": 8443,
@@ -10047,7 +10047,7 @@
     "request_content": "FTP STOR /data/dump_20260525.sql from db-master-01 to 55.178.154.42",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 3236,
       "destination_port": 3306,
@@ -10127,7 +10127,7 @@
     "request_content": "nmap scan report for dev-workstation [185.156.73.164]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 10424,
       "destination_port": 80,
@@ -10208,7 +10208,7 @@
     "request_content": "Process locker.bin (PID 28062) modified 27 files in 60s on db-master-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 30230,
       "destination_port": 3306,
@@ -10289,7 +10289,7 @@
     "request_content": "Outbound transfer of 43.2MB to 112.100.140.32 on port 443 from web-prod-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 59446,
       "destination_port": 27017,
@@ -10450,7 +10450,7 @@
     "request_content": "Failed password for root from 41.77.239.118 port 17668 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 17668,
       "destination_port": 8080,
@@ -10531,7 +10531,7 @@
     "request_content": "Process minergate-cli connected to evil-c2.xyz:4444 (mining pool)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 65233,
       "destination_port": 443,
@@ -10612,7 +10612,7 @@
     "request_content": "Connection attempts to multiple ports from 91.240.118.184: 27017,3306,8443,22",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 44578,
       "destination_port": 8080,
@@ -10693,7 +10693,7 @@
     "request_content": "Connection attempts to multiple ports from 5.188.62.72: 6379,3306,6379,8080,8080,3306,22,443,8080,27017",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 20009,
       "destination_port": 3306,
@@ -10855,7 +10855,7 @@
     "request_content": "masscan detected: 45.155.205.4 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 12981,
       "destination_port": 3306,
@@ -10936,7 +10936,7 @@
     "request_content": "nmap scan report for db-master-01 [194.26.29.40]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 40112,
       "destination_port": 3306,
@@ -11017,7 +11017,7 @@
     "request_content": "Failed password for invalid user deploy from 103.224.182.70 port 49273",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 49273,
       "destination_port": 27017,
@@ -11098,7 +11098,7 @@
     "request_content": "masscan detected: 41.77.239.221 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 37813,
       "destination_port": 22,
@@ -11179,7 +11179,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=94.102.61.189",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 34909,
       "destination_port": 443,
@@ -11260,7 +11260,7 @@
     "request_content": "Recurring HTTPS POST to 37.47.151.5/gate.php every 120s",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 41168,
       "destination_port": 443,
@@ -11341,7 +11341,7 @@
     "request_content": "Large DNS TXT queries from web-prod-01 to malware-update.cc (avg 8.0 bytes)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 12862,
       "destination_port": 8443,
@@ -11421,7 +11421,7 @@
     "request_content": "Failed password for admin from 5.188.62.227 port 49875 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 49875,
       "destination_port": 27017,
@@ -11502,7 +11502,7 @@
     "request_content": "Outbound transfer of 49.9MB to 56.63.55.85 on port 443 from db-master-01",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 18391,
       "destination_port": 443,
@@ -11663,7 +11663,7 @@
     "request_content": "masscan detected: 77.247.110.130 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 2504,
       "destination_port": 80,
@@ -11744,7 +11744,7 @@
     "request_content": "Ransom note detected: /home/user/README_DECRYPT.txt on web-prod-02",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 28849,
       "destination_port": 6379,
@@ -11825,7 +11825,7 @@
     "request_content": "Recurring HTTPS POST to 202.108.136.33/gate.php every 120s",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 59920,
       "destination_port": 8443,
@@ -11906,7 +11906,7 @@
     "request_content": "Process minergate-cli connected to c2-beacon.top:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 37613,
       "destination_port": 27017,
@@ -11987,7 +11987,7 @@
     "request_content": "TLS beacon to 186.11.167.33 with JA3 hash a1b2c3d4e5 (C2 pattern)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 56412,
       "destination_port": 443,
@@ -12068,7 +12068,7 @@
     "request_content": "Process svchost_inject.exe (PID 21289) modified 75 files in 60s on dev-workstation",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 58481,
       "destination_port": 3389,
@@ -12149,7 +12149,7 @@
     "request_content": "Process cpuminer.exe connected to evil-c2.xyz:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 36879,
       "destination_port": 80,
@@ -12230,7 +12230,7 @@
     "request_content": "Ransom note detected: /home/user/README_DECRYPT.txt on db-slave-01",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 35138,
       "destination_port": 6379,
@@ -12311,7 +12311,7 @@
     "request_content": "Failed password for admin from 77.247.110.88 port 64410 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 64410,
       "destination_port": 3306,
@@ -12392,7 +12392,7 @@
     "request_content": "Recurring HTTPS POST to 79.234.132.230/gate.php every 120s",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 21126,
       "destination_port": 3389,
@@ -12473,7 +12473,7 @@
     "request_content": "Failed password for admin from 94.102.61.31 port 26926 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 26926,
       "destination_port": 27017,
@@ -12554,7 +12554,7 @@
     "request_content": "Failed password for admin from 103.224.182.146 port 19416 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 19416,
       "destination_port": 3306,
@@ -12635,7 +12635,7 @@
     "request_content": "Large DNS TXT queries from app-server-02 to crypt-pool.ru (avg 15.7 bytes)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 59201,
       "destination_port": 80,
@@ -12715,7 +12715,7 @@
     "request_content": "Outbound transfer of 8.0MB to 253.41.209.123 on port 443 from app-server-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 27825,
       "destination_port": 443,
@@ -12795,7 +12795,7 @@
     "request_content": "RDP login failed: user=administrator src=185.220.101.148 attempts=183",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 34548,
       "destination_port": 443,
@@ -12876,7 +12876,7 @@
     "request_content": "masscan detected: 103.149.162.99 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 3281,
       "destination_port": 8443,
@@ -12957,7 +12957,7 @@
     "request_content": "Outbound transfer of 44.5MB to 207.108.169.80 on port 443 from db-master-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 36991,
       "destination_port": 27017,
@@ -13037,7 +13037,7 @@
     "request_content": "Large DNS TXT queries from db-master-01 to bad-actors.net (avg 4.9 bytes)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 45667,
       "destination_port": 3389,
@@ -13117,7 +13117,7 @@
     "request_content": "Recurring HTTPS POST to 166.47.230.64/gate.php every 120s",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 19314,
       "destination_port": 8080,
@@ -13279,7 +13279,7 @@
     "request_content": "DNS query for bad-actors.net — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 56508,
       "destination_port": 22,
@@ -13360,7 +13360,7 @@
     "request_content": "High CPU (74%) detected on db-master-01 from hidden process xmrig.exe",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 19371,
       "destination_port": 3306,
@@ -13522,7 +13522,7 @@
     "request_content": "High CPU (87%) detected on web-prod-01 from hidden process cpuminer.exe",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 18779,
       "destination_port": 22,
@@ -13603,7 +13603,7 @@
     "request_content": "Outbound transfer of 5.7MB to 87.76.65.142 on port 443 from web-prod-02",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 63141,
       "destination_port": 3389,
@@ -13845,7 +13845,7 @@
     "request_content": "Failed password for invalid user test from 177.54.20.212 port 34017",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 34017,
       "destination_port": 80,
@@ -13926,7 +13926,7 @@
     "request_content": "DNS query for evil-c2.xyz — known C2 domain (TI match)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 55061,
       "destination_port": 443,
@@ -14007,7 +14007,7 @@
     "request_content": "Port scan detected: 202.183.112.184 → web-prod-01 [182 ports in 30s]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 15909,
       "destination_port": 6379,
@@ -14088,7 +14088,7 @@
     "request_content": "Suspicious outbound connection: web-prod-02 → 29.216.172.79:443 (beacon interval 60s)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 2712,
       "destination_port": 3389,
@@ -14169,7 +14169,7 @@
     "request_content": "nmap scan report for db-master-01 [103.149.162.107]",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 4276,
       "destination_port": 3306,
@@ -14250,7 +14250,7 @@
     "request_content": "Connection attempts to multiple ports from 103.35.64.230: 8080,27017,8080,443,8443,3389,8443,27017",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 55296,
       "destination_port": 8443,
@@ -14331,7 +14331,7 @@
     "request_content": "Process xmrig.exe connected to crypt-pool.ru:4444 (mining pool)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 57854,
       "destination_port": 3306,
@@ -14412,7 +14412,7 @@
     "request_content": "Recurring HTTPS POST to 154.29.106.184/gate.php every 120s",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 9335,
       "destination_port": 6379,
@@ -14493,7 +14493,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=185.220.101.8",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 45433,
       "destination_port": 22,
@@ -14655,7 +14655,7 @@
     "request_content": "Process cpuminer.exe connected to steal-data.info:4444 (mining pool)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 56553,
       "destination_port": 8080,
@@ -14736,7 +14736,7 @@
     "request_content": "Failed password for invalid user test from 103.224.182.188 port 48547",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 48547,
       "destination_port": 3306,
@@ -14817,7 +14817,7 @@
     "request_content": "masscan detected: 45.14.224.115 scanning common ports (1-1024)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 61885,
       "destination_port": 443,
@@ -14898,7 +14898,7 @@
     "request_content": "Failed password for invalid user test from 14.192.18.161 port 4583",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 4583,
       "destination_port": 8080,
@@ -14979,7 +14979,7 @@
     "request_content": "FTP STOR /data/dump_20260524.sql from app-server-02 to 148.189.242.16",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 1482,
       "destination_port": 3389,
@@ -15059,7 +15059,7 @@
     "request_content": "Failed password for admin from 77.247.110.23 port 51436 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 51436,
       "destination_port": 6379,
@@ -15140,7 +15140,7 @@
     "request_content": "Process xmrig.exe connected to bad-actors.net:4444 (mining pool)",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 51663,
       "destination_port": 6379,
@@ -15221,7 +15221,7 @@
     "request_content": "Failed password for admin from 103.35.64.81 port 13302 ssh2",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 13302,
       "destination_port": 443,
@@ -15302,7 +15302,7 @@
     "request_content": "Large DNS TXT queries from app-server-01 to crypt-pool.ru (avg 45.7 bytes)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 59989,
       "destination_port": 443,
@@ -15463,7 +15463,7 @@
     "request_content": "Large DNS TXT queries from test-server to steal-data.info (avg 36.8 bytes)",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 57149,
       "destination_port": 6379,
@@ -15543,7 +15543,7 @@
     "request_content": "Failed password for admin from 202.183.112.13 port 65112 ssh2",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 65112,
       "destination_port": 8443,
@@ -15624,7 +15624,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=45.61.136.81",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 46672,
       "destination_port": 443,
@@ -15705,7 +15705,7 @@
     "request_content": "Port scan detected: 77.247.110.23 → app-server-01 [410 ports in 30s]",
     "packet_details": {
       "protocol": "UDP",
-      "request_method": "unknown",
+      "request_method": "HEAD",
       "request_uri": "/",
       "source_port": 34452,
       "destination_port": 443,
@@ -15786,7 +15786,7 @@
     "request_content": "Outbound transfer of 9.2MB to 64.176.107.174 on port 443 from web-prod-01",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 50589,
       "destination_port": 27017,
@@ -15866,7 +15866,7 @@
     "request_content": "PAM 2 more authentication failures; rhost=185.176.27.247",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 32626,
       "destination_port": 6379,
@@ -15947,7 +15947,7 @@
     "request_content": "Failed password for invalid user webmaster from 94.102.61.193 port 38524",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "GET",
       "request_uri": "/",
       "source_port": 38524,
       "destination_port": 8080,
@@ -16109,7 +16109,7 @@
     "request_content": "RDP login failed: user=administrator src=77.247.110.23 attempts=383",
     "packet_details": {
       "protocol": "TCP",
-      "request_method": "unknown",
+      "request_method": "POST",
       "request_uri": "/",
       "source_port": 13534,
       "destination_port": 8443,

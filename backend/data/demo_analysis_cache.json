@@ -1,0 +1,1259 @@
+{
+  "8c13cbbe-5387-46e2-a348-af61fbe53893": {
+    "alert": {
+      "id": "8c13cbbe-5387-46e2-a348-af61fbe53893",
+      "title": "隐蔽扫描检测: 177.54.20.162 → dev-workstation",
+      "source": "wazuh",
+      "severity": "low",
+      "status": "escalated",
+      "timestamp": "2026-05-27T13:47:18.264567Z",
+      "rule_name": "隐蔽扫描检测: 177.54.20.162 → dev-workstation",
+      "description": "隐蔽扫描检测: 177.54.20.162 → dev-workstation",
+      "log_excerpt": "masscan detected: 177.54.20.162 scanning common ports (1-1024)",
+      "source_ip": "177.54.20.162",
+      "destination_ip": "10.0.99.10",
+      "source_geo": {
+        "region": "南美",
+        "country": "阿根廷",
+        "city": "布宜诺斯艾利斯",
+        "latitude": -34.6037,
+        "longitude": -58.3816
+      },
+      "event_type": "port-scan",
+      "request_content": "masscan detected: 177.54.20.162 scanning common ports (1-1024)",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 38686,
+        "destination_port": 80,
+        "packet_size": 1410,
+        "tcp_flags": "ACK",
+        "payload_preview": "masscan detected: 177.54.20.162 scanning common ports (1-1024)"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5603"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 116,
+        "last_7_days": 12,
+        "closed_rate": 0.61
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "system",
+        "updated_at": "2026-05-27T13:47:18.264567Z",
+        "response_minutes": 154
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "dev-workstation",
+        "ip": "10.0.99.10",
+        "owner": "dev-team",
+        "environment": "dev"
+      },
+      "related_entities": [
+        "177.54.20.162",
+        "10.0.99.10",
+        "dev-workstation"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T12:38:18.264567Z",
+          "message": "初步检测到异常行为: 阿根廷 IP 177.54.20.162"
+        },
+        {
+          "timestamp": "2026-05-27T13:37:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T13:47:18.264567Z",
+          "message": "masscan detected: 177.54.20.162 scanning common ports (1-1024)"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "8c13cbbe-5387-46e2-a348-af61fbe53893",
+      "overall_score": 39.0,
+      "confidence": 0.89,
+      "label": "benign",
+      "false_positive_probability": 0.5,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "**研判结论：威胁真实性低，疑似误报。**\n\n**关键证据：**\n1.  **告警源与规则**：Wazuh 规则“隐蔽扫描检测”触发，日志明确为 `masscan` 扫描行为，目标为常见端口范围（1-1024）。\n2.  **风险评分**：风险分仅 39.0/100，异常分 0.59，且启发式分析明确将分类标记为 `benign`（良性），误报概率高达 0.50。\n3.  **资产属性**：目标资产为 `dev-workstation`（开发工作站），属于开发环境，此类环境常因开发测试、第三方工具或内部扫描任务产生此类流量，与外部真实攻击的上下文不符。\n\n**建议处置动作：**\n1.  **确认扫描来源**：核实 `177.54.20.162` 是否为已知的内部扫描器、开发人员测试机或授权的安全评估工具。\n2.  **临时放行**：若确认为内部合法扫描或测试行为，建议在 Wazuh 中为该源 IP 添加白名单规则，抑制后续同类告警。\n3.  **保留监控**：若来源不明，建议对该 IP 进行 24 小时网络流量监控，观察是否存在后续漏洞利用或数据外传行为。",
+      "recommendations": [
+        "持续监控源 IP 177.54.20.162，观察是否重复触发类似告警",
+        "优化 隐蔽扫描检测: 177.54.20.162 → dev-workstation 规则阈值，降低误报率",
+        "确认 dev-workstation 上相关服务为正常业务行为后标记为白名单",
+        "沉淀本次分析结果为知识库条目，减少后续重复研判成本"
+      ],
+      "trace_summary": [
+        "2026-05-27T12:38:18.264567+00:00 - 初步检测到异常行为: 阿根廷 IP 177.54.20.162",
+        "2026-05-27T13:37:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T13:47:18.264567+00:00 - masscan detected: 177.54.20.162 scanning common ports (1-1024)"
+      ]
+    },
+    "prediction": null
+  },
+  "28c998b4-fd17-443c-a315-4ae47aa674e7": {
+    "alert": {
+      "id": "28c998b4-fd17-443c-a315-4ae47aa674e7",
+      "title": "可疑加密外连: app-server-01 → 88.145.88.182:443 (C2指纹匹配)",
+      "source": "wazuh",
+      "severity": "high",
+      "status": "resolved",
+      "timestamp": "2026-05-27T13:39:18.264567Z",
+      "rule_name": "可疑加密外连: app-server-01 → 88.145.88.182:443 (C2指纹匹配)",
+      "description": "可疑加密外连: app-server-01 → 88.145.88.182:443 (C2指纹匹配)",
+      "log_excerpt": "DNS query for bad-actors.net — known C2 domain (TI match)",
+      "source_ip": "103.224.182.95",
+      "destination_ip": "88.145.88.182",
+      "source_geo": {
+        "region": "东南亚",
+        "country": "印度尼西亚",
+        "city": "雅加达",
+        "latitude": -6.2088,
+        "longitude": 106.8456
+      },
+      "event_type": "c2",
+      "request_content": "DNS query for bad-actors.net — known C2 domain (TI match)",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 28544,
+        "destination_port": 3389,
+        "packet_size": 1281,
+        "tcp_flags": "PSH ACK",
+        "payload_preview": "DNS query for bad-actors.net — known C2 domain (TI match)"
+      },
+      "threat_type": "c2",
+      "attack_stage": "Command and Control",
+      "related_rule_ids": [
+        "5531"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 117,
+        "last_7_days": 18,
+        "closed_rate": 0.45
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "system",
+        "updated_at": "2026-05-27T13:39:18.264567Z",
+        "response_minutes": 447
+      },
+      "mitre_tactics": [
+        "Command and Control",
+        "Defense Evasion"
+      ],
+      "asset": {
+        "hostname": "app-server-01",
+        "ip": "10.0.3.31",
+        "owner": "app-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "103.224.182.95",
+        "88.145.88.182",
+        "app-server-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T13:26:18.264567Z",
+          "message": "初步检测到异常行为: 印度尼西亚 IP 103.224.182.95"
+        },
+        {
+          "timestamp": "2026-05-27T12:55:18.264567Z",
+          "message": "关联分析确认攻击模式: c2"
+        },
+        {
+          "timestamp": "2026-05-27T13:39:18.264567Z",
+          "message": "DNS query for bad-actors.net — known C2 domain (TI match)"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "28c998b4-fd17-443c-a315-4ae47aa674e7",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "c2",
+      "attack_stage": "Command and Control",
+      "reasoning": "**研判结论：确认威胁，需立即处置**\n\n1.  **威胁真实性判断**：真实威胁。告警关联的域名 `bad-actors.net` 已确认为已知C2服务器，且目标IP `88.145.88.182:443` 与C2指纹匹配。资产 `app-server-01` 已建立加密外连，符合命令与控制（C2）攻击阶段特征，风险评分100，误报概率极低（0.03）。\n\n2.  **关键证据**：\n    *   **C2域名匹配**：日志显示DNS查询了已知C2域名 `bad-actors.net`。\n    *   **C2指纹匹配**：目标IP `88.145.88.182:443` 的加密流量指纹与已知C2服务器特征一致。\n    *   **高置信度评分**：风险分100/100，分类为 `confirmed-threat`。\n\n3.  **建议处置动作**：\n    *   **立即隔离**：在防火墙上阻断 `app-server-01` 与 `88.145.88.182` 及 `103.224.182.95` 的所有通信。\n    *   **主机取证**：对 `app-server-01` 进行离线取证，排查持久化机制、恶意进程及数据泄露痕迹。\n    *   **溯源分析**：检查 `app-server-01` 近期的",
+      "recommendations": [
+        "立即阻断源 IP 103.224.182.95，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 app-server-01 (10.0.3.31)，禁止横向移动",
+        "重置 app-server-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 103.224.182.95 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T13:26:18.264567+00:00 - 初步检测到异常行为: 印度尼西亚 IP 103.224.182.95",
+        "2026-05-27T12:55:18.264567+00:00 - 关联分析确认攻击模式: c2",
+        "2026-05-27T13:39:18.264567+00:00 - DNS query for bad-actors.net — known C2 domain (TI match)"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Command and Control",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，基于您提供的告警上下文，作为高级威胁狩猎分析师，我的推理结论如下：\n\n1.  **预测下一攻击阶段**: **数据渗出(Exfiltration)** 或 **横向移动(Lateral Movement)**\n    *   **推理**: 当前阶段已是C2，攻击者已建立稳定的控制通道。根据Kill Chain，下一步通常是利用该通道进行内部侦察、横向移动以扩大战果，或直接窃取数据。\n\n2.  **攻击路径推理**:\n    *   **当前状态**: 攻击者已通过 `103.224.182.95` 在 `app-server-01` 上建立了C2通信（DNS查询 `bad-actors.net`）。`app-server-01` 作为生产应用服务器，是攻击者理想的“滩头阵地”。\n    *   **横向移动**: 攻击者会利用 `app-server-01` 的权限，扫描内网。最可",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "5ff36894-2a51-464d-bf4c-c8b10884d1c4": {
+    "alert": {
+      "id": "5ff36894-2a51-464d-bf4c-c8b10884d1c4",
+      "title": "数据渗出检测: web-prod-01 → 93.172.167.235 (41.2MB)",
+      "source": "wazuh",
+      "severity": "high",
+      "status": "new",
+      "timestamp": "2026-05-27T11:49:18.264567Z",
+      "rule_name": "数据渗出检测: web-prod-01 → 93.172.167.235 (41.2MB)",
+      "description": "数据渗出检测: web-prod-01 → 93.172.167.235 (41.2MB)",
+      "log_excerpt": "Outbound transfer of 41.2MB to 93.172.167.235 on port 443 from web-prod-01",
+      "source_ip": "91.240.118.6",
+      "destination_ip": "93.172.167.235",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "英国",
+        "city": "伦敦",
+        "latitude": 51.5074,
+        "longitude": -0.1278
+      },
+      "event_type": "exfiltration",
+      "request_content": "Outbound transfer of 41.2MB to 93.172.167.235 on port 443 from web-prod-01",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 15674,
+        "destination_port": 3306,
+        "packet_size": 281,
+        "tcp_flags": "RST",
+        "payload_preview": "Outbound transfer of 41.2MB to 93.172.167.235 on port 443 from web-prod-01"
+      },
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "related_rule_ids": [
+        "5511"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 137,
+        "last_7_days": 29,
+        "closed_rate": 0.52
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T11:49:18.264567Z",
+        "response_minutes": 57
+      },
+      "mitre_tactics": [
+        "Exfiltration"
+      ],
+      "asset": {
+        "hostname": "web-prod-01",
+        "ip": "10.0.1.11",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "91.240.118.6",
+        "93.172.167.235",
+        "web-prod-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T10:25:18.264567Z",
+          "message": "初步检测到异常行为: 英国 IP 91.240.118.6"
+        },
+        {
+          "timestamp": "2026-05-27T11:34:18.264567Z",
+          "message": "关联分析确认攻击模式: exfiltration"
+        },
+        {
+          "timestamp": "2026-05-27T11:49:18.264567Z",
+          "message": "Outbound transfer of 41.2MB to 93.172.167.235 on port 443 from web-prod-01"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "5ff36894-2a51-464d-bf4c-c8b10884d1c4",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "reasoning": "**研判结论：确认威胁，数据外泄事件**\n\n1.  **威胁真实性判断**：**真实威胁**。告警风险评分高达100，误报概率极低（0.03），结合MITRE攻击阶段（Exfiltration）及异常流量特征，判定为生产服务器向境外IP（93.172.167.235）发起的大规模数据外泄行为。\n\n2.  **关键证据**：\n    *   **异常流量**：生产服务器`web-prod-01`（10.0.1.11）在非业务场景下，向境外IP `93.172.167.235`（端口443）发送了41.2MB数据，远超正常通信基线。\n    *   **关联实体**：关联IP `91.240.118.6` 可能为C2或跳板节点，需进一步溯源。\n    *   **高置信度**：启发式分析确认攻击阶段为Exfiltration，分类为`confirmed-threat`。\n\n3.  **建议处置动作**：\n    *   **立即隔离**：在防火墙上阻断`web-prod-01`与`93.172.167.235`及`91.240.118.6`的所有通信。\n    *   **主机取证**：对`web-prod-01`进行内存转储和磁盘快照，排查可疑进程、计划任务及后门文件。",
+      "recommendations": [
+        "立即阻断源 IP 91.240.118.6，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 web-prod-01 (10.0.1.11)，禁止横向移动",
+        "重置 web-prod-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 91.240.118.6 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T10:25:18.264567+00:00 - 初步检测到异常行为: 英国 IP 91.240.118.6",
+        "2026-05-27T11:34:18.264567+00:00 - 关联分析确认攻击模式: exfiltration",
+        "2026-05-27T11:49:18.264567+00:00 - Outbound transfer of 41.2MB to 93.172.167.235 on port 443 from web-prod-01"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Exfiltration",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "1. **预测下一攻击阶段**: 影响(Impact) — 攻击者已完成数据渗出，可能转向破坏或勒索。\n\n2. **攻击路径推理**: 攻击者已通过初始访问（可能利用未记录漏洞或弱凭证）控制 web-prod-01，并建立 C2 通道（91.240.118.6 为 C2 服务器）。当前阶段，攻击者从 web-prod-01 向 93.172.167.235 外传 41.2MB 数据（端口 443 加密通道），表明已成功窃取敏感数据。由于未发现直接关联 CVE，推测攻击者可能利用 web 应用漏洞（如 SQL 注入、文件上传）或弱口令获得初始访问。下一步，攻击者可能利用 web-prod-01 作为跳板，横向移动到内部数据库或应用服务器，以扩大战果或部署勒索软件/擦除工具，造成数据破坏或业务中断。\n\n3. **高风险目标**:\n   - **db-master-01**: 数据库主节点，存储",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "a111dd71-d901-4784-971f-c5ebb00b19e3": {
+    "alert": {
+      "id": "a111dd71-d901-4784-971f-c5ebb00b19e3",
+      "title": "目录遍历攻击: 94.102.61.151 尝试读取 web-prod-02 系统文件",
+      "source": "wazuh",
+      "severity": "critical",
+      "status": "investigating",
+      "timestamp": "2026-05-27T10:58:18.264567Z",
+      "rule_name": "目录遍历攻击: 94.102.61.151 尝试读取 web-prod-02 系统文件",
+      "description": "目录遍历攻击: 94.102.61.151 尝试读取 web-prod-02 系统文件",
+      "log_excerpt": "POST /upload.php HTTP/1.1 — PHP webshell payload detected 94.102.61.151",
+      "source_ip": "94.102.61.151",
+      "destination_ip": "10.0.1.12",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "罗马尼亚",
+        "city": "布加勒斯特",
+        "latitude": 44.4268,
+        "longitude": 26.1025
+      },
+      "event_type": "web-attack",
+      "request_content": "POST /upload.php HTTP/1.1 — PHP webshell payload detected 94.102.61.151",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "GET",
+        "request_uri": "/admin/login",
+        "source_port": 61512,
+        "destination_port": 3389,
+        "packet_size": 223,
+        "tcp_flags": "PSH ACK",
+        "payload_preview": "POST /upload.php HTTP/1.1 — PHP webshell payload detected 94.102.61.151"
+      },
+      "threat_type": "web-attack",
+      "attack_stage": "Initial Access",
+      "related_rule_ids": [
+        "31102"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 90,
+        "last_7_days": 13,
+        "closed_rate": 0.34
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "analyst01",
+        "updated_at": "2026-05-27T10:58:18.264567Z",
+        "response_minutes": 280
+      },
+      "mitre_tactics": [
+        "Initial Access",
+        "Execution"
+      ],
+      "asset": {
+        "hostname": "web-prod-02",
+        "ip": "10.0.1.12",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "94.102.61.151",
+        "10.0.1.12",
+        "web-prod-02"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T10:42:18.264567Z",
+          "message": "初步检测到异常行为: 罗马尼亚 IP 94.102.61.151"
+        },
+        {
+          "timestamp": "2026-05-27T10:17:18.264567Z",
+          "message": "关联分析确认攻击模式: web-attack"
+        },
+        {
+          "timestamp": "2026-05-27T10:58:18.264567Z",
+          "message": "POST /upload.php HTTP/1.1 — PHP webshell payload detected 94.102.61.151"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "a111dd71-d901-4784-971f-c5ebb00b19e3",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "web-attack",
+      "attack_stage": "Initial Access",
+      "reasoning": "**研判结论：威胁真实，确认存在目录遍历与Webshell上传攻击。**\n\n**关键证据：**\n1.  **攻击行为明确**：源IP `94.102.61.151` 对 `web-prod-02` 的 `/upload.php` 发起POST请求，日志明确标记为“PHP webshell payload detected”。\n2.  **攻击阶段匹配**：MITRE ATT&CK 映射为 Initial Access 和 Execution，与上传webshell获取初始访问权限的行为一致。\n3.  **风险评分极高**：启发式分析风险分100/100，误报概率仅0.03，分类为confirmed-threat，可信度极高。\n\n**建议处置动作：**\n1.  **立即隔离**：将资产 `web-prod-02` (10.0.1.12) 从生产网络隔离，防止横向移动。\n2.  **阻断IP**：在边界防火墙/WAF上永久封禁源IP `94.102.61.151`。\n3.  **取证排查**：检查 `/upload.php` 上传目录及web应用目录，查找并删除可疑webshell文件（如 `.php`、`.phtml` 等）；同时检查系统日志，确认是否有后续命令执行痕迹。\n4.  **漏洞修复**：审计 `upload.php` 文件上传逻辑，修复目录遍历及文件上传漏洞，并更新WAF规则。",
+      "recommendations": [
+        "立即阻断源 IP 94.102.61.151，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 web-prod-02 (10.0.1.12)，禁止横向移动",
+        "重置 web-prod-02 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 94.102.61.151 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T10:42:18.264567+00:00 - 初步检测到异常行为: 罗马尼亚 IP 94.102.61.151",
+        "2026-05-27T10:17:18.264567+00:00 - 关联分析确认攻击模式: web-attack",
+        "2026-05-27T10:58:18.264567+00:00 - POST /upload.php HTTP/1.1 — PHP webshell payload detected 94.102.61.151"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Initial Access",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "利用 CVE-2024-4577 (RCE)",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，以下是推理结论：\n\n1.  **预测下一攻击阶段**: **执行(Execution) → 命令控制(Command and Control)**\n\n2.  **攻击路径推理**:\n    *   **当前状态**: 攻击者已成功通过 `POST /upload.php` 上传了PHP webshell，完成了**初始访问**。日志中“PHP webshell payload detected”表明攻击者已具备在 `web-prod-02` 上执行任意PHP代码的能力，即进入了**执行**阶段。\n    *   **下一步逻辑**: 攻击者下一步的核心目标是建立持久的远程控制通道。他/她将立即尝试连接并激活上传的webshell，通过HTTP/HTTPS协议与C2服务器（很可能就是源IP `94.102.61.151` 或另一个备用IP",
+      "recommended_defense": [],
+      "matched_cves": [
+        {
+          "id": "CVE-2024-4577",
+          "cvss": 9.8,
+          "severity": "critical",
+          "product": "PHP",
+          "vendor": "PHP Group",
+          "versions": [
+            "8.1",
+            "8.2",
+            "8.3"
+          ],
+          "description": "PHP CGI 参数注入漏洞，Windows 系统上使用特定语言环境时可绕过 CVE-2012-1823 修复，实现 RCE。",
+          "exploit_type": "RCE",
+          "attack_vector": "NETWORK",
+          "patch": "升级到 PHP 8.1.29+ / 8.2.20+ / 8.3.8+",
+          "mitre": [
+            "T1190",
+            "T1059"
+          ]
+        }
+      ]
+    }
+  },
+  "9e84e924-70eb-4b92-bce9-cdad1a0c59c5": {
+    "alert": {
+      "id": "9e84e924-70eb-4b92-bce9-cdad1a0c59c5",
+      "title": "挖矿木马检测: app-server-02 连接到矿池",
+      "source": "wazuh",
+      "severity": "high",
+      "status": "new",
+      "timestamp": "2026-05-27T12:50:18.264567Z",
+      "rule_name": "挖矿木马检测: app-server-02 连接到矿池",
+      "description": "挖矿木马检测: app-server-02 连接到矿池",
+      "log_excerpt": "High CPU (94%) detected on app-server-02 from hidden process cpuminer.exe",
+      "source_ip": "45.155.205.225",
+      "destination_ip": "10.0.3.32",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "乌克兰",
+        "city": "基辅",
+        "latitude": 50.4501,
+        "longitude": 30.5234
+      },
+      "event_type": "miner",
+      "request_content": "High CPU (94%) detected on app-server-02 from hidden process cpuminer.exe",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 51323,
+        "destination_port": 3389,
+        "packet_size": 321,
+        "tcp_flags": "RST",
+        "payload_preview": "High CPU (94%) detected on app-server-02 from hidden process cpuminer.exe"
+      },
+      "threat_type": "miner",
+      "attack_stage": "Execution",
+      "related_rule_ids": [
+        "5520"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 38,
+        "last_7_days": 8,
+        "closed_rate": 0.76
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T12:50:18.264567Z",
+        "response_minutes": 41
+      },
+      "mitre_tactics": [
+        "Execution",
+        "Impact"
+      ],
+      "asset": {
+        "hostname": "app-server-02",
+        "ip": "10.0.3.32",
+        "owner": "app-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "45.155.205.225",
+        "10.0.3.32",
+        "app-server-02"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T12:42:18.264567Z",
+          "message": "初步检测到异常行为: 乌克兰 IP 45.155.205.225"
+        },
+        {
+          "timestamp": "2026-05-27T12:14:18.264567Z",
+          "message": "关联分析确认攻击模式: miner"
+        },
+        {
+          "timestamp": "2026-05-27T12:50:18.264567Z",
+          "message": "High CPU (94%) detected on app-server-02 from hidden process cpuminer.exe"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "9e84e924-70eb-4b92-bce9-cdad1a0c59c5",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "miner",
+      "attack_stage": "Execution",
+      "reasoning": "**研判结论：确认威胁，建议立即隔离。**\n\n1.  **威胁真实性判断：** 真实威胁。告警关联了高CPU占用、隐藏进程（`cpuminer.exe`）及连接矿池IP（45.155.205.225）三个关键证据，风险评分100，误报概率极低（0.03），判定为已确认的挖矿木马感染。\n\n2.  **关键证据：**\n    *   **进程行为：** 服务器 `app-server-02` 上存在隐藏进程 `cpuminer.exe`，导致CPU使用率飙升至94%。\n    *   **网络连接：** 该进程连接至已知矿池IP `45.155.205.225`。\n    *   **攻击阶段：** 已进入执行（Execution）和影响（Impact）阶段，表明木马已运行并正在消耗资源。\n\n3.  **建议处置动作：**\n    *   **立即隔离：** 将 `app-server-02`（10.0.3.32）从生产网络中断开，防止横向移动及资源持续被窃。\n    *   **进程查杀：** 强制终止 `cpuminer.exe` 进程，并检查是否存在持久化机制（如计划任务、服务、注册表启动项）。\n    *   **溯源分析：** 检查该主机近期的进程创建、文件写入及网络连接日志，",
+      "recommendations": [
+        "立即阻断源 IP 45.155.205.225，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 app-server-02 (10.0.3.32)，禁止横向移动",
+        "重置 app-server-02 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 45.155.205.225 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T12:42:18.264567+00:00 - 初步检测到异常行为: 乌克兰 IP 45.155.205.225",
+        "2026-05-27T12:14:18.264567+00:00 - 关联分析确认攻击模式: miner",
+        "2026-05-27T12:50:18.264567+00:00 - High CPU (94%) detected on app-server-02 from hidden process cpuminer.exe"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Execution",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，以下是推理结论：\n\n1.  **预测下一攻击阶段**: **命令控制 (Command and Control)** 或 **横向移动 (Lateral Movement)**。当前阶段为Execution，挖矿木马已执行。攻击者下一步要么建立持久化C2通道以接收指令或更新矿池配置，要么利用已控节点向内网其他资产扩散。\n\n2.  **攻击路径推理**:\n    *   **因果链**: 攻击者已通过未知初始访问方式（如弱口令、未修复漏洞）在 `app-server-02` 上执行了 `cpuminer.exe`，导致CPU飙升至94%。这表明攻击者已获得代码执行权限。\n    *   **下一步推演**:\n        *   **C2建立**: 源IP `45.155.205.225` 很可能是矿池地址或C2服务器。攻击者会立即建立",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "46fbde0b-a929-4679-a3c2-1b68b7d9f140": {
+    "alert": {
+      "id": "46fbde0b-a929-4679-a3c2-1b68b7d9f140",
+      "title": "多源SSH爆破: 185.191.32.126 针对 test-server",
+      "source": "wazuh",
+      "severity": "medium",
+      "status": "new",
+      "timestamp": "2026-05-27T06:28:18.264567Z",
+      "rule_name": "多源SSH爆破: 185.191.32.126 针对 test-server",
+      "description": "多源SSH爆破: 185.191.32.126 针对 test-server",
+      "log_excerpt": "Failed password for admin from 185.191.32.126 port 46893 ssh2",
+      "source_ip": "185.191.32.126",
+      "destination_ip": "10.0.98.5",
+      "source_geo": {
+        "region": "非洲",
+        "country": "尼日利亚",
+        "city": "拉各斯",
+        "latitude": 6.5244,
+        "longitude": 3.3792
+      },
+      "event_type": "brute-force",
+      "request_content": "Failed password for admin from 185.191.32.126 port 46893 ssh2",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 46893,
+        "destination_port": 8080,
+        "packet_size": 909,
+        "tcp_flags": "RST",
+        "payload_preview": "Failed password for admin from 185.191.32.126 port 46893 ssh2"
+      },
+      "threat_type": "brute-force",
+      "attack_stage": "Initial Access",
+      "related_rule_ids": [
+        "5712"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 176,
+        "last_7_days": 6,
+        "closed_rate": 0.83
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T06:28:18.264567Z",
+        "response_minutes": 469
+      },
+      "mitre_tactics": [
+        "Credential Access",
+        "Brute Force"
+      ],
+      "asset": {
+        "hostname": "test-server",
+        "ip": "10.0.98.5",
+        "owner": "qa-team",
+        "environment": "test"
+      },
+      "related_entities": [
+        "185.191.32.126",
+        "10.0.98.5",
+        "test-server"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T06:12:18.264567Z",
+          "message": "初步检测到异常行为: 尼日利亚 IP 185.191.32.126"
+        },
+        {
+          "timestamp": "2026-05-27T05:59:18.264567Z",
+          "message": "关联分析确认攻击模式: brute-force"
+        },
+        {
+          "timestamp": "2026-05-27T06:28:18.264567Z",
+          "message": "Failed password for admin from 185.191.32.126 port 46893 ssh2"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "46fbde0b-a929-4679-a3c2-1b68b7d9f140",
+      "overall_score": 70.0,
+      "confidence": 0.99,
+      "label": "suspicious",
+      "false_positive_probability": 0.19,
+      "anomaly_score": 0.74,
+      "threat_type": "brute-force",
+      "attack_stage": "Initial Access",
+      "reasoning": "**研判结论：威胁真实，建议立即处置。**\n\n1.  **威胁真实性判断**：真实。告警日志明确记录了源IP `185.191.32.126` 对目标资产 `test-server` 的SSH认证失败事件，符合SSH暴力破解攻击特征。风险分70，误报概率低（0.19），判定为可疑活动。\n\n2.  **关键证据**：\n    *   **源IP**：`185.191.32.126`（外部IP，通常与扫描/爆破活动关联）。\n    *   **目标资产**：`test-server`（10.0.98.5），使用默认管理员账户 `admin` 进行爆破。\n    *   **日志内容**：`Failed password for admin from 185.191.32.126 port 46893 ssh2`，明确记录了失败的登录尝试。\n    *   **MITRE ATT&CK**：映射至 `Credential Access` 下的 `Brute Force` 技术，攻击阶段为 `Initial Access`。\n\n3.  **建议处置动作**：\n    *   **立即阻断**：在边界防火墙或IPS上，将源IP `185.191.32.126` 加入黑名单，阻止其所有入站流量。\n    *   **资产排查**：登录 `test-server`，检查 `/var/log/secure` 或 `/var/log/auth.log`，确认",
+      "recommendations": [
+        "对源 IP 185.191.32.126 启动定向狩猎，分析访问模式与时间线",
+        "在 test-server 部署额外审计规则，监控异常进程与网络连接",
+        "提取 IOC (IP/域名/Hash) 同步至威胁情报平台交叉验证",
+        "若确认恶意行为，升级为高危事件并启动应急响应",
+        "更新 SIEM 关联规则，提升对同类行为的检测灵敏度"
+      ],
+      "trace_summary": [
+        "2026-05-27T06:12:18.264567+00:00 - 初步检测到异常行为: 尼日利亚 IP 185.191.32.126",
+        "2026-05-27T05:59:18.264567+00:00 - 关联分析确认攻击模式: brute-force",
+        "2026-05-27T06:28:18.264567+00:00 - Failed password for admin from 185.191.32.126 port 46893 ssh2"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Initial Access",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "利用 CVE-2024-6387 (RCE)",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，以下是推理结论。\n\n1.  **预测下一攻击阶段**: **执行(Execution)**\n\n2.  **攻击路径推理**:\n    *   **当前状态**: 攻击者（185.191.32.126）正在对 `test-server` 进行SSH暴力破解，试图获取 `admin` 账户的访问权限。这是典型的初始访问尝试。\n    *   **因果逻辑**: 暴力破解成功是攻击者进入内网的门票。一旦获得 `test-server` 的 `admin` 权限，攻击者将立即进入 **执行(Execution)** 阶段。由于目标资产未发现直接关联的高危CVE，攻击者更可能依赖**凭据滥用**而非漏洞利用。\n    *   **具体手法**: 攻击者会使用获得的凭据通过SSH登录 `test-server`，然后执行以下操作之一：\n      ",
+      "recommended_defense": [],
+      "matched_cves": [
+        {
+          "id": "CVE-2024-6387",
+          "cvss": 9.8,
+          "severity": "critical",
+          "product": "OpenSSH",
+          "vendor": "OpenBSD",
+          "versions": [
+            "8.5p1",
+            "9.7p1",
+            "4.4p1"
+          ],
+          "description": "regreSSHion — OpenSSH 信号处理竞态条件导致未认证远程代码执行 (RCE)。影响 glibc 系统上的 sshd 默认配置。",
+          "exploit_type": "RCE",
+          "attack_vector": "NETWORK",
+          "patch": "升级到 OpenSSH 9.8p1 或更高版本",
+          "mitre": [
+            "T1190",
+            "T1210"
+          ]
+        }
+      ]
+    }
+  },
+  "390a5b99-c191-4e5e-8d0c-5e13e4c66d70": {
+    "alert": {
+      "id": "390a5b99-c191-4e5e-8d0c-5e13e4c66d70",
+      "title": "Nmap SYN 扫描来自 185.220.101.181",
+      "source": "wazuh",
+      "severity": "low",
+      "status": "new",
+      "timestamp": "2026-05-27T07:55:18.264567Z",
+      "rule_name": "Nmap SYN 扫描来自 185.220.101.181",
+      "description": "Nmap SYN 扫描来自 185.220.101.181",
+      "log_excerpt": "Connection attempts to multiple ports from 185.220.101.181: 8080,8443,3306",
+      "source_ip": "185.220.101.181",
+      "destination_ip": "10.0.1.11",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "俄罗斯",
+        "city": "莫斯科",
+        "latitude": 55.7558,
+        "longitude": 37.6173
+      },
+      "event_type": "port-scan",
+      "request_content": "Connection attempts to multiple ports from 185.220.101.181: 8080,8443,3306",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 23515,
+        "destination_port": 8443,
+        "packet_size": 1339,
+        "tcp_flags": "ACK",
+        "payload_preview": "Connection attempts to multiple ports from 185.220.101.181: 8080,8443,3306"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5603"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 198,
+        "last_7_days": 8,
+        "closed_rate": 0.47
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "analyst01",
+        "updated_at": "2026-05-27T07:55:18.264567Z",
+        "response_minutes": 43
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "web-prod-01",
+        "ip": "10.0.1.11",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "185.220.101.181",
+        "10.0.1.11",
+        "web-prod-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T07:34:18.264567Z",
+          "message": "初步检测到异常行为: 俄罗斯 IP 185.220.101.181"
+        },
+        {
+          "timestamp": "2026-05-27T07:11:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T07:55:18.264567Z",
+          "message": "Connection attempts to multiple ports from 185.220.101.181: 8080,8443,3306"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "390a5b99-c191-4e5e-8d0c-5e13e4c66d70",
+      "overall_score": 47.0,
+      "confidence": 0.93,
+      "label": "benign",
+      "false_positive_probability": 0.43,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "研判结论：**真实威胁，需立即处置。**\n\n1.  **威胁真实性判断**：真实。源IP `185.220.101.181` 对生产资产 `web-prod-01` 的多个非连续端口（8080, 8443, 3306）发起SYN扫描，符合主动侦察行为特征。尽管风险分较低，但结合MITRE ATT&CK阶段（Reconnaissance）及资产重要性，应视为攻击前奏。\n\n2.  **关键证据**：\n    *   源IP `185.220.101.181` 在短时间内对目标 `10.0.1.11` 的多个端口（8080, 8443, 3306）发起连接尝试。\n    *   攻击阶段明确为“Reconnaissance”，威胁类型为“port-scan”。\n    *   目标资产 `web-prod-01` 属于生产环境，具有高价值。\n\n3.  **建议处置动作**：\n    *   **立即阻断**：在边界防火墙或WAF上临时封禁源IP `185.220.101.181` 对生产网段的所有访问。\n    *   **溯源排查**：检查 `web-prod-01` 上对应端口（特别是3306 MySQL服务）的日志，确认是否存在后续爆破或未授权访问。\n    *   **情报关联**：查询 `185.220.101.181",
+      "recommendations": [
+        "持续监控源 IP 185.220.101.181，观察是否重复触发类似告警",
+        "优化 Nmap SYN 扫描来自 185.220.101.181 规则阈值，降低误报率",
+        "确认 web-prod-01 上相关服务为正常业务行为后标记为白名单",
+        "沉淀本次分析结果为知识库条目，减少后续重复研判成本"
+      ],
+      "trace_summary": [
+        "2026-05-27T07:34:18.264567+00:00 - 初步检测到异常行为: 俄罗斯 IP 185.220.101.181",
+        "2026-05-27T07:11:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T07:55:18.264567+00:00 - Connection attempts to multiple ports from 185.220.101.181: 8080,8443,3306"
+      ]
+    },
+    "prediction": null
+  },
+  "e627aac2-e421-45b8-8f21-0810e4cbf1fe": {
+    "alert": {
+      "id": "e627aac2-e421-45b8-8f21-0810e4cbf1fe",
+      "title": "隐蔽扫描检测: 194.26.29.230 → dev-workstation",
+      "source": "wazuh",
+      "severity": "low",
+      "status": "new",
+      "timestamp": "2026-05-27T12:59:18.264567Z",
+      "rule_name": "隐蔽扫描检测: 194.26.29.230 → dev-workstation",
+      "description": "隐蔽扫描检测: 194.26.29.230 → dev-workstation",
+      "log_excerpt": "Connection attempts to multiple ports from 194.26.29.230: 3389,8443,3306,22,8443,8443,3306",
+      "source_ip": "194.26.29.230",
+      "destination_ip": "10.0.99.10",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "德国",
+        "city": "法兰克福",
+        "latitude": 50.1109,
+        "longitude": 8.6821
+      },
+      "event_type": "port-scan",
+      "request_content": "Connection attempts to multiple ports from 194.26.29.230: 3389,8443,3306,22,8443,8443,3306",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 39486,
+        "destination_port": 80,
+        "packet_size": 924,
+        "tcp_flags": "SYN",
+        "payload_preview": "Connection attempts to multiple ports from 194.26.29.230: 3389,8443,3306,22,8443,8443,3306"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5603"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 197,
+        "last_7_days": 1,
+        "closed_rate": 0.82
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "system",
+        "updated_at": "2026-05-27T12:59:18.264567Z",
+        "response_minutes": 79
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "dev-workstation",
+        "ip": "10.0.99.10",
+        "owner": "dev-team",
+        "environment": "dev"
+      },
+      "related_entities": [
+        "194.26.29.230",
+        "10.0.99.10",
+        "dev-workstation"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T11:27:18.264567Z",
+          "message": "初步检测到异常行为: 德国 IP 194.26.29.230"
+        },
+        {
+          "timestamp": "2026-05-27T12:08:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T12:59:18.264567Z",
+          "message": "Connection attempts to multiple ports from 194.26.29.230: 3389,8443,3306,22,8443,8443,3306"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "e627aac2-e421-45b8-8f21-0810e4cbf1fe",
+      "overall_score": 39.0,
+      "confidence": 0.89,
+      "label": "benign",
+      "false_positive_probability": 0.5,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "**研判结论：威胁真实性低，疑似外部扫描行为，建议临时封禁并持续监控。**\n\n**关键证据：**\n1.  **源IP（194.26.29.230）** 在短时间内对目标资产（10.0.99.10）发起多个常见服务端口（3389 RDP、8443 HTTPS-alt、3306 MySQL、22 SSH）的连接尝试，符合端口扫描特征。\n2.  **告警级别为Low**，且启发式分析的风险分（39/100）和异常分（0.59）均处于低位，误报概率（0.50）较高，分类为良性（benign），表明该行为可能为自动化扫描器或互联网背景噪声。\n3.  **攻击阶段**为侦察（Reconnaissance），未发现后续利用或横向移动证据。\n\n**建议处置动作：**\n1.  **临时封禁**：在边界防火墙或WAF上临时封禁源IP `194.26.29.230` 对 `dev-workstation` 的访问，观察24小时。\n2.  **资产排查**：确认 `dev-workstation` 是否暴露于公网，若为内部资产，检查是否有非预期公网映射。\n3.  **持续监控**：关注该源IP是否对其他内部资产发起类似扫描，以及目标资产上是否有异常登录或服务爆破日志。",
+      "recommendations": [
+        "持续监控源 IP 194.26.29.230，观察是否重复触发类似告警",
+        "优化 隐蔽扫描检测: 194.26.29.230 → dev-workstation 规则阈值，降低误报率",
+        "确认 dev-workstation 上相关服务为正常业务行为后标记为白名单",
+        "沉淀本次分析结果为知识库条目，减少后续重复研判成本"
+      ],
+      "trace_summary": [
+        "2026-05-27T11:27:18.264567+00:00 - 初步检测到异常行为: 德国 IP 194.26.29.230",
+        "2026-05-27T12:08:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T12:59:18.264567+00:00 - Connection attempts to multiple ports from 194.26.29.230: 3389,8443,3306,22,8443,8443,3306"
+      ]
+    },
+    "prediction": null
+  },
+  "87dbcb27-601c-4b94-8152-76fc09f18b39": {
+    "alert": {
+      "id": "87dbcb27-601c-4b94-8152-76fc09f18b39",
+      "title": "WordPress 后台暴力破解 5.188.62.216",
+      "source": "wazuh",
+      "severity": "high",
+      "status": "new",
+      "timestamp": "2026-05-27T10:10:18.264567Z",
+      "rule_name": "WordPress 后台暴力破解 5.188.62.216",
+      "description": "WordPress 后台暴力破解 5.188.62.216",
+      "log_excerpt": "Failed password for invalid user oracle from 5.188.62.216 port 17888",
+      "source_ip": "5.188.62.216",
+      "destination_ip": "10.0.99.10",
+      "source_geo": {
+        "region": "中东",
+        "country": "伊朗",
+        "city": "德黑兰",
+        "latitude": 35.6892,
+        "longitude": 51.389
+      },
+      "event_type": "brute-force",
+      "request_content": "Failed password for invalid user oracle from 5.188.62.216 port 17888",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 17888,
+        "destination_port": 443,
+        "packet_size": 1485,
+        "tcp_flags": "RST",
+        "payload_preview": "Failed password for invalid user oracle from 5.188.62.216 port 17888"
+      },
+      "threat_type": "brute-force",
+      "attack_stage": "Initial Access",
+      "related_rule_ids": [
+        "5712"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 8,
+        "last_7_days": 25,
+        "closed_rate": 0.45
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T10:10:18.264567Z",
+        "response_minutes": 104
+      },
+      "mitre_tactics": [
+        "Credential Access",
+        "Brute Force"
+      ],
+      "asset": {
+        "hostname": "dev-workstation",
+        "ip": "10.0.99.10",
+        "owner": "dev-team",
+        "environment": "dev"
+      },
+      "related_entities": [
+        "5.188.62.216",
+        "10.0.99.10",
+        "dev-workstation"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T08:36:18.264567Z",
+          "message": "初步检测到异常行为: 伊朗 IP 5.188.62.216"
+        },
+        {
+          "timestamp": "2026-05-27T09:12:18.264567Z",
+          "message": "关联分析确认攻击模式: brute-force"
+        },
+        {
+          "timestamp": "2026-05-27T10:10:18.264567Z",
+          "message": "Failed password for invalid user oracle from 5.188.62.216 port 17888"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "87dbcb27-601c-4b94-8152-76fc09f18b39",
+      "overall_score": 97.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.74,
+      "threat_type": "brute-force",
+      "attack_stage": "Initial Access",
+      "reasoning": "### 研判结论：**确认威胁，建议立即阻断**\n\n1.  **威胁真实性判断**：**真实攻击**。源IP `5.188.62.216` 对内部资产 `10.0.99.10` 的WordPress后台发起暴力破解，日志显示尝试使用无效用户 `oracle` 进行SSH登录，符合暴力破解特征。风险分97，误报概率仅0.03，判定为确认威胁。\n\n2.  **关键证据**：\n    *   **源IP**：`5.188.62.216`（外部可疑IP）。\n    *   **目标资产**：`dev-workstation`（10.0.99.10）。\n    *   **日志内容**：`Failed password for invalid user oracle from 5.188.62.216 port 17888`，表明SSH暴力破解尝试。\n    *   **MITRE ATT&CK**：`Credential Access`（凭据访问）阶段的`Brute Force`（暴力破解）技术。\n\n3.  **建议处置动作**：\n    *   **立即阻断**：在边界防火墙或WAF上永久封禁源IP `5.188.62.216`。\n    *   **排查失陷**：检查 `dev-workstation` 的 `/var/log/auth.log` 或 `wp-admin` 日志，确认是否有成功登录记录。\n    *",
+      "recommendations": [
+        "立即阻断源 IP 5.188.62.216，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 dev-workstation (10.0.99.10)，禁止横向移动",
+        "重置 dev-workstation 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 5.188.62.216 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T08:36:18.264567+00:00 - 初步检测到异常行为: 伊朗 IP 5.188.62.216",
+        "2026-05-27T09:12:18.264567+00:00 - 关联分析确认攻击模式: brute-force",
+        "2026-05-27T10:10:18.264567+00:00 - Failed password for invalid user oracle from 5.188.62.216 port 17888"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Initial Access",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "利用 CVE-2020-1472 (PRIV_ESC)",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，我的推理结论如下：\n\n1.  **预测下一攻击阶段**: **执行(Execution)**\n\n2.  **攻击路径推理**:\n    *   **当前状态**: 攻击者（5.188.62.216）正通过暴力破解尝试获取`dev-workstation`的访问权限。日志显示其尝试了不存在的用户`oracle`，表明攻击者可能在进行用户名枚举或针对特定服务（如Oracle数据库）的弱口令扫描。\n    *   **下一步逻辑**: 一旦成功猜解出有效凭据（如`root`、`admin`或本地用户），攻击者将立即进入**执行**阶段。最可能的执行方式是利用SSH或RDP会话直接登录，然后：\n        *   **横向移动准备**: 在`dev-workstation`上部署持久化后门（如SSH公钥、cron任务）或下载C2工具（如Co",
+      "recommended_defense": [],
+      "matched_cves": [
+        {
+          "id": "CVE-2020-1472",
+          "cvss": 10.0,
+          "severity": "critical",
+          "product": "Windows Netlogon",
+          "vendor": "Microsoft",
+          "versions": [
+            "ALL"
+          ],
+          "description": "ZeroLogon — Netlogon 协议特权提升漏洞，攻击者可在无需凭据的情况下接管域控制器。",
+          "exploit_type": "PRIV_ESC",
+          "attack_vector": "NETWORK",
+          "patch": "安装微软 2020年8月安全更新",
+          "mitre": [
+            "T1068",
+            "T1484"
+          ]
+        },
+        {
+          "id": "CVE-2020-0796",
+          "cvss": 10.0,
+          "severity": "critical",
+          "product": "Microsoft SMBv3",
+          "vendor": "Microsoft",
+          "versions": [
+            "1903",
+            "1909"
+          ],
+          "description": "SMBGhost — SMBv3 压缩机制远程代码执行，蠕虫级传播能力，类似 EternalBlue。影响 Windows 10/Server 2019。",
+          "exploit_type": "RCE",
+          "attack_vector": "NETWORK",
+          "patch": "安装微软 2020年3月安全更新",
+          "mitre": [
+            "T1210",
+            "T1190"
+          ]
+        },
+        {
+          "id": "CVE-2024-4577",
+          "cvss": 9.8,
+          "severity": "critical",
+          "product": "PHP",
+          "vendor": "PHP Group",
+          "versions": [
+            "8.1",
+            "8.2",
+            "8.3"
+          ],
+          "description": "PHP CGI 参数注入漏洞，Windows 系统上使用特定语言环境时可绕过 CVE-2012-1823 修复，实现 RCE。",
+          "exploit_type": "RCE",
+          "attack_vector": "NETWORK",
+          "patch": "升级到 PHP 8.1.29+ / 8.2.20+ / 8.3.8+",
+          "mitre": [
+            "T1190",
+            "T1059"
+          ]
+        }
+      ]
+    }
+  },
+  "90453e2d-1acc-40ac-b12b-a53e805e4bc2": {
+    "alert": {
+      "id": "90453e2d-1acc-40ac-b12b-a53e805e4bc2",
+      "title": "SSH 暴力破解攻击: 202.183.112.94 → web-prod-01",
+      "source": "wazuh",
+      "severity": "high",
+      "status": "new",
+      "timestamp": "2026-05-27T06:27:18.264567Z",
+      "rule_name": "SSH 暴力破解攻击: 202.183.112.94 → web-prod-01",
+      "description": "SSH 暴力破解攻击: 202.183.112.94 → web-prod-01",
+      "log_excerpt": "Failed password for root from 202.183.112.94 port 47070 ssh2",
+      "source_ip": "202.183.112.94",
+      "destination_ip": "10.0.1.11",
+      "source_geo": {
+        "region": "大洋洲",
+        "country": "澳大利亚",
+        "city": "悉尼",
+        "latitude": -33.8688,
+        "longitude": 151.2093
+      },
+      "event_type": "brute-force",
+      "request_content": "Failed password for root from 202.183.112.94 port 47070 ssh2",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 47070,
+        "destination_port": 22,
+        "packet_size": 340,
+        "tcp_flags": "SYN",
+        "payload_preview": "Failed password for root from 202.183.112.94 port 47070 ssh2"
+      },
+      "threat_type": "brute-force",
+      "attack_stage": "Initial Access",
+      "related_rule_ids": [
+        "5760"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 174,
+        "last_7_days": 7,
+        "closed_rate": 0.32
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "system",
+        "updated_at": "2026-05-27T06:27:18.264567Z",
+        "response_minutes": 155
+      },
+      "mitre_tactics": [
+        "Credential Access",
+        "Brute Force"
+      ],
+      "asset": {
+        "hostname": "web-prod-01",
+        "ip": "10.0.1.11",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "202.183.112.94",
+        "10.0.1.11",
+        "web-prod-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T04:56:18.264567Z",
+          "message": "初步检测到异常行为: 澳大利亚 IP 202.183.112.94"
+        },
+        {
+          "timestamp": "2026-05-27T06:14:18.264567Z",
+          "message": "关联分析确认攻击模式: brute-force"
+        },
+        {
+          "timestamp": "2026-05-27T06:27:18.264567Z",
+          "message": "Failed password for root from 202.183.112.94 port 47070 ssh2"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "90453e2d-1acc-40ac-b12b-a53e805e4bc2",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.74,
+      "threat_type": "brute-force",
+      "attack_stage": "Initial Access",
+      "reasoning": "**研判结论：威胁真实，确认SSH暴力破解攻击。**\n\n1.  **威胁真实性判断**：确认属实。告警日志明确记录了来自外部IP `202.183.112.94` 对生产服务器 `web-prod-01` 的root账户SSH登录失败尝试，且启发式分析风险评分极高（100/100），误报概率极低（0.03），符合暴力破解攻击特征。\n\n2.  **关键证据**：\n    *   **源IP**：`202.183.112.94`（外部地址）。\n    *   **目标**：`web-prod-01`（10.0.1.11，生产环境）。\n    *   **日志**：`Failed password for root from 202.183.112.94 port 47070 ssh2`。\n    *   **MITRE**：T1110（暴力破解），对应Credential Access阶段。\n\n3.  **建议处置动作**：\n    *   **立即阻断**：在边界防火墙或WAF上临时封禁源IP `202.183.112.94`。\n    *   **加固措施**：禁止root用户直接SSH登录，改用普通用户+sudo；启用SSH密钥认证，禁用密码认证；配置fail2ban等自动阻断工具。\n    *   **溯源排查**：检查 `web-prod-01` 的 `/var/log/secure",
+      "recommendations": [
+        "立即阻断源 IP 202.183.112.94，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 web-prod-01 (10.0.1.11)，禁止横向移动",
+        "重置 web-prod-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 202.183.112.94 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T04:56:18.264567+00:00 - 初步检测到异常行为: 澳大利亚 IP 202.183.112.94",
+        "2026-05-27T06:14:18.264567+00:00 - 关联分析确认攻击模式: brute-force",
+        "2026-05-27T06:27:18.264567+00:00 - Failed password for root from 202.183.112.94 port 47070 ssh2"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Initial Access",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "利用 CVE-2024-6387 (RCE)",
+      "rationale": "1. **预测下一攻击阶段**: 执行(Execution)\n2. **攻击路径推理**: 攻击者正在对 web-prod-01 进行 SSH 暴力破解，尝试 root 账户登录。由于未发现直接关联的高危 CVE，攻击者可能通过暴力破解获取有效凭证后，直接通过 SSH 登录目标主机。一旦登录成功，攻击者将进入执行阶段，可能立即部署后门、挖矿程序或横向移动工具。考虑到目标资产是生产环境中的 Web 服务器，其与 app-server-01/02 及 db-master-01 存在业务通信，攻击者可能利用已控节点向内网其他资产发起横向移动。\n3. **高风险目标**: \n   - **web-prod-01** (当前被攻击目标，一旦失陷即成为跳板)\n   - **app-server-01** (与 web-prod-01 存在业务交互，易被横向移动)\n   - **db-master-01",
+      "recommended_defense": [],
+      "matched_cves": [
+        {
+          "id": "CVE-2024-6387",
+          "cvss": 9.8,
+          "severity": "critical",
+          "product": "OpenSSH",
+          "vendor": "OpenBSD",
+          "versions": [
+            "8.5p1",
+            "9.7p1",
+            "4.4p1"
+          ],
+          "description": "regreSSHion — OpenSSH 信号处理竞态条件导致未认证远程代码执行 (RCE)。影响 glibc 系统上的 sshd 默认配置。",
+          "exploit_type": "RCE",
+          "attack_vector": "NETWORK",
+          "patch": "升级到 OpenSSH 9.8p1 或更高版本",
+          "mitre": [
+            "T1190",
+            "T1210"
+          ]
+        }
+      ]
+    }
+  }
+}

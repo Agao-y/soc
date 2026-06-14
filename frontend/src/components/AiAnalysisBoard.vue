@@ -58,29 +58,25 @@ async function handleStatus(status: ActionStatus) {
 }
 
 const stages = [
-  "Reconnaissance",
-  "Initial Access",
-  "Execution",
-  "Command and Control",
-  "Exfiltration",
+  "Reconnaissance", "Initial Access", "Execution",
+  "Command and Control", "Privilege Escalation",
+  "Lateral Movement", "Credential Access", "Exfiltration", "Impact",
 ];
 
 const stageLabels: Record<string, string> = {
-  Reconnaissance: "侦察",
-  "Initial Access": "植入",
-  Execution: "执行",
-  "Command and Control": "命令控制",
-  Exfiltration: "数据渗出",
+  Reconnaissance: "侦察", "Initial Access": "植入",
+  Execution: "执行", "Command and Control": "命令控制",
+  "Privilege Escalation": "权限提升", "Lateral Movement": "横向移动",
+  "Credential Access": "凭据窃取", Exfiltration: "数据渗出", Impact: "影响破坏",
 };
 
 const threatLabels: Record<string, string> = {
-  "brute-force": "暴力破解",
-  miner: "挖矿活动",
-  ransomware: "勒索行为",
-  c2: "C2 控制",
-  "port-scan": "端口扫描",
-  exfiltration: "数据渗出",
-  "web-attack": "Web攻击",
+  "brute-force": "暴力破解", miner: "挖矿活动", ransomware: "勒索行为",
+  c2: "C2 控制", "port-scan": "端口扫描", exfiltration: "数据渗出",
+  "web-attack": "Web攻击", "sql-injection": "SQL注入", xss: "XSS跨站脚本",
+  phishing: "钓鱼攻击", ddos: "DDoS拒绝服务", webshell: "Webshell上传",
+  "privilege-escalation": "权限提升", "lateral-movement": "横向移动",
+  "credential-dumping": "凭据转储",
 };
 
 function getThreatLabel(threatType?: string) {

@@ -307,11 +307,10 @@ class ThreatAnalyzer:
             "critical": 90,
         }[alert.severity]
         stage_bonus = {
-            "Reconnaissance": 4,
-            "Initial Access": 8,
-            "Execution": 11,
-            "Command and Control": 14,
-            "Exfiltration": 16,
+            "Reconnaissance": 4, "Initial Access": 8,
+            "Execution": 11, "Command and Control": 14,
+            "Exfiltration": 16, "Privilege Escalation": 15,
+            "Lateral Movement": 13, "Credential Access": 17, "Impact": 18,
         }[alert.attack_stage]
         prod_bonus = 8 if alert.asset.environment == "prod" else 0
         tactic_bonus = min(len(alert.mitre_tactics) * 3, 12)
@@ -324,6 +323,14 @@ class ThreatAnalyzer:
             "port-scan": 3,
             "exfiltration": 11,
             "web-attack": 9,
+            "sql-injection": 10,
+            "xss": 7,
+            "phishing": 11,
+            "ddos": 8,
+            "webshell": 13,
+            "privilege-escalation": 14,
+            "lateral-movement": 12,
+            "credential-dumping": 15,
         }[alert.threat_type]
         anomaly_score = min(
             0.23
@@ -523,13 +530,14 @@ class ThreatAnalyzer:
     def _build_distribution(self, type_counts: Counter[str]) -> list[DistributionSlice]:
         # 英文事件类型 → 中文显示名
         type_label_map = {
-            "brute-force": "暴力破解",
-            "port-scan": "端口扫描",
-            "c2": "可疑外连",
-            "ransomware": "恶意文件",
-            "exfiltration": "可疑外连",
-            "miner": "恶意文件",
+            "brute-force": "暴力破解", "port-scan": "端口扫描",
+            "c2": "可疑外连", "ransomware": "恶意文件",
+            "exfiltration": "可疑外连", "miner": "恶意文件",
             "web-attack": "漏洞利用",
+            "sql-injection": "漏洞利用", "xss": "漏洞利用",
+            "phishing": "恶意文件", "ddos": "端口扫描",
+            "webshell": "恶意文件", "privilege-escalation": "暴力破解",
+            "lateral-movement": "可疑外连", "credential-dumping": "暴力破解",
         }
         color_map = {
             "暴力破解": "#ef4444",

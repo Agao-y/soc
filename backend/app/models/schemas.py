@@ -9,8 +9,12 @@ from pydantic import BaseModel, Field
 Severity = Literal["low", "medium", "high", "critical"]
 AlertStatus = Literal["new", "investigating", "resolved", "ignored", "escalated"]
 ThreatLabel = Literal["benign", "suspicious", "confirmed-threat"]
-ThreatType = Literal["brute-force", "miner", "ransomware", "c2", "port-scan", "exfiltration", "web-attack"]
-AttackStage = Literal["Reconnaissance", "Initial Access", "Execution", "Command and Control", "Exfiltration"]
+ThreatType = Literal[
+    "brute-force", "miner", "ransomware", "c2", "port-scan", "exfiltration", "web-attack",
+    "sql-injection", "xss", "phishing", "ddos", "webshell",
+    "privilege-escalation", "lateral-movement", "credential-dumping",
+]
+AttackStage = Literal["Reconnaissance", "Initial Access", "Execution", "Command and Control", "Exfiltration", "Privilege Escalation", "Lateral Movement", "Credential Access", "Impact"]
 
 
 class GeoPoint(BaseModel):

@@ -28,19 +28,13 @@ api.interceptors.response.use(
 export type Severity = "low" | "medium" | "high" | "critical";
 export type Status = "new" | "investigating" | "resolved";
 export type ThreatType =
-  | "brute-force"
-  | "miner"
-  | "ransomware"
-  | "c2"
-  | "port-scan"
-  | "exfiltration"
-  | "web-attack";
+  | "brute-force" | "miner" | "ransomware" | "c2" | "port-scan" | "exfiltration" | "web-attack"
+  | "sql-injection" | "xss" | "phishing" | "ddos" | "webshell"
+  | "privilege-escalation" | "lateral-movement" | "credential-dumping";
 export type AttackStage =
-  | "Reconnaissance"
-  | "Initial Access"
-  | "Execution"
-  | "Command and Control"
-  | "Exfiltration";
+  | "Reconnaissance" | "Initial Access" | "Execution"
+  | "Command and Control" | "Privilege Escalation"
+  | "Lateral Movement" | "Credential Access" | "Exfiltration" | "Impact";
 
 export interface TicketRecord {
   status: "pending" | "processing" | "closed" | "ignored";

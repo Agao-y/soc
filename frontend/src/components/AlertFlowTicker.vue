@@ -22,13 +22,12 @@ const router = useRouter();
 const doubledAlerts = computed(() => [...props.alerts, ...props.alerts]);
 
 const threatTypeLabel: Record<Alert["threat_type"], string> = {
-  "brute-force": "暴力破解攻击",
-  miner: "挖矿木马活动",
-  ransomware: "勒索软件行为",
-  c2: "C2 控制通信",
-  "port-scan": "端口扫描攻击",
-  exfiltration: "数据渗出风险",
-  "web-attack": "Web 应用攻击",
+  "brute-force": "暴力破解", miner: "挖矿活动", ransomware: "勒索行为",
+  c2: "C2 控制", "port-scan": "端口扫描", exfiltration: "数据渗出",
+  "web-attack": "Web攻击", "sql-injection": "SQL注入", xss: "XSS跨站",
+  phishing: "钓鱼攻击", ddos: "DDoS拒绝服务", webshell: "Webshell上传",
+  "privilege-escalation": "权限提升", "lateral-movement": "横向移动",
+  "credential-dumping": "凭据转储",
 };
 
 function colorClass(level: Alert["severity"]) {

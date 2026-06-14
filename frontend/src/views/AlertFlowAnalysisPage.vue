@@ -20,6 +20,10 @@ const selectedAlert = computed(() => alerts.value.find((item) => item.id === sel
 const threatLabels: Record<string, string> = {
   "brute-force": "暴力破解", miner: "挖矿活动", ransomware: "勒索行为",
   c2: "C2 控制", "port-scan": "端口扫描", exfiltration: "数据渗出",
+  "web-attack": "Web攻击", "sql-injection": "SQL注入", xss: "XSS跨站",
+  phishing: "钓鱼攻击", ddos: "DDoS拒绝服务", webshell: "Webshell上传",
+  "privilege-escalation": "权限提升", "lateral-movement": "横向移动",
+  "credential-dumping": "凭据转储",
 };
 
 function getText(value?: string) {

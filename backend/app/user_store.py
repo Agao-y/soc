@@ -11,7 +11,9 @@ _data_file = Path(__file__).resolve().parents[2] / "data" / "users.json"
 def _load() -> dict:
     if not _data_file.exists():
         _data_file.parent.mkdir(parents=True, exist_ok=True)
-        default = {"admin": {"username": "admin", "hashed_password": pwd_context.hash("admin123"), "role": "admin"}}
+        import os
+        default_pwd = os.getenv("DEFAULT_ADMIN_PASSWORD", "changeme")
+        default = {"admin": {"username": "admin", "hashed_password": pwd_context.hash(default_pwd), "role": "admin"}}
         _data_file.write_text(json.dumps(default, ensure_ascii=False, indent=2), encoding="utf-8")
         return default
     return json.loads(_data_file.read_text(encoding="utf-8"))

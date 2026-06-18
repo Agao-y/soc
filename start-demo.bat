@@ -31,7 +31,7 @@ echo.
 echo ==========================================
 echo   Services starting, please wait...
 echo   http://127.0.0.1:5173
-echo   Login: admin / admin123
+echo   Login: see .env.demo config
 echo ==========================================
 echo.
 echo Press any key to open browser...

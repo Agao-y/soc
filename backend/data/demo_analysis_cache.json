@@ -1255,5 +1255,1138 @@
         }
       ]
     }
+  },
+  "df92a4ca-36cd-488e-8790-b81d2f547ef3": {
+    "alert": {
+      "id": "df92a4ca-36cd-488e-8790-b81d2f547ef3",
+      "title": "数据渗出检测: test-server → 4.23.141.20 (25.6MB)",
+      "source": "wazuh",
+      "severity": "critical",
+      "status": "new",
+      "timestamp": "2026-05-27T10:10:18.264567Z",
+      "rule_name": "数据渗出检测: test-server → 4.23.141.20 (25.6MB)",
+      "description": "数据渗出检测: test-server → 4.23.141.20 (25.6MB)",
+      "log_excerpt": "Outbound transfer of 25.6MB to 4.23.141.20 on port 443 from test-server",
+      "source_ip": "77.247.110.28",
+      "destination_ip": "4.23.141.20",
+      "source_geo": {
+        "region": "中东",
+        "country": "土耳其",
+        "city": "伊斯坦布尔",
+        "latitude": 41.0082,
+        "longitude": 28.9784
+      },
+      "event_type": "exfiltration",
+      "request_content": "Outbound transfer of 25.6MB to 4.23.141.20 on port 443 from test-server",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 34076,
+        "destination_port": 8080,
+        "packet_size": 553,
+        "tcp_flags": "RST",
+        "payload_preview": "Outbound transfer of 25.6MB to 4.23.141.20 on port 443 from test-server"
+      },
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "related_rule_ids": [
+        "5511"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 161,
+        "last_7_days": 6,
+        "closed_rate": 0.47
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T10:10:18.264567Z",
+        "response_minutes": 113
+      },
+      "mitre_tactics": [
+        "Exfiltration"
+      ],
+      "asset": {
+        "hostname": "test-server",
+        "ip": "10.0.98.5",
+        "owner": "qa-team",
+        "environment": "test"
+      },
+      "related_entities": [
+        "77.247.110.28",
+        "4.23.141.20",
+        "test-server"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T08:26:18.264567Z",
+          "message": "初步检测到异常行为: 土耳其 IP 77.247.110.28"
+        },
+        {
+          "timestamp": "2026-05-27T09:20:18.264567Z",
+          "message": "关联分析确认攻击模式: exfiltration"
+        },
+        {
+          "timestamp": "2026-05-27T10:10:18.264567Z",
+          "message": "Outbound transfer of 25.6MB to 4.23.141.20 on port 443 from test-server"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "df92a4ca-36cd-488e-8790-b81d2f547ef3",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "reasoning": "**研判结论：确认威胁，数据渗出事件属实。**\n\n**关键证据：**\n1.  **异常流量行为**：`test-server` 向外部IP `4.23.141.20` 的443端口发送了25.6MB数据，远超正常业务基线。\n2.  **关联恶意IP**：关联实体 `77.247.110.28` 与 `4.23.141.20` 均为已知或可疑的C2/数据收集节点，且 `4.23.141.20` 非企业常用云服务或CDN。\n3.  **高置信度评分**：风险分100/100，误报概率仅0.03，分类为 `confirmed-threat`，攻击阶段明确为 `Exfiltration`。\n\n**建议处置动作：**\n1.  **立即隔离**：将 `test-server` (10.0.98.5) 从网络中断开，防止进一步数据泄露。\n2.  **取证分析**：对 `test-server` 进行内存和磁盘取证，查找恶意进程、后门及数据打包工具。\n3.  **阻断通信**：在边界防火墙上永久封禁 `4.23.141.20` 和 `77.247.110.28`。\n4.  **溯源排查**：检查 `test-server` 近7天的登录日志、进程创建记录及DNS解析记录，",
+      "recommendations": [
+        "立即阻断源 IP 77.247.110.28，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 test-server (10.0.98.5)，禁止横向移动",
+        "重置 test-server 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 77.247.110.28 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T08:26:18.264567+00:00 - 初步检测到异常行为: 土耳其 IP 77.247.110.28",
+        "2026-05-27T09:20:18.264567+00:00 - 关联分析确认攻击模式: exfiltration",
+        "2026-05-27T10:10:18.264567+00:00 - Outbound transfer of 25.6MB to 4.23.141.20 on port 443 from test-server"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Exfiltration",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，以下是攻击路径推演结论。\n\n1.  **预测下一攻击阶段**: **影响 (Impact)** 或 **维持 (Persistence)**\n    *   **推理**: 攻击者已完成数据渗出（Exfiltration），其核心目标（窃取数据）已达成。下一步逻辑是：要么尝试对目标系统造成破坏（影响），要么在清理痕迹前，确保能再次进入网络（维持）。\n\n2.  **攻击路径推理**:\n    *   **因果链**: 攻击者已成功从 `test-server` 向外部IP `4.23.141.20` 渗出25.6MB数据。这表明攻击者已拥有对该服务器的控制权（可能通过初始访问或C2阶段）。既然数据已得手，攻击者可能：\n        *   **路径A (影响)**: 在 `test-server` 上部署勒索软件或擦除日志，以掩盖入侵痕",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "097a7d11-2df3-4e8a-9ab4-6fda9eb60998": {
+    "alert": {
+      "id": "097a7d11-2df3-4e8a-9ab4-6fda9eb60998",
+      "title": "可疑FTP外传: db-master-01 上传数据到 89.40.109.227",
+      "source": "wazuh",
+      "severity": "critical",
+      "status": "resolved",
+      "timestamp": "2026-05-27T12:55:18.264567Z",
+      "rule_name": "可疑FTP外传: db-master-01 上传数据到 89.40.109.227",
+      "description": "可疑FTP外传: db-master-01 上传数据到 89.40.109.227",
+      "log_excerpt": "Outbound transfer of 4.5MB to 89.40.109.227 on port 443 from db-master-01",
+      "source_ip": "45.61.136.73",
+      "destination_ip": "89.40.109.227",
+      "source_geo": {
+        "region": "北美",
+        "country": "美国",
+        "city": "洛杉矶",
+        "latitude": 34.0522,
+        "longitude": -118.2437
+      },
+      "event_type": "exfiltration",
+      "request_content": "Outbound transfer of 4.5MB to 89.40.109.227 on port 443 from db-master-01",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 49871,
+        "destination_port": 8080,
+        "packet_size": 1459,
+        "tcp_flags": "SYN",
+        "payload_preview": "Outbound transfer of 4.5MB to 89.40.109.227 on port 443 from db-master-01"
+      },
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "related_rule_ids": [
+        "5511"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 189,
+        "last_7_days": 1,
+        "closed_rate": 0.72
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "analyst01",
+        "updated_at": "2026-05-27T12:55:18.264567Z",
+        "response_minutes": 10
+      },
+      "mitre_tactics": [
+        "Exfiltration"
+      ],
+      "asset": {
+        "hostname": "db-master-01",
+        "ip": "10.0.2.21",
+        "owner": "dba-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "45.61.136.73",
+        "89.40.109.227",
+        "db-master-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T12:43:18.264567Z",
+          "message": "初步检测到异常行为: 美国 IP 45.61.136.73"
+        },
+        {
+          "timestamp": "2026-05-27T12:52:18.264567Z",
+          "message": "关联分析确认攻击模式: exfiltration"
+        },
+        {
+          "timestamp": "2026-05-27T12:55:18.264567Z",
+          "message": "Outbound transfer of 4.5MB to 89.40.109.227 on port 443 from db-master-01"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "097a7d11-2df3-4e8a-9ab4-6fda9eb60998",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "reasoning": "**研判结论：确认威胁，数据外泄事件**\n\n1.  **威胁真实性判断**：真实威胁。告警风险评分100，误报概率仅3%，结合MITRE ATT&CK Exfiltration阶段及资产属性（数据库主服务器），判定为确认的数据外泄攻击。\n2.  **关键证据**：\n    *   **异常行为**：`db-master-01`（10.0.2.21）向外部IP `89.40.109.227` 发起FTP外传，传输量达4.5MB。\n    *   **端口异常**：FTP协议使用443端口（通常为HTTPS），存在明显的端口混淆规避检测行为。\n    *   **关联实体**：关联IP `45.61.136.73` 可能为C2或中转节点，需进一步溯源。\n3.  **建议处置动作**：\n    *   **立即隔离**：将 `db-master-01` 从生产网络断开，防止进一步外泄。\n    *   **阻断通信**：在边界防火墙/IPS上永久封禁 `89.40.109.227` 及关联IP `45.61.136.73`。\n    *   **取证分析**：提取该主机内存、磁盘及FTP日志，确认泄露数据类型（如数据库转储文件）及攻击入口。\n    *   **密码重置**：立即轮",
+      "recommendations": [
+        "立即阻断源 IP 45.61.136.73，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 db-master-01 (10.0.2.21)，禁止横向移动",
+        "重置 db-master-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 45.61.136.73 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T12:43:18.264567+00:00 - 初步检测到异常行为: 美国 IP 45.61.136.73",
+        "2026-05-27T12:52:18.264567+00:00 - 关联分析确认攻击模式: exfiltration",
+        "2026-05-27T12:55:18.264567+00:00 - Outbound transfer of 4.5MB to 89.40.109.227 on port 443 from db-master-01"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Exfiltration",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "1. **预测下一攻击阶段**: 维持访问 (Maintenance/Persistence) 或 影响 (Impact)\n   - **推理**: 攻击者已完成数据渗出（Exfiltration），但仅渗出4.5MB数据，可能仅为试探性窃取。下一步可能为：a) 建立持久化后门以持续窃取更多数据；b) 直接对数据库或核心资产执行破坏性操作（如勒索、删除），以掩盖痕迹或施压。\n\n2. **攻击路径推理**: 攻击者已通过初始访问（可能利用弱口令、未修复漏洞或社工）控制db-master-01，并建立C2通道（45.61.136.73）进行数据外传。由于未发现直接高危CVE，推测攻击者可能：\n   - 利用db-master-01作为跳板，横向移动至**db-slave-01**（数据库从库，数据同步）或**app-server-01/02**（应用服务器，可能持有API密钥或业务逻辑）。\n ",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "80941544-b38e-4474-a197-32abbb7a2b40": {
+    "alert": {
+      "id": "80941544-b38e-4474-a197-32abbb7a2b40",
+      "title": "大规模端口扫描: 185.220.101.36 扫描 446 端口",
+      "source": "wazuh",
+      "severity": "low",
+      "status": "new",
+      "timestamp": "2026-05-27T09:32:18.264567Z",
+      "rule_name": "大规模端口扫描: 185.220.101.36 扫描 446 端口",
+      "description": "大规模端口扫描: 185.220.101.36 扫描 446 端口",
+      "log_excerpt": "Port scan detected: 185.220.101.36 → app-server-02 [446 ports in 30s]",
+      "source_ip": "185.220.101.36",
+      "destination_ip": "10.0.3.32",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "俄罗斯",
+        "city": "莫斯科",
+        "latitude": 55.7558,
+        "longitude": 37.6173
+      },
+      "event_type": "port-scan",
+      "request_content": "Port scan detected: 185.220.101.36 → app-server-02 [446 ports in 30s]",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 2726,
+        "destination_port": 3389,
+        "packet_size": 637,
+        "tcp_flags": "SYN",
+        "payload_preview": "Port scan detected: 185.220.101.36 → app-server-02 [446 ports in 30s]"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5602"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 26,
+        "last_7_days": 18,
+        "closed_rate": 0.82
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "system",
+        "updated_at": "2026-05-27T09:32:18.264567Z",
+        "response_minutes": 68
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "app-server-02",
+        "ip": "10.0.3.32",
+        "owner": "app-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "185.220.101.36",
+        "10.0.3.32",
+        "app-server-02"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T08:48:18.264567Z",
+          "message": "初步检测到异常行为: 俄罗斯 IP 185.220.101.36"
+        },
+        {
+          "timestamp": "2026-05-27T08:32:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T09:32:18.264567Z",
+          "message": "Port scan detected: 185.220.101.36 → app-server-02 [446 ports in 30s]"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "80941544-b38e-4474-a197-32abbb7a2b40",
+      "overall_score": 47.0,
+      "confidence": 0.93,
+      "label": "benign",
+      "false_positive_probability": 0.43,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "**研判结论：威胁真实性高，属外部侦察行为。**\n\n**关键证据：**\n1. 源IP `185.220.101.36` 在30秒内对目标资产 `app-server-02 (10.0.3.32)` 扫描了446个端口，符合大规模端口扫描特征。\n2. 攻击阶段明确为 `Reconnaissance`（侦察），与MITRE框架中的发现/侦察战术匹配。\n3. 风险分47.0（中等偏低），异常分0.59，误报概率0.43，虽分类为`benign`，但外部IP主动扫描生产资产属于明确恶意行为。\n\n**建议处置动作：**\n1. **立即阻断**：在边界防火墙或IPS上临时封禁源IP `185.220.101.36`，并设置观察期（建议24小时）。\n2. **溯源排查**：检查 `app-server-02` 上是否存在异常进程、新开放端口或未授权服务，确认是否已被成功探测。\n3. **日志留存**：导出该IP近1小时的全量流量日志，用于后续威胁情报关联分析。\n4. **情报共享**：将 `185.220.101.36` 提交至内部威胁情报平台或外部社区（如AbuseIPDB），标记为扫描源。",
+      "recommendations": [
+        "持续监控源 IP 185.220.101.36，观察是否重复触发类似告警",
+        "优化 大规模端口扫描: 185.220.101.36 扫描 446 端口 规则阈值，降低误报率",
+        "确认 app-server-02 上相关服务为正常业务行为后标记为白名单",
+        "沉淀本次分析结果为知识库条目，减少后续重复研判成本"
+      ],
+      "trace_summary": [
+        "2026-05-27T08:48:18.264567+00:00 - 初步检测到异常行为: 俄罗斯 IP 185.220.101.36",
+        "2026-05-27T08:32:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T09:32:18.264567+00:00 - Port scan detected: 185.220.101.36 → app-server-02 [446 ports in 30s]"
+      ]
+    },
+    "prediction": null
+  },
+  "2a9fb1cb-fe89-44af-b197-3353f4065cee": {
+    "alert": {
+      "id": "2a9fb1cb-fe89-44af-b197-3353f4065cee",
+      "title": "Nmap SYN 扫描来自 177.54.20.158",
+      "source": "wazuh",
+      "severity": "low",
+      "status": "new",
+      "timestamp": "2026-05-27T08:57:18.264567Z",
+      "rule_name": "Nmap SYN 扫描来自 177.54.20.158",
+      "description": "Nmap SYN 扫描来自 177.54.20.158",
+      "log_excerpt": "Port scan detected: 177.54.20.158 → web-prod-01 [355 ports in 30s]",
+      "source_ip": "177.54.20.158",
+      "destination_ip": "10.0.1.11",
+      "source_geo": {
+        "region": "南美",
+        "country": "阿根廷",
+        "city": "布宜诺斯艾利斯",
+        "latitude": -34.6037,
+        "longitude": -58.3816
+      },
+      "event_type": "port-scan",
+      "request_content": "Port scan detected: 177.54.20.158 → web-prod-01 [355 ports in 30s]",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "HEAD",
+        "request_uri": "/",
+        "source_port": 15511,
+        "destination_port": 80,
+        "packet_size": 155,
+        "tcp_flags": "ACK",
+        "payload_preview": "Port scan detected: 177.54.20.158 → web-prod-01 [355 ports in 30s]"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5601"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 164,
+        "last_7_days": 24,
+        "closed_rate": 0.86
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "system",
+        "updated_at": "2026-05-27T08:57:18.264567Z",
+        "response_minutes": 213
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "web-prod-01",
+        "ip": "10.0.1.11",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "177.54.20.158",
+        "10.0.1.11",
+        "web-prod-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T08:30:18.264567Z",
+          "message": "初步检测到异常行为: 阿根廷 IP 177.54.20.158"
+        },
+        {
+          "timestamp": "2026-05-27T08:45:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T08:57:18.264567Z",
+          "message": "Port scan detected: 177.54.20.158 → web-prod-01 [355 ports in 30s]"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "2a9fb1cb-fe89-44af-b197-3353f4065cee",
+      "overall_score": 47.0,
+      "confidence": 0.93,
+      "label": "benign",
+      "false_positive_probability": 0.43,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "**研判结论：** 威胁真实，为外部IP对生产Web服务器发起的主动端口扫描行为。\n\n**关键证据：**\n1. 源IP `177.54.20.158` 在30秒内对目标 `10.0.1.11` 探测了355个端口，符合Nmap SYN扫描特征。\n2. 目标资产为生产环境Web服务器（web-prod-01），暴露在公网。\n3. MITRE ATT&CK阶段为“侦察”，与端口扫描行为一致。\n\n**建议处置动作：**\n1. **立即阻断**：在边界防火墙或WAF上临时封禁源IP `177.54.20.158` 24小时。\n2. **溯源分析**：检查该IP历史访问日志，确认是否有其他探测或攻击尝试。\n3. **加固防护**：确认目标服务器仅开放必要端口，并启用入侵防御系统（IPS）的扫描防护规则。",
+      "recommendations": [
+        "持续监控源 IP 177.54.20.158，观察是否重复触发类似告警",
+        "优化 Nmap SYN 扫描来自 177.54.20.158 规则阈值，降低误报率",
+        "确认 web-prod-01 上相关服务为正常业务行为后标记为白名单",
+        "沉淀本次分析结果为知识库条目，减少后续重复研判成本"
+      ],
+      "trace_summary": [
+        "2026-05-27T08:30:18.264567+00:00 - 初步检测到异常行为: 阿根廷 IP 177.54.20.158",
+        "2026-05-27T08:45:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T08:57:18.264567+00:00 - Port scan detected: 177.54.20.158 → web-prod-01 [355 ports in 30s]"
+      ]
+    },
+    "prediction": null
+  },
+  "db83a6c7-a035-4ad3-9d7f-84bb55aea4c2": {
+    "alert": {
+      "id": "db83a6c7-a035-4ad3-9d7f-84bb55aea4c2",
+      "title": "可疑加密外连: web-prod-02 → 19.52.217.118:443 (C2指纹匹配)",
+      "source": "wazuh",
+      "severity": "critical",
+      "status": "new",
+      "timestamp": "2026-05-27T08:46:18.264567Z",
+      "rule_name": "可疑加密外连: web-prod-02 → 19.52.217.118:443 (C2指纹匹配)",
+      "description": "可疑加密外连: web-prod-02 → 19.52.217.118:443 (C2指纹匹配)",
+      "log_excerpt": "TLS beacon to 19.52.217.118 with JA3 hash a1b2c3d4e5 (C2 pattern)",
+      "source_ip": "177.54.20.27",
+      "destination_ip": "19.52.217.118",
+      "source_geo": {
+        "region": "南美",
+        "country": "阿根廷",
+        "city": "布宜诺斯艾利斯",
+        "latitude": -34.6037,
+        "longitude": -58.3816
+      },
+      "event_type": "c2",
+      "request_content": "TLS beacon to 19.52.217.118 with JA3 hash a1b2c3d4e5 (C2 pattern)",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 17809,
+        "destination_port": 3306,
+        "packet_size": 1446,
+        "tcp_flags": "PSH ACK",
+        "payload_preview": "TLS beacon to 19.52.217.118 with JA3 hash a1b2c3d4e5 (C2 pattern)"
+      },
+      "threat_type": "c2",
+      "attack_stage": "Command and Control",
+      "related_rule_ids": [
+        "5531"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 135,
+        "last_7_days": 4,
+        "closed_rate": 0.45
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T08:46:18.264567Z",
+        "response_minutes": 190
+      },
+      "mitre_tactics": [
+        "Command and Control",
+        "Defense Evasion"
+      ],
+      "asset": {
+        "hostname": "web-prod-02",
+        "ip": "10.0.1.12",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "177.54.20.27",
+        "19.52.217.118",
+        "web-prod-02"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T07:12:18.264567Z",
+          "message": "初步检测到异常行为: 阿根廷 IP 177.54.20.27"
+        },
+        {
+          "timestamp": "2026-05-27T08:44:18.264567Z",
+          "message": "关联分析确认攻击模式: c2"
+        },
+        {
+          "timestamp": "2026-05-27T08:46:18.264567Z",
+          "message": "TLS beacon to 19.52.217.118 with JA3 hash a1b2c3d4e5 (C2 pattern)"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "db83a6c7-a035-4ad3-9d7f-84bb55aea4c2",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.69,
+      "threat_type": "c2",
+      "attack_stage": "Command and Control",
+      "reasoning": "**研判结论：确认威胁，需立即处置。**\n\n1.  **威胁真实性判断**：**真实威胁**。告警基于JA3哈希与已知C2指纹匹配，且风险评分100、误报概率仅3%，结合资产为生产环境Web服务器，判定为高置信度C2通信。\n2.  **关键证据**：\n    *   **C2指纹匹配**：TLS握手JA3哈希 `a1b2c3d4e5` 与已知C2框架特征一致。\n    *   **异常行为**：生产Web服务器 `web-prod-02` 主动外连至外部IP `19.52.217.118:443`，不符合正常业务模式。\n    *   **关联实体**：源IP `177.54.20.27` 可能为初始入侵来源，需进一步溯源。\n3.  **建议处置动作**：\n    *   **立即隔离**：在防火墙上阻断 `web-prod-02` 至 `19.52.217.118` 的所有流量，并断开该主机网络连接。\n    *   **取证分析**：对 `web-prod-02` 进行内存转储和磁盘快照，重点排查近期进程创建、计划任务及持久化机制。\n    *   **溯源排查**：检查 `177.54.20.27` 在 `web-prod-02`",
+      "recommendations": [
+        "立即阻断源 IP 177.54.20.27，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 web-prod-02 (10.0.1.12)，禁止横向移动",
+        "重置 web-prod-02 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 177.54.20.27 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T07:12:18.264567+00:00 - 初步检测到异常行为: 阿根廷 IP 177.54.20.27",
+        "2026-05-27T08:44:18.264567+00:00 - 关联分析确认攻击模式: c2",
+        "2026-05-27T08:46:18.264567+00:00 - TLS beacon to 19.52.217.118 with JA3 hash a1b2c3d4e5 (C2 pattern)"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Command and Control",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，我的推理结论如下：\n\n1.  **预测下一攻击阶段**: **数据渗出 (Exfiltration)** 或 **横向移动 (Lateral Movement)**。当前已建立稳定的C2通道，攻击者下一步将利用此通道进行价值提取或扩大战果。\n\n2.  **攻击路径推理**:\n    *   **核心逻辑**: 攻击者已通过未知方式（非CVE，可能为弱口令、钓鱼或未记录漏洞）获得对 `web-prod-02` 的初始访问，并成功部署了C2 Beacon（JA3指纹 `a1b2c3d4e5`）。Beacon通过TLS加密与C2服务器 `19.52.217.118` 通信，规避了基础检测。\n    *   **路径推演**:\n        *   **路径A (数据渗出)**: 攻击者会首先评估 `web-prod-02` 的价值。作为生产",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "dc0845ce-405f-4e93-9a76-1ed6cb414770": {
+    "alert": {
+      "id": "dc0845ce-405f-4e93-9a76-1ed6cb414770",
+      "title": "大规模端口扫描: 177.54.20.246 扫描 189 端口",
+      "source": "wazuh",
+      "severity": "medium",
+      "status": "investigating",
+      "timestamp": "2026-05-27T08:39:18.264567Z",
+      "rule_name": "大规模端口扫描: 177.54.20.246 扫描 189 端口",
+      "description": "大规模端口扫描: 177.54.20.246 扫描 189 端口",
+      "log_excerpt": "masscan detected: 177.54.20.246 scanning common ports (1-1024)",
+      "source_ip": "177.54.20.246",
+      "destination_ip": "10.0.99.10",
+      "source_geo": {
+        "region": "南美",
+        "country": "阿根廷",
+        "city": "布宜诺斯艾利斯",
+        "latitude": -34.6037,
+        "longitude": -58.3816
+      },
+      "event_type": "port-scan",
+      "request_content": "masscan detected: 177.54.20.246 scanning common ports (1-1024)",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 55935,
+        "destination_port": 443,
+        "packet_size": 571,
+        "tcp_flags": "PSH ACK",
+        "payload_preview": "masscan detected: 177.54.20.246 scanning common ports (1-1024)"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5603"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 31,
+        "last_7_days": 4,
+        "closed_rate": 0.61
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T08:39:18.264567Z",
+        "response_minutes": 281
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "dev-workstation",
+        "ip": "10.0.99.10",
+        "owner": "dev-team",
+        "environment": "dev"
+      },
+      "related_entities": [
+        "177.54.20.246",
+        "10.0.99.10",
+        "dev-workstation"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T06:46:18.264567Z",
+          "message": "初步检测到异常行为: 阿根廷 IP 177.54.20.246"
+        },
+        {
+          "timestamp": "2026-05-27T08:07:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T08:39:18.264567Z",
+          "message": "masscan detected: 177.54.20.246 scanning common ports (1-1024)"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "dc0845ce-405f-4e93-9a76-1ed6cb414770",
+      "overall_score": 64.0,
+      "confidence": 0.99,
+      "label": "suspicious",
+      "false_positive_probability": 0.28,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "**研判结论：威胁真实，属外部侦察行为，建议立即阻断。**\n\n**关键证据：**\n1.  **源IP行为**：`177.54.20.246` 被 `masscan` 工具检测到对目标资产 `10.0.99.10` 的1-1024常见端口进行扫描，符合自动化扫描工具特征。\n2.  **攻击阶段**：对应MITRE ATT&CK的“发现/侦察”阶段，是攻击链的初始步骤。\n3.  **风险量化**：风险分64.0，误报概率仅0.28，分类为“可疑”，支持真实威胁判断。\n\n**建议处置动作：**\n1.  **立即阻断**：在边界防火墙或IPS上永久封禁源IP `177.54.20.246`。\n2.  **溯源排查**：检查目标资产 `10.0.99.10` 在扫描时间窗口前后的登录日志、进程创建及网络连接记录，确认是否存在被利用的脆弱点。\n3.  **加固策略**：若非业务必要，建议关闭或限制目标资产上的非必要端口（尤其是1-1024范围内的服务端口）对外暴露。",
+      "recommendations": [
+        "对源 IP 177.54.20.246 启动定向狩猎，分析访问模式与时间线",
+        "在 dev-workstation 部署额外审计规则，监控异常进程与网络连接",
+        "提取 IOC (IP/域名/Hash) 同步至威胁情报平台交叉验证",
+        "若确认恶意行为，升级为高危事件并启动应急响应",
+        "更新 SIEM 关联规则，提升对同类行为的检测灵敏度"
+      ],
+      "trace_summary": [
+        "2026-05-27T06:46:18.264567+00:00 - 初步检测到异常行为: 阿根廷 IP 177.54.20.246",
+        "2026-05-27T08:07:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T08:39:18.264567+00:00 - masscan detected: 177.54.20.246 scanning common ports (1-1024)"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Reconnaissance",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，我的推理结论如下：\n\n1.  **预测下一攻击阶段**: **初始访问 (Initial Access)**\n\n2.  **攻击路径推理**:\n    *   **当前状态**: 攻击者（177.54.20.246）已完成对目标 `dev-workstation` 的端口扫描（1-1024），确认了该资产在公网或可达网络中存在，并可能已发现开放的服务端口（如 SSH、HTTP、RDP 等）。\n    *   **下一步逻辑**: 侦察阶段的目标是发现可被利用的入口点。由于未发现直接关联的高危 CVE，攻击者不会立即使用复杂的 0-day 漏洞。其最可能的下一步是**利用扫描结果进行针对性攻击**。\n    *   **具体路径**:\n        1.  **暴力破解/凭证猜测**: 如果扫描发现 SSH (22) 或 RDP (33",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "fe343693-d601-43f0-8104-394dddbcd52b": {
+    "alert": {
+      "id": "fe343693-d601-43f0-8104-394dddbcd52b",
+      "title": "目录遍历攻击: 94.102.61.216 尝试读取 web-prod-01 系统文件",
+      "source": "wazuh",
+      "severity": "critical",
+      "status": "new",
+      "timestamp": "2026-05-27T08:06:18.264567Z",
+      "rule_name": "目录遍历攻击: 94.102.61.216 尝试读取 web-prod-01 系统文件",
+      "description": "目录遍历攻击: 94.102.61.216 尝试读取 web-prod-01 系统文件",
+      "log_excerpt": "GET /search?id=1' UNION SELECT username,password FROM users-- from 94.102.61.216",
+      "source_ip": "94.102.61.216",
+      "destination_ip": "10.0.1.11",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "罗马尼亚",
+        "city": "布加勒斯特",
+        "latitude": 44.4268,
+        "longitude": 26.1025
+      },
+      "event_type": "web-attack",
+      "request_content": "GET /search?id=1' UNION SELECT username,password FROM users-- from 94.102.61.216",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "GET",
+        "request_uri": "/upload.php",
+        "source_port": 31769,
+        "destination_port": 8080,
+        "packet_size": 1211,
+        "tcp_flags": "ACK",
+        "payload_preview": "GET /search?id=1' UNION SELECT username,password FROM users-- from 94.102.61.216"
+      },
+      "threat_type": "web-attack",
+      "attack_stage": "Initial Access",
+      "related_rule_ids": [
+        "31100"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 88,
+        "last_7_days": 24,
+        "closed_rate": 0.78
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "admin",
+        "updated_at": "2026-05-27T08:06:18.264567Z",
+        "response_minutes": 291
+      },
+      "mitre_tactics": [
+        "Initial Access",
+        "Execution"
+      ],
+      "asset": {
+        "hostname": "web-prod-01",
+        "ip": "10.0.1.11",
+        "owner": "ops-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "94.102.61.216",
+        "10.0.1.11",
+        "web-prod-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T07:06:18.264567Z",
+          "message": "初步检测到异常行为: 罗马尼亚 IP 94.102.61.216"
+        },
+        {
+          "timestamp": "2026-05-27T07:34:18.264567Z",
+          "message": "关联分析确认攻击模式: web-attack"
+        },
+        {
+          "timestamp": "2026-05-27T08:06:18.264567Z",
+          "message": "GET /search?id=1' UNION SELECT username,password FROM users-- from 94.102.61.216"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "fe343693-d601-43f0-8104-394dddbcd52b",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "web-attack",
+      "attack_stage": "Initial Access",
+      "reasoning": "**研判结论：确认威胁，SQL注入攻击（非目录遍历）**\n\n1.  **威胁真实性判断**：**真实攻击**。告警标题误标为“目录遍历”，但日志片段显示为典型的SQL注入攻击（`UNION SELECT`），攻击者试图通过注入点获取数据库敏感信息。风险分100，误报概率仅0.03，判定为确认威胁。\n\n2.  **关键证据**：\n    *   攻击源IP `94.102.61.216` 向 `web-prod-01` 发送恶意GET请求。\n    *   请求参数 `id=1' UNION SELECT username,password FROM users--` 为标准的SQL注入Payload，意图窃取用户凭据。\n    *   攻击阶段为`Initial Access`，符合利用Web漏洞进行初始入侵的特征。\n\n3.  **建议处置动作**：\n    *   **立即阻断**：在WAF或边界防火墙上临时封禁源IP `94.102.61.216`。\n    *   **应急排查**：登录 `web-prod-01`，检查Web服务器日志，确认是否存在其他类似请求或已成功的注入痕迹。\n    *   **漏洞修复**：对`/search`接口的`id`参数实施严格的输入验证或参数化查询，修复SQL注入漏洞。\n    *   **溯源分析**：检查该IP的历史访问记录，评估是否存在数据泄露风险",
+      "recommendations": [
+        "立即阻断源 IP 94.102.61.216，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 web-prod-01 (10.0.1.11)，禁止横向移动",
+        "重置 web-prod-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 94.102.61.216 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T07:06:18.264567+00:00 - 初步检测到异常行为: 罗马尼亚 IP 94.102.61.216",
+        "2026-05-27T07:34:18.264567+00:00 - 关联分析确认攻击模式: web-attack",
+        "2026-05-27T08:06:18.264567+00:00 - GET /search?id=1' UNION SELECT username,password FROM users-- from 94.102.61.216"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Initial Access",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，作为高级威胁狩猎分析师，基于您提供的告警上下文，以下是推理结论：\n\n1.  **预测下一攻击阶段**: **执行(Execution) → 命令控制(Command and Control)**\n\n2.  **攻击路径推理**:\n    *   **当前状态**: 攻击者已通过SQL注入（`UNION SELECT`）成功探测到`web-prod-01`的数据库，初步获取了`users`表的用户名和密码。这标志着初始访问成功，并已进入执行阶段。\n    *   **下一步行动**: 攻击者不会止步于数据窃取。他会利用获得的凭证（很可能是Web应用的管理员或普通用户账户）尝试登录Web应用后台或直接通过SSH/RDP等方式横向移动到`web-prod-01`服务器本身。\n    *   **CVE关联**: 虽然未发现直接关联的高危CVE，但SQL注入本身是攻击向量。攻击者下一步可能利",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "b0ecbccc-5032-4343-8444-8852cdb72aed": {
+    "alert": {
+      "id": "b0ecbccc-5032-4343-8444-8852cdb72aed",
+      "title": "Nmap SYN 扫描来自 103.35.64.39",
+      "source": "wazuh",
+      "severity": "low",
+      "status": "new",
+      "timestamp": "2026-05-27T07:54:18.264567Z",
+      "rule_name": "Nmap SYN 扫描来自 103.35.64.39",
+      "description": "Nmap SYN 扫描来自 103.35.64.39",
+      "log_excerpt": "Port scan detected: 103.35.64.39 → dev-workstation [403 ports in 30s]",
+      "source_ip": "103.35.64.39",
+      "destination_ip": "10.0.99.10",
+      "source_geo": {
+        "region": "东亚",
+        "country": "韩国",
+        "city": "首尔",
+        "latitude": 37.5665,
+        "longitude": 126.978
+      },
+      "event_type": "port-scan",
+      "request_content": "Port scan detected: 103.35.64.39 → dev-workstation [403 ports in 30s]",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 60220,
+        "destination_port": 8443,
+        "packet_size": 511,
+        "tcp_flags": "PSH ACK",
+        "payload_preview": "Port scan detected: 103.35.64.39 → dev-workstation [403 ports in 30s]"
+      },
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "related_rule_ids": [
+        "5603"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 57,
+        "last_7_days": 5,
+        "closed_rate": 0.33
+      },
+      "ticket": {
+        "status": "pending",
+        "assignee": "system",
+        "updated_at": "2026-05-27T07:54:18.264567Z",
+        "response_minutes": 54
+      },
+      "mitre_tactics": [
+        "Discovery",
+        "Reconnaissance"
+      ],
+      "asset": {
+        "hostname": "dev-workstation",
+        "ip": "10.0.99.10",
+        "owner": "dev-team",
+        "environment": "dev"
+      },
+      "related_entities": [
+        "103.35.64.39",
+        "10.0.99.10",
+        "dev-workstation"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T07:48:18.264567Z",
+          "message": "初步检测到异常行为: 韩国 IP 103.35.64.39"
+        },
+        {
+          "timestamp": "2026-05-27T07:46:18.264567Z",
+          "message": "关联分析确认攻击模式: port-scan"
+        },
+        {
+          "timestamp": "2026-05-27T07:54:18.264567Z",
+          "message": "Port scan detected: 103.35.64.39 → dev-workstation [403 ports in 30s]"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "b0ecbccc-5032-4343-8444-8852cdb72aed",
+      "overall_score": 39.0,
+      "confidence": 0.89,
+      "label": "benign",
+      "false_positive_probability": 0.5,
+      "anomaly_score": 0.59,
+      "threat_type": "port-scan",
+      "attack_stage": "Reconnaissance",
+      "reasoning": "**研判结论：疑似外部侦察扫描，暂判定为低危事件。**\n\n1.  **威胁真实性判断**：真实。SIEM 日志明确记录源 IP `103.35.64.39` 在 30 秒内对内部资产 `dev-workstation` 扫描了 403 个端口，符合 Nmap SYN 扫描特征。但启发式分析将其分类为 `benign`，风险分仅 39，误报概率 0.5，表明该行为可能为自动化扫描器或外部探测，尚未发现后续攻击载荷。\n\n2.  **关键证据**：\n    *   **源 IP**：`103.35.64.39`（境外 IP，非白名单）。\n    *   **行为**：30 秒内扫描 403 个端口，速率高，符合 SYN 扫描特征。\n    *   **目标**：开发环境资产 `dev-workstation`（10.0.99.10），非核心生产系统。\n    *   **MITRE 阶段**：Reconnaissance（侦察）。\n\n3.  **建议处置动作**：\n    *   **短期**：在边界防火墙或 WAF 上临时阻断源 IP `103.35.64.39`，观察是否仍有其他扫描源。\n    *   **中期**：检查 `dev-workstation` 是否存在未授权开放的高危端口（如 22、3389、445",
+      "recommendations": [
+        "持续监控源 IP 103.35.64.39，观察是否重复触发类似告警",
+        "优化 Nmap SYN 扫描来自 103.35.64.39 规则阈值，降低误报率",
+        "确认 dev-workstation 上相关服务为正常业务行为后标记为白名单",
+        "沉淀本次分析结果为知识库条目，减少后续重复研判成本"
+      ],
+      "trace_summary": [
+        "2026-05-27T07:48:18.264567+00:00 - 初步检测到异常行为: 韩国 IP 103.35.64.39",
+        "2026-05-27T07:46:18.264567+00:00 - 关联分析确认攻击模式: port-scan",
+        "2026-05-27T07:54:18.264567+00:00 - Port scan detected: 103.35.64.39 → dev-workstation [403 ports in 30s]"
+      ]
+    },
+    "prediction": null
+  },
+  "5de0264a-30da-4cc9-96a0-5ff56e30f3cf": {
+    "alert": {
+      "id": "5de0264a-30da-4cc9-96a0-5ff56e30f3cf",
+      "title": "DNS数据渗出: db-slave-01 → evil-c2.xyz",
+      "source": "wazuh",
+      "severity": "high",
+      "status": "new",
+      "timestamp": "2026-05-27T06:35:18.264567Z",
+      "rule_name": "DNS数据渗出: db-slave-01 → evil-c2.xyz",
+      "description": "DNS数据渗出: db-slave-01 → evil-c2.xyz",
+      "log_excerpt": "Outbound transfer of 24.0MB to 166.235.168.176 on port 443 from db-slave-01",
+      "source_ip": "45.61.136.193",
+      "destination_ip": "166.235.168.176",
+      "source_geo": {
+        "region": "北美",
+        "country": "美国",
+        "city": "洛杉矶",
+        "latitude": 34.0522,
+        "longitude": -118.2437
+      },
+      "event_type": "exfiltration",
+      "request_content": "Outbound transfer of 24.0MB to 166.235.168.176 on port 443 from db-slave-01",
+      "packet_details": {
+        "protocol": "TCP",
+        "request_method": "GET",
+        "request_uri": "/",
+        "source_port": 60567,
+        "destination_port": 443,
+        "packet_size": 1477,
+        "tcp_flags": "SYN",
+        "payload_preview": "Outbound transfer of 24.0MB to 166.235.168.176 on port 443 from db-slave-01"
+      },
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "related_rule_ids": [
+        "5511"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 184,
+        "last_7_days": 26,
+        "closed_rate": 0.33
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "system",
+        "updated_at": "2026-05-27T06:35:18.264567Z",
+        "response_minutes": 454
+      },
+      "mitre_tactics": [
+        "Exfiltration"
+      ],
+      "asset": {
+        "hostname": "db-slave-01",
+        "ip": "10.0.2.22",
+        "owner": "dba-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "45.61.136.193",
+        "166.235.168.176",
+        "db-slave-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T05:37:18.264567Z",
+          "message": "初步检测到异常行为: 美国 IP 45.61.136.193"
+        },
+        {
+          "timestamp": "2026-05-27T05:55:18.264567Z",
+          "message": "关联分析确认攻击模式: exfiltration"
+        },
+        {
+          "timestamp": "2026-05-27T06:35:18.264567Z",
+          "message": "Outbound transfer of 24.0MB to 166.235.168.176 on port 443 from db-slave-01"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "5de0264a-30da-4cc9-96a0-5ff56e30f3cf",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "reasoning": "**研判结论：确认威胁，DNS数据渗出攻击**\n\n1.  **威胁真实性判断**：**真实威胁**。告警风险分100，误报概率仅0.03，结合资产属性（生产数据库从库）与异常行为（向未知外部IP传输24MB数据），判定为恶意数据渗出。\n2.  **关键证据**：\n    *   **资产异常**：`db-slave-01`（10.0.2.22）为生产数据库从库，不应主动向外部发起大流量连接。\n    *   **行为异常**：向恶意域名 `evil-c2.xyz` 及关联IP `166.235.168.176`（端口443）发起24MB出站数据传输，符合DNS隧道或加密通道渗出特征。\n    *   **攻击阶段**：MITRE ATT&CK 阶段为“渗出”，与告警行为完全吻合。\n3.  **建议处置动作**：\n    *   **立即隔离**：在防火墙上阻断 `db-slave-01` 所有出站流量，并在交换机上将其隔离。\n    *   **取证分析**：提取该主机内存与磁盘镜像，重点分析进程链、DNS查询日志及 `evil-c2.xyz` 通信内容。\n    *   **溯源排查**：检查 `db-slave-01` 近期登录记录、计划任务及可疑进程，确认入侵入口（如",
+      "recommendations": [
+        "立即阻断源 IP 45.61.136.193，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 db-slave-01 (10.0.2.22)，禁止横向移动",
+        "重置 db-slave-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 45.61.136.193 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T05:37:18.264567+00:00 - 初步检测到异常行为: 美国 IP 45.61.136.193",
+        "2026-05-27T05:55:18.264567+00:00 - 关联分析确认攻击模式: exfiltration",
+        "2026-05-27T06:35:18.264567+00:00 - Outbound transfer of 24.0MB to 166.235.168.176 on port 443 from db-slave-01"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Exfiltration",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "1. **预测下一攻击阶段**: 影响扩散 (Impact) 或 持久化 (Persistence)\n2. **攻击路径推理**: 攻击者已成功从 `db-slave-01` 渗出 24MB 数据至外部 C2 节点 `166.235.168.176`，表明已建立稳定的命令与控制通道。由于 `db-slave-01` 是生产数据库的从库，攻击者可能已获取数据库访问凭证。下一步极可能利用该通道横向移动至 `db-master-01`（主库）以获取完整数据，或向 `db-slave-01` 植入后门（如计划任务、Web Shell）以维持持久化访问，防止被清除后丢失据点。\n3. **高风险目标**:\n   - **db-master-01**: 主数据库，包含完整生产数据，是攻击者扩大数据窃取量的首选目标。\n   - **app-server-01/02**: 应用服务器通常与数据库交互，攻击者",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
+  },
+  "35241c53-cef9-4873-ad6f-722a3132ee38": {
+    "alert": {
+      "id": "35241c53-cef9-4873-ad6f-722a3132ee38",
+      "title": "数据渗出检测: db-slave-01 → 233.76.150.240 (21.5MB)",
+      "source": "wazuh",
+      "severity": "critical",
+      "status": "investigating",
+      "timestamp": "2026-05-27T06:19:18.264567Z",
+      "rule_name": "数据渗出检测: db-slave-01 → 233.76.150.240 (21.5MB)",
+      "description": "数据渗出检测: db-slave-01 → 233.76.150.240 (21.5MB)",
+      "log_excerpt": "Large DNS TXT queries from db-slave-01 to malware-update.cc (avg 21.5 bytes)",
+      "source_ip": "45.155.205.142",
+      "destination_ip": "233.76.150.240",
+      "source_geo": {
+        "region": "欧洲",
+        "country": "乌克兰",
+        "city": "基辅",
+        "latitude": 50.4501,
+        "longitude": 30.5234
+      },
+      "event_type": "exfiltration",
+      "request_content": "Large DNS TXT queries from db-slave-01 to malware-update.cc (avg 21.5 bytes)",
+      "packet_details": {
+        "protocol": "UDP",
+        "request_method": "POST",
+        "request_uri": "/",
+        "source_port": 43574,
+        "destination_port": 8080,
+        "packet_size": 817,
+        "tcp_flags": "PSH ACK",
+        "payload_preview": "Large DNS TXT queries from db-slave-01 to malware-update.cc (avg 21.5 bytes)"
+      },
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "related_rule_ids": [
+        "5512"
+      ],
+      "hardening_suggestions": [
+        "结合原始日志补充规则调优，并核验主机与账号侧安全基线",
+        "更新IDS/IPS规则库，封禁恶意源IP"
+      ],
+      "similar_incidents": {
+        "total": 169,
+        "last_7_days": 5,
+        "closed_rate": 0.76
+      },
+      "ticket": {
+        "status": "processing",
+        "assignee": "analyst01",
+        "updated_at": "2026-05-27T06:19:18.264567Z",
+        "response_minutes": 111
+      },
+      "mitre_tactics": [
+        "Exfiltration"
+      ],
+      "asset": {
+        "hostname": "db-slave-01",
+        "ip": "10.0.2.22",
+        "owner": "dba-team",
+        "environment": "prod"
+      },
+      "related_entities": [
+        "45.155.205.142",
+        "233.76.150.240",
+        "db-slave-01"
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-05-27T05:56:18.264567Z",
+          "message": "初步检测到异常行为: 乌克兰 IP 45.155.205.142"
+        },
+        {
+          "timestamp": "2026-05-27T05:36:18.264567Z",
+          "message": "关联分析确认攻击模式: exfiltration"
+        },
+        {
+          "timestamp": "2026-05-27T06:19:18.264567Z",
+          "message": "Large DNS TXT queries from db-slave-01 to malware-update.cc (avg 21.5 bytes)"
+        }
+      ]
+    },
+    "assessment": {
+      "alert_id": "35241c53-cef9-4873-ad6f-722a3132ee38",
+      "overall_score": 100.0,
+      "confidence": 0.99,
+      "label": "confirmed-threat",
+      "false_positive_probability": 0.03,
+      "anomaly_score": 0.59,
+      "threat_type": "exfiltration",
+      "attack_stage": "Exfiltration",
+      "reasoning": "**研判结论：威胁真实，确认数据渗出事件。**\n\n**关键证据：**\n1.  **异常流量行为**：生产数据库从机 `db-slave-01` 向外部IP `233.76.150.240` 发送了21.5MB数据，远超正常DNS TXT查询大小（平均21.5字节），符合数据渗出特征。\n2.  **恶意域名解析**：日志显示查询域名为 `malware-update.cc`，该域名具有明显恶意特征，且关联IP `45.155.205.142` 可能为C2或中转节点。\n3.  **高置信度评分**：启发式分析风险分100/100，误报概率仅0.03，分类为 `confirmed-threat`，进一步确认了告警的可靠性。\n\n**建议处置动作：**\n1.  **立即隔离**：在防火墙上阻断 `db-slave-01` 与 `233.76.150.240` 及 `45.155.205.142` 的所有通信，并在交换机上将该主机隔离。\n2.  **取证分析**：对 `db-slave-01` 进行内存和磁盘快照，重点排查近期进程创建、网络连接及计划任务变更，确认失陷原因（如弱口令、漏洞利用）。\n3.  **数据影响评估**：检查数据库审计日志，确认被渗出的具体数据表及",
+      "recommendations": [
+        "立即阻断源 IP 45.155.205.142，在边界防火墙添加 deny 规则",
+        "隔离涉事终端 db-slave-01 (10.0.2.22)，禁止横向移动",
+        "重置 db-slave-01 上受影响账号凭据，排查后门持久化",
+        "提取 IOC 同步至 SIEM/EDR，全量回溯 45.155.205.142 近 72h 活动",
+        "启动应急响应流程，通知安全负责人并留存取证材料"
+      ],
+      "trace_summary": [
+        "2026-05-27T05:56:18.264567+00:00 - 初步检测到异常行为: 乌克兰 IP 45.155.205.142",
+        "2026-05-27T05:36:18.264567+00:00 - 关联分析确认攻击模式: exfiltration",
+        "2026-05-27T06:19:18.264567+00:00 - Large DNS TXT queries from db-slave-01 to malware-update.cc (avg 21.5 bytes)"
+      ]
+    },
+    "prediction": {
+      "current_stage": "Exfiltration",
+      "predicted_next_stage": "Execution",
+      "confidence": 0.6,
+      "risk_score": 50.0,
+      "likely_targets": [],
+      "attack_vector": "未知",
+      "rationale": "好的，作为高级威胁狩猎分析师，我将基于提供的告警上下文进行严谨的推理。\n\n---\n\n1.  **预测下一攻击阶段**: **影响 (Impact)** 或 **行动 (Actions on Objectives)**\n    *   **推理**: 攻击者已完成数据渗出（Exfiltration），下一步通常是对受害者系统造成破坏、加密勒索或横向移动到其他高价值目标以扩大战果。鉴于渗出的是数据库从库，数据已被窃取，下一步可能是销毁证据或加密数据库。\n\n2.  **攻击路径推理**:\n    *   **因果链**: 攻击者已成功在 `db-slave-01` 上建立立足点并执行了数据渗出（通过DNS TXT查询将数据打包外传至 `malware-update.cc`）。这表明攻击者已具备对该主机的控制权。\n    *   **下一步行动**:\n        *   **可能性A (影响/",
+      "recommended_defense": [],
+      "matched_cves": []
+    }
   }
 }
